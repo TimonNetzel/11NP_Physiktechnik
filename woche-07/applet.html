@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#16233a">
+<title>Simulation</title>
+<style>
+:root{
+  --bg:#eef1f5; --card:#ffffff; --ink:#15202e; --muted:#5b6778; --line:#d6dce4;
+  --acc:#e4572e; --acc-d:#b83f1c; --blue:#1f6f8b; --ok:#23915a; --okbg:#e3f5ea; --bad:#cf3b3b; --badbg:#fde8e8;
+  --gold:#f0b400; --nav:#16233a; --hint:#fff6d6; --hintb:#eed27a;
+  --scr:#07140f; --trace:#7dffa6; --grid:rgba(125,255,166,.16);
+  --r:16px; --sh:0 2px 10px rgba(20,32,46,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;min-height:100dvh;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{touch-action:manipulation;cursor:pointer;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--nav);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 0 8px}
+.top .wrap{display:flex;align-items:center;gap:8px}
+.top h1{font-size:17px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{background:rgba(255,255,255,.12);border:0;border-radius:999px;padding:7px 12px;color:#fff;font-weight:600;font-size:15px;min-height:40px;display:inline-flex;align-items:center;gap:4px}
+.pill.gold{background:var(--gold);color:#241a00}
+.iconbtn{min-width:44px;justify-content:center}
+.dots{display:flex;gap:5px;padding:8px 0 2px;flex-wrap:wrap}
+.dots i{height:6px;flex:1;min-width:10px;border-radius:3px;background:rgba(255,255,255,.2)}
+.dots i.on{background:var(--gold)} .dots i.cur{background:#fff}
+/* home */
+.hero{background:linear-gradient(160deg,#16233a 0%,#24406a 100%);color:#fff;padding:22px 0 26px}
+.hero h2{margin:0 0 6px;font-size:26px;line-height:1.2}
+.hero p{margin:0;opacity:.9}
+.stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 12px;font-size:15px}
+.stat b{font-size:20px;display:block}
+.levels{display:grid;gap:12px;margin:18px auto 28px}
+@media(min-width:700px){.levels{grid-template-columns:1fr 1fr}}
+.lv{display:flex;gap:14px;align-items:center;background:var(--card);border:2px solid transparent;border-radius:var(--r);padding:14px;box-shadow:var(--sh);text-align:left;width:100%}
+.lv:disabled{opacity:.5;cursor:default}
+.lv.next{border-color:var(--acc)}
+.lv .num{flex:0 0 48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;background:#e8edf3;color:var(--nav)}
+.lv.done .num{background:var(--ok);color:#fff}
+.lv.next .num{background:var(--acc);color:#fff}
+.lv .tx{flex:1;min-width:0}
+.lv .tag{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);font-weight:700}
+.lv .tt{font-weight:700;font-size:17px}
+.lv .sub{font-size:14px;color:var(--muted)}
+.lv .st{font-size:22px}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.bdg{background:#fff;border-radius:999px;padding:6px 12px;font-size:14px;box-shadow:var(--sh)}
+.bdg.off{opacity:.35;filter:grayscale(1)}
+/* step */
+.step{padding:16px 0 120px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:20px;line-height:1.25}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
+.task{background:#eaf4f8;border-left:5px solid var(--blue);border-radius:10px;padding:10px 12px;margin:10px 0}
+.task b:first-child{color:var(--blue)}
+.story{display:flex;gap:12px;align-items:flex-start}
+.ava{flex:0 0 54px;height:54px;border-radius:50%;background:#ffe2d6;display:grid;place-items:center;font-size:30px}
+.bubble{background:#fff;border-radius:4px 16px 16px 16px;padding:12px 14px;box-shadow:var(--sh);flex:1}
+.bubble .who{font-weight:700;font-size:14px;color:var(--acc-d)}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(238,241,245,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+.foot .wrap{display:flex;gap:10px}
+.btn{border:0;border-radius:14px;min-height:52px;padding:10px 18px;font-weight:700;background:var(--acc);color:#fff;box-shadow:0 2px 0 var(--acc-d)}
+.btn:disabled{background:#b9c1cb;box-shadow:none;cursor:default}
+.btn.sec{background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--line) inset}
+.btn.blue{background:var(--blue);box-shadow:0 2px 0 #134a5d}
+.btn.wide{flex:1}
+.btn.small{min-height:44px;padding:8px 14px;font-size:15px}
+.hintbox{background:var(--hint);border:2px solid var(--hintb);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:16px}
+/* mcq */
+.mcq .q{font-weight:700;margin:4px 0 10px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:54px;font-size:16px}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg);opacity:.75}
+.fb{margin-top:10px;border-radius:12px;padding:0;font-size:16px}
+.fb.ok{background:var(--okbg);padding:10px 12px;border:2px solid #9fd8b8}
+.fb.bad{background:var(--badbg);padding:10px 12px;border:2px solid #f0b0b0}
+.fb.info{background:#eaf4f8;padding:10px 12px;border:2px solid #b7d9e6}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+/* pick */
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.tile{background:#fff;border:3px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;font-size:14px;font-weight:600;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.tile svg{width:56px;height:56px}
+.tile.sel{border-color:var(--blue);background:#e6f3f8}
+.tile.good{border-color:var(--ok);background:var(--okbg)}
+.tile.wrong{border-color:var(--bad);background:var(--badbg)}
+/* place / seq */
+.fig{background:#f7f9fb;border-radius:12px;padding:8px;margin:8px 0}
+.fig svg{width:100%;height:auto;display:block}
+.slots{display:grid;gap:8px;margin:10px 0}
+.slot{display:flex;align-items:center;gap:10px;background:#fff;border:2px dashed #9fb0c2;border-radius:12px;padding:8px 10px;min-height:50px;text-align:left;width:100%}
+.slot .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--nav);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+.slot.filled{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+.slot.act{border-color:var(--blue);background:#e6f3f8}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{background:#fff;border:2px solid var(--line);border-radius:999px;padding:9px 14px;min-height:46px;font-weight:600;font-size:15px}
+.chip.sel{border-color:var(--blue);background:var(--blue);color:#fff}
+.seqlist{display:grid;gap:8px}
+.seqitem{display:flex;gap:10px;align-items:center;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;min-height:52px;width:100%;font-size:16px}
+.seqitem .n{flex:0 0 30px;height:30px;border-radius:50%;background:#e8edf3;display:grid;place-items:center;font-weight:800}
+.seqitem.done{border-color:var(--ok);background:var(--okbg)} .seqitem.done .n{background:var(--ok);color:#fff}
+/* calc */
+.calc{display:grid;gap:10px}
+.crow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;background:#f7f9fb;border-radius:12px;padding:10px 12px;font-size:17px}
+.crow.given{background:#eef2f6;color:#334}
+.crow input{width:130px;min-height:46px;border:2px solid #9fb0c2;border-radius:10px;padding:6px 10px;font-size:18px;font-weight:700;text-align:right;background:#fff}
+.crow input.okI{border-color:var(--ok);background:var(--okbg)}
+.crow input.badI{border-color:var(--bad);background:var(--badbg)}
+.crow .u{font-weight:600;color:var(--muted)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.92em;margin:0 3px}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.tip{font-size:14px;color:var(--muted)}
+/* scan */
+.scanwrap{background:#1c2733;border-radius:14px;padding:8px;margin:10px 0;color:#cfe}
+.scanhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px 6px;font-size:13px}
+.scanhead .t{font-weight:700;letter-spacing:.04em}
+canvas.scan{display:block;width:100%;height:auto;aspect-ratio:16/8.5;border-radius:8px;background:var(--scr);touch-action:manipulation}
+.seg{display:inline-flex;background:#2d3b4a;border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;color:#cfe;padding:6px 12px;border-radius:8px;min-height:36px;font-weight:700;font-size:14px}
+.seg button.on{background:var(--trace);color:#062}
+.readout{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 4px 0;font-size:14px;font-variant-numeric:tabular-nums}
+.readout b{color:var(--trace)}
+/* controls */
+.ctrls{display:grid;gap:10px;margin-top:6px}
+.ctl{background:#f7f9fb;border-radius:12px;padding:10px 12px}
+.ctl .lab{display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-bottom:6px}
+.ctl .lab span{font-variant-numeric:tabular-nums;color:var(--blue)}
+.ctl .row{display:flex;gap:8px;align-items:center}
+.ctl input[type=range]{flex:1;min-width:0;height:36px;accent-color:var(--acc)}
+.btns4{display:grid!important;grid-template-columns:repeat(4,1fr);margin-top:6px}
+.sbtn{min-width:52px;min-height:46px;border:0;border-radius:12px;background:var(--nav);color:#fff;font-weight:800;font-size:16px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.btnrow .btn{flex:1;min-width:140px}
+.check{list-style:none;padding:0;margin:8px 0;display:grid;gap:4px;font-size:15px}
+.check li:before{content:"⬜ "} .check li.ok:before{content:"✅ "}
+/* scene */
+.scene{width:100%;max-height:200px;display:block}
+.wv{animation:wv 1.1s linear infinite;opacity:0}
+.wv:nth-child(2){animation-delay:.37s}.wv:nth-child(3){animation-delay:.74s}
+@keyframes wv{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(62px);opacity:0}}
+.weak .wv{animation-name:wvw}
+@keyframes wvw{0%{transform:translateY(0);opacity:.25}30%{opacity:0}100%{transform:translateY(20px);opacity:0}}
+/* device (Gerätemenü im Hardware-Look) */
+.dev{background:#c8232c;border-radius:18px;padding:12px;box-shadow:0 4px 0 #8d141b}
+.dev .scr{background:#0b1a14;color:#bfffd3;border-radius:8px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px}
+.dev .scr .mrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed rgba(191,255,211,.25)}
+.dev .scr .mrow:last-child{border:0}
+.dev .brand{color:#fff;font-weight:800;font-size:12px;letter-spacing:.12em;margin-top:8px;opacity:.9}
+.dev .keys{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dev .keys button{flex:1 0 64px;min-height:46px;border:0;border-radius:10px;background:#f0f0f0;color:#222;font-weight:800}
+.dev .arrow{min-width:44px;min-height:40px;border:0;border-radius:8px;background:#2a4a3a;color:#bfffd3;font-weight:800}
+/* table */
+table.tb{border-collapse:collapse;width:100%;font-size:15px}
+.tb th,.tb td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left}
+.tb th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+/* decide */
+.dcard{border:2px solid var(--line);border-radius:14px;padding:10px;margin:10px 0;background:#fff}
+.dcard.ok{border-color:var(--ok);background:var(--okbg)}
+.dcard h4{margin:0 0 4px}
+.dbtns{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:560px){.dbtns{grid-template-columns:1fr 1fr 1fr}}
+.dbtns button{min-height:50px;border-radius:12px;border:2px solid var(--line);background:#fff;font-weight:700;font-size:15px}
+.dbtns button.bad{border-color:var(--bad);background:var(--badbg)} .dbtns button.ok{border-color:var(--ok);background:var(--okbg)}
+/* cloze */
+.cloze p{margin:0 0 12px;line-height:2}
+.cloze select{min-height:44px;border:2px solid #9fb0c2;border-radius:10px;padding:4px 8px;max-width:100%;background:#fff;font-weight:600;font-size:16px}
+.cloze select.okI{border-color:var(--ok);background:var(--okbg)} .cloze select.badI{border-color:var(--bad);background:var(--badbg)}
+.doc{border:2px solid var(--nav);border-radius:12px;padding:16px;position:relative;background:#fffdf7;margin-top:12px}
+.doc h4{margin:0 0 8px;font-size:19px}
+.doc .stamp{position:absolute;right:12px;top:10px;border:3px solid var(--ok);color:var(--ok);font-weight:900;padding:4px 10px;border-radius:8px;transform:rotate(-8deg);letter-spacing:.08em}
+.doc dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:15px}
+.doc dt{font-weight:700;color:var(--muted)}
+.doc dd{margin:0}
+/* sheet */
+.shade{position:fixed;inset:0;background:rgba(10,18,30,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:88vh;overflow:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 10px}
+@media(min-width:700px){.shade{align-items:center}.sheet{border-radius:20px}}
+.calcdisp{background:#0b1a14;color:#bfffd3;font:600 24px/1.2 ui-monospace,Menlo,monospace;border-radius:12px;padding:12px;text-align:right;min-height:58px;word-break:break-all}
+.calckeys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.calckeys button{min-height:54px;border:0;border-radius:12px;background:#e8edf3;font-size:20px;font-weight:700}
+.calckeys button.op{background:#d5e6ee}.calckeys button.eq{grid-column:span 4;background:var(--acc);color:#fff}
+.calckeys button.ex{font-size:16px}
+.term{border-bottom:2px dotted var(--blue);color:var(--blue);font-weight:600;cursor:pointer}
+.term:after{content:" ⓘ";font-size:.75em}
+/* overlay */
+.win{text-align:center;padding:10px 0}
+.win .big{font-size:64px;line-height:1}
+.float{position:fixed;z-index:60;font-weight:900;color:var(--gold);font-size:26px;text-shadow:0 1px 0 #7a5a00;pointer-events:none;animation:up 1.1s ease-out forwards}
+@keyframes up{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-70px)}}
+.conf{position:fixed;top:-10px;width:10px;height:14px;z-index:70;pointer-events:none;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+/* cert */
+.cert{background:linear-gradient(145deg,#16233a,#2a4b7a);color:#fff;border-radius:22px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.cert:after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(240,180,0,.18)}
+.cert h2{margin:0;font-size:24px}
+.cert .nm{font-size:30px;font-weight:900;margin:14px 0 2px;color:var(--gold)}
+.cert .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.cert .row div{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 12px}
+.stars{font-size:30px;letter-spacing:4px;margin-top:8px;color:var(--gold)}
+.bars{display:grid;gap:10px;margin:10px 0}
+.bar{background:#e8edf3;border-radius:10px;height:26px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:10px}
+.bar span{position:absolute;left:10px;top:3px;font-size:14px;font-weight:700}
+small.m{color:var(--muted)}
+input.name{width:100%;min-height:52px;border:2px solid #9fb0c2;border-radius:12px;padding:8px 12px;font-size:18px}
+@media (prefers-color-scheme: dark){
+ :root:not([data-theme="light"]){--bg:#0f1621;--card:#1a2433;--ink:#e8eef6;--muted:#9fb0c2;--line:#2f3d50;--okbg:#153a28;--badbg:#3d1c1c;--hint:#3a3317;--hintb:#6d5d1d}
+ :root:not([data-theme="light"]) .opt,:root:not([data-theme="light"]) .tile,:root:not([data-theme="light"]) .slot,:root:not([data-theme="light"]) .chip,:root:not([data-theme="light"]) .seqitem,:root:not([data-theme="light"]) .dcard,:root:not([data-theme="light"]) .dbtns button,:root:not([data-theme="light"]) .cloze select,:root:not([data-theme="light"]) .crow input,:root:not([data-theme="light"]) .bubble,:root:not([data-theme="light"]) .sheet,:root:not([data-theme="light"]) .bdg,:root:not([data-theme="light"]) input.name{background:#1f2b3c}
+ :root:not([data-theme="light"]) .crow,:root:not([data-theme="light"]) .ctl,:root:not([data-theme="light"]) .fig{background:#223044}
+ :root:not([data-theme="light"]) .fig{background:#e9eef4}
+ :root:not([data-theme="light"]) .task{background:#16303c}
+ :root:not([data-theme="light"]) .fb.info{background:#16303c;border-color:#24536a}
+ :root:not([data-theme="light"]) .foot{background:rgba(15,22,33,.94)}
+ :root:not([data-theme="light"]) .btn.sec{background:#1f2b3c}
+ :root:not([data-theme="light"]) .doc{background:#1f2b3c}
+ :root:not([data-theme="light"]) .calckeys button{background:#2a3a50}
+ :root:not([data-theme="light"]) .calckeys button.op{background:#24485a}
+ :root:not([data-theme="light"]) .lv .num{background:#2a3a50;color:#e8eef6}
+ :root:not([data-theme="light"]) .bar{background:#2a3a50}
+ :root:not([data-theme="light"]) .tile.sel,:root:not([data-theme="light"]) .slot.act{background:#16303c}
+}
+.sol h4{margin:16px 0 6px;font-size:17px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.sol ol{margin:0;padding-left:22px}.sol li{margin:4px 0}
+.sol .a{color:var(--ok);font-weight:700}
+@media print{.top,.foot,.shade .btn{display:none!important}.shade{position:static;background:none}.sheet{max-height:none;box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <button class="pill iconbtn" id="bHome" aria-label="Übersicht">🏠</button>
+  <h1 id="tTitle"></h1>
+  <button class="pill iconbtn" id="bCalc" aria-label="Taschenrechner">🧮</button>
+  <button class="pill iconbtn" id="bProto" aria-label="Messprotokoll">📋</button>
+  <span class="pill gold" id="tPts">⭐ 0</span>
+</div><div class="wrap"><div class="dots" id="dots"></div></div></header>
+<main id="home"></main>
+<main id="level" class="hidden"><div class="wrap step" id="stepBox"></div></main>
+<main id="certView" class="hidden"></main>
+<footer class="foot hidden" id="foot"><div class="wrap">
+  <button class="btn sec" id="bHint">💡 Hilfe</button>
+  <button class="btn wide" id="bNext" disabled>Weiter ▶</button>
+</div></footer>
+<script>
+"use strict";
+/* ===================== ENGINE (unverändert übernehmen) ===================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const fmt=(x,d=1)=>Number(x).toFixed(d).replace('.',',');
+const rand=(a,b)=>a+Math.random()*(b-a);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function parseNum(s){
+  if(s==null)return NaN; s=String(s).trim().replace(/\s/g,'').replace(/[−–]/g,'-'); if(!s)return NaN;
+  s=s.replace(/·10\^?/g,'e').replace(/x10\^?/gi,'e');
+  if(s.includes(',')){s=s.replace(/\./g,'').replace(',','.')}
+  else if((s.match(/\./g)||[]).length>1){s=s.replace(/\./g,'')}
+  else if(/^\d{1,3}\.\d{3}$/.test(s)&&Number(s.replace('.',''))>=1000){return Number(s.replace('.',''))}
+  return Number(s);
+}
+function shake(el){if(!el)return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const stripTags=h=>String(typeof h==='function'?h():h).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+
+/* ---------- State ---------- */
+const S0={name:'',points:0,done:{},awarded:{},stepIdx:{},hints:0,proto:{},quiz:{},teacher:false,sim:{}};
+let state;
+function load(){try{const s=JSON.parse(localStorage.getItem(CONFIG.key));if(s)return Object.assign(JSON.parse(JSON.stringify(S0)),s)}catch(e){}return JSON.parse(JSON.stringify(S0))}
+function save(){try{localStorage.setItem(CONFIG.key,JSON.stringify(state))}catch(e){}}
+
+/* ---------- Glossar / Wort-Hilfe ---------- */
+const T=(k,txt)=>`<span class="term" data-g="${k}">${txt||(GL[k]?GL[k][0]:k)}</span>`;
+document.addEventListener('click',e=>{const t=e.target.closest('.term');if(t&&GL[t.dataset.g]){const g=GL[t.dataset.g];sheet(`<h3>📘 ${g[0]}</h3><p>${g[1]}</p><button class="btn wide" style="width:100%" data-close>Verstanden</button>`)}});
+
+/* ---------- Bottom-Sheet ---------- */
+function sheet(html,onOpen){
+  const sh=document.createElement('div');sh.className='shade';
+  sh.innerHTML=`<div class="sheet" role="dialog">${html}</div>`;
+  sh.addEventListener('click',e=>{if(e.target===sh||e.target.closest('[data-close]'))sh.remove()});
+  document.body.appendChild(sh); onOpen&&onOpen(sh.firstChild,()=>sh.remove()); return sh;
+}
+
+/* ---------- Taschenrechner ---------- */
+let cExpr='';
+function calcDisp(){return cExpr.replace(/\*1e-6/g,'×10⁻⁶').replace(/\*1e-3/g,'×10⁻³').replace(/\*1e3/g,'×10³').replace(/\*/g,'×').replace(/\//g,'÷').replace(/-/g,'−').replace(/\./g,',')||'0'}
+function openCalc(){
+  const keys=['C','⌫','(',')','7','8','9','÷','4','5','6','×','1','2','3','−','0',',','×10⁻⁶','+','×10⁻³','×10³','x²','√','='];
+  sheet(`<h3>🧮 Taschenrechner</h3><div class="calcdisp" id="cd"></div>
+  <div class="calckeys">${keys.map(k=>`<button class="${'÷×−+'.includes(k)?'op':''}${k==='='?' eq':''}${/10|x²|√/.test(k)?' ex op':''}" data-k="${k}">${k}</button>`).join('')}</div>
+  <p class="tip">Tipp: µ (Mikro) = ×10⁻⁶ · m (Milli) = ×10⁻³ · k (Kilo) = ×10³</p>
+  <button class="btn sec wide" style="width:100%" data-close>Schließen</button>`,(s)=>{
+    const d=$('#cd',s);const up=()=>d.textContent=calcDisp();up();
+    const ev=()=>{const js=cExpr;if(!/^[0-9+\-*/().e]+$/.test(js))return NaN;try{return Function('"use strict";return ('+js+')')()}catch(e){return NaN}};
+    $$('.calckeys button',s).forEach(b=>b.onclick=()=>{
+      const k=b.dataset.k;
+      if(k==='C')cExpr='';else if(k==='⌫'){const m=cExpr.match(/\*1e-?\d$/);cExpr=m?cExpr.slice(0,-m[0].length):cExpr.slice(0,-1)}
+      else if(k==='='||k==='x²'||k==='√'){let r=ev();if(k==='x²')r=r*r;if(k==='√')r=Math.sqrt(r);if(!isFinite(r)){d.textContent='Fehler';cExpr='';return}cExpr=String(Number(r.toPrecision(8)))}
+      else cExpr+=({'÷':'/','×':'*','−':'-',',':'.','×10⁻⁶':'*1e-6','×10⁻³':'*1e-3','×10³':'*1e3'})[k]||k;
+      up();
+    });
+  });
+}
+
+/* ---------- Messprotokoll ---------- */
+function openProto(){
+  const p=state.proto;
+  sheet(`<h3>📋 Mein Messprotokoll</h3><table class="tb"><tr><th>Größe</th><th>Wert</th></tr>
+  ${PROTO.map(r=>{const v=p[r.k];return `<tr><td>${r.label}</td><td>${v==null?'—':(typeof v==='number'?fmt(v,r.d??1)+' '+(r.u||''):esc(v))}</td></tr>`}).join('')}</table>
+  <p class="tip">Werte werden automatisch eingetragen, wenn du sie gemessen oder richtig berechnet hast.</p>
+  <button class="btn sec" style="width:100%" data-close>Schließen</button>`);
+}
+
+/* ---------- Messbild (Oszilloskop-/Gerätebildschirm) ---------- */
+function pulseShape(u){ if(u<0||u>5)return 0; const osc=.55+.45*Math.abs(Math.cos(u*6.5)); return (u<.3?u/.3:Math.exp(-(u-.3)*1.5))*osc; }
+/* o: {xmin,xmax,ymin=0,ymax=100, xdec, ylabels:[..], peaks:[{x,a}], pulse:x, ring, grass, curves:[{f:x=>y,color,w}], points:[{x,y}],
+       targets:[x], htargets:[y], marks:[{x,label,row}], hl:[gridIndex], strich:bool, corner:'Text' } */
+function drawScope(cv,o){
+  const r=cv.getBoundingClientRect(); if(r.width<10)return;
+  const dpr=window.devicePixelRatio||1, W=Math.round(r.width), H=Math.round(r.height);
+  if(cv.width!==W*dpr||cv.height!==H*dpr){cv.width=W*dpr;cv.height=H*dpr}
+  const c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,W,H);
+  const ymin=o.ymin??0, ymax=o.ymax??100, pl=38,pr=o.strich?30:10,pt=10,pb=26, gw=W-pl-pr, gh=H-pt-pb;
+  cv._lay={pl,pr,pt,pb,gw,gh,xmin:o.xmin,xmax:o.xmax,ymin,ymax};
+  const X=x=>pl+(x-o.xmin)/(o.xmax-o.xmin)*gw, Y=a=>pt+gh-(a-ymin)/(ymax-ymin)*gh;
+  c.fillStyle='#07140f';c.fillRect(0,0,W,H);
+  for(let i=0;i<=10;i++){const x=pl+i*gw/10,h=o.hl&&o.hl.includes(i);c.strokeStyle=h?'rgba(255,196,0,.95)':'rgba(125,255,166,.16)';c.lineWidth=h?2.5:1;c.beginPath();c.moveTo(x,pt);c.lineTo(x,pt+gh);c.stroke()}
+  c.lineWidth=1;c.strokeStyle='rgba(125,255,166,.16)';
+  for(let i=0;i<=10;i++){const y=pt+i*gh/10;c.beginPath();c.moveTo(pl,y);c.lineTo(pl+gw,y);c.stroke()}
+  if(ymin<0&&ymax>0){c.strokeStyle='rgba(125,255,166,.45)';c.beginPath();c.moveTo(pl,Y(0));c.lineTo(pl+gw,Y(0));c.stroke()}
+  c.textAlign='center';const step=W<420?2:1;
+  for(let i=0;i<=10;i+=(o.strich?1:step)){const x=pl+i*gw/10,h=o.hl&&o.hl.includes(i);
+    const xv=o.xmin+i*(o.xmax-o.xmin)/10,lab=o.strich?String(i+1):fmt(xv,o.xdec??(Math.abs(xv-Math.round(xv))<1e-6?0:1));
+    c.fillStyle=h?'#ffc400':'rgba(200,255,220,.75)';c.font=h?'bold 12px -apple-system,sans-serif':'11px -apple-system,sans-serif';c.fillText(lab,x,H-9)}
+  c.textAlign='right';c.fillStyle='rgba(200,255,220,.75)';c.font='11px -apple-system,sans-serif';
+  (o.ylabels||[ymin,(ymin+ymax)/2,ymax]).forEach(a=>c.fillText(fmt(a,o.ydec??(Math.abs(a-Math.round(a))<1e-6?0:1)),pl-5,Y(a)+4));
+  (o.targets||[]).forEach(t=>{const x=X(t);c.save();c.setLineDash([5,5]);c.strokeStyle='#ffc400';c.lineWidth=2;c.beginPath();c.moveTo(x,pt);c.lineTo(x,pt+gh);c.stroke();c.restore()});
+  (o.htargets||[]).forEach(t=>{const y=Y(t);c.save();c.setLineDash([5,5]);c.strokeStyle='#ffc400';c.lineWidth=2;c.beginPath();c.moveTo(pl,y);c.lineTo(pl+gw,y);c.stroke();c.restore()});
+  c.save();c.beginPath();c.rect(pl-1,pt-1,gw+pr,gh+2);c.clip();
+  const span=o.xmax-o.xmin;
+  if(o.peaks||o.pulse!=null){ // Impuls-/Echo-Darstellung (gleichgerichtet)
+    const ew=span*0.011, grass=(o.grass??2);c.beginPath();
+    for(let px=0;px<=gw+(o.strich?pr-4:0);px++){const x=o.xmin+px/gw*span;let v=Math.random()*grass;
+      if(o.pulse!=null)v=Math.max(v,Math.min(98,100*pulseShape((x-o.pulse)/(ew*(o.ring||2.4)))));
+      (o.peaks||[]).forEach(e=>{v=Math.max(v,e.a*pulseShape((x-e.x)/ew)*(1+Math.random()*.04))});
+      const y=Y(ymin+Math.min(v,99)/100*(ymax-ymin));px?c.lineTo(pl+px,y):c.moveTo(pl+px,y)}
+    c.strokeStyle='#7dffa6';c.lineWidth=1.6;c.shadowColor='#7dffa6';c.shadowBlur=4;c.stroke();c.shadowBlur=0;
+  }
+  (o.curves||[]).forEach(cu=>{c.beginPath();for(let px=0;px<=gw;px++){const x=o.xmin+px/gw*span;let y=cu.f(x)+(cu.noise?rand(-cu.noise,cu.noise):0);if(!isFinite(y))continue;y=Y(Math.max(ymin-1e9,Math.min(ymax+1e9,y)));px?c.lineTo(pl+px,y):c.moveTo(pl+px,y)}
+    c.strokeStyle=cu.color||'#7dffa6';c.lineWidth=cu.w||2;c.shadowColor=c.strokeStyle;c.shadowBlur=3;c.stroke();c.shadowBlur=0});
+  (o.points||[]).forEach(p=>{c.fillStyle=p.color||'#4fc3ff';c.beginPath();c.arc(X(p.x),Y(p.y),p.r||5,0,7);c.fill()});
+  c.restore();
+  (o.marks||[]).forEach(m=>{const x=X(m.x);c.strokeStyle='#4fc3ff';c.lineWidth=2;c.beginPath();c.moveTo(x,pt);c.lineTo(x,pt+gh);c.stroke();
+    c.font='bold 12px -apple-system,sans-serif';const w=c.measureText(m.label).width+10;let bx=Math.min(Math.max(x-w/2,pl),pl+gw-w);
+    c.fillStyle='#4fc3ff';c.fillRect(bx,pt+2+(m.row||0)*20,w,18);c.fillStyle='#021';c.textAlign='left';c.fillText(m.label,bx+5,pt+15+(m.row||0)*20)});
+  if(o.corner){c.textAlign='right';c.fillStyle='rgba(200,255,220,.9)';c.font='bold 12px -apple-system,sans-serif';c.fillText(o.corner,pl+gw-4,pt+14)}
+}
+function scopeToX(cv,clientX){const r=cv.getBoundingClientRect(),L=cv._lay;if(!L)return null;return L.xmin+(clientX-r.left-L.pl)/L.gw*(L.xmax-L.xmin)}
+/* makeScope(parent,{title, units:['µs','mm']}) → o.cv, o.ro (Anzeigezeile), o.unit, o.onUnit */
+function makeScope(parent,{title='Messbild',units=null}={}){
+  const w=document.createElement('div');w.className='scanwrap';
+  w.innerHTML=`<div class="scanhead"><span class="t">📟 ${title}</span>${units?`<div class="seg">${units.map(u=>`<button data-u="${u}">${u}</button>`).join('')}</div>`:''}</div><canvas class="scan"></canvas><div class="readout"></div>`;
+  parent.appendChild(w);
+  const o={cv:$('canvas',w),ro:$('.readout',w),unit:units?units[0]:null,wrap:w};
+  if(units){const bs=$$('.seg button',w);const mark=()=>bs.forEach(b=>b.classList.toggle('on',b.dataset.u===o.unit));mark();bs.forEach(b=>b.onclick=()=>{o.unit=b.dataset.u;mark();o.onUnit&&o.onUnit()})}
+  return o;
+}
+/* Live-Aktualisierung (~8 Hz) – wird bei jedem Schrittwechsel geleert */
+let loops=[];setInterval(()=>{loops.forEach(f=>{try{f()}catch(e){console.error(e)}})},120);
+function loop(f){loops.push(f);requestAnimationFrame(f)}
+window.addEventListener('resize',()=>loops.forEach(f=>f()));
+
+/* ---------- kleine Bausteine für Simulationen ---------- */
+function checklist(items){const u=document.createElement('ul');u.className='check';u.innerHTML=items.map(t=>`<li>${t}</li>`).join('');u.set=(i,ok)=>u.children[i].classList.toggle('ok',ok);return u}
+/* Regler: {label,min,max,step,val,fine,coarse,fmtV,onChange} → Element mit .set(v) */
+function ctlRow({label,min,max,step,val,fine,fmtV,onChange,coarse}){
+  const d=document.createElement('div');d.className='ctl';const f1=v=>fmt(v,v%1?1:0);
+  d.innerHTML=`<div class="lab">${label}<span></span></div>${coarse?`<input type="range" min="${min}" max="${max}" step="${step}" value="${val}" style="width:100%"><div class="row btns4"><button class="sbtn" data-d="-${coarse}">−${f1(coarse)}</button><button class="sbtn" data-d="-${fine}">−${f1(fine)}</button><button class="sbtn" data-d="${fine}">+${f1(fine)}</button><button class="sbtn" data-d="${coarse}">+${f1(coarse)}</button></div>`
+   :`<div class="row"><button class="sbtn" data-d="-${fine}">−</button><input type="range" min="${min}" max="${max}" step="${step}" value="${val}"><button class="sbtn" data-d="${fine}">+</button></div>`}`;
+  const r=$('input',d),sp=$('.lab span',d);
+  const set=v=>{v=Math.min(max,Math.max(min,Math.round(v/step)*step));v=Number(v.toFixed(4));r.value=v;sp.textContent=fmtV(v);onChange(v)};
+  r.oninput=()=>set(+r.value);$$('.sbtn',d).forEach(b=>b.onclick=()=>set(+r.value+ +b.dataset.d));
+  sp.textContent=fmtV(val);d.set=set;return d;
+}
+function statusFb(c){const f=document.createElement('div');f.className='fb';c.appendChild(f);return (cls,h)=>{f.className='fb '+cls;f.innerHTML=h}}
+const person=(txt)=>`<div class="story"><div class="ava">${CONFIG.person.ava}</div><div class="bubble"><div class="who">${CONFIG.person.name} · ${CONFIG.person.role}</div>${txt}</div></div>`;
+
+/* ---------- Navigation ---------- */
+let cur=null, ctx=null;
+function levelOpen(i){return state.teacher||i===0||state.done[i-1]}
+function updPts(){$('#tPts').textContent='⭐ '+state.points}
+function renderHome(){
+  loops=[];cur=null;
+  $('#level').classList.add('hidden');$('#certView').classList.add('hidden');$('#home').classList.remove('hidden');$('#foot').classList.add('hidden');
+  $('#tTitle').textContent=CONFIG.title;$('#dots').innerHTML='';$('#bHome').classList.add('hidden');updPts();
+  const N=LEVELS.length,nDone=LEVELS.filter((l,i)=>state.done[i]).length, nextI=LEVELS.findIndex((l,i)=>!state.done[i]);
+  $('#home').innerHTML=`<section class="hero"><div class="wrap">
+    <div class="kicker" style="color:#ffb199">${CONFIG.org}</div><h2>${CONFIG.mission}</h2>
+    <p>Hallo ${esc(state.name||CONFIG.defaultName)}! ${CONFIG.missionText}</p>
+    <div class="stats"><div class="stat"><b>${nDone}/${N}</b>Level</div><div class="stat"><b>⭐ ${state.points}</b>Punkte</div><div class="stat"><b>${nDone}</b>Abzeichen</div></div>
+  </div></section><div class="wrap">
+   ${nextI>=0?`<button class="btn wide" style="width:100%;margin-top:16px" id="goNext">▶ ${state.stepIdx[nextI]?'Weitermachen':'Starten'}: Level ${nextI+1}</button>`:`<button class="btn wide" style="width:100%;margin-top:16px" id="goCert">🪪 ${CONFIG.certButton}</button>`}
+   <div class="levels">${LEVELS.map((L,i)=>{const d=state.done[i],o=levelOpen(i);return `<button class="lv ${d?'done':''} ${i===nextI?'next':''}" data-l="${i}" ${o?'':'disabled'}>
+     <div class="num">${d?'✓':i+1}</div><div class="tx"><div class="tag">${L.tag}</div><div class="tt">${L.title}</div><div class="sub">${L.sub}</div></div><div class="st">${d?L.badge.split(' ')[0]:o?'▶':'🔒'}</div></button>`}).join('')}</div>
+   <h3 style="margin:0 0 8px">Deine Abzeichen</h3>
+   <div class="badges">${LEVELS.map((L,i)=>`<span class="bdg ${state.done[i]?'':'off'}">${L.badge}</span>`).join('')}</div>
+   <p style="margin:26px 0 30px;text-align:center"><button class="btn sec small" id="bSet">⚙️ Einstellungen</button></p></div>`;
+  $$('.lv').forEach(b=>b.onclick=()=>openLevel(+b.dataset.l));
+  const gn=$('#goNext');if(gn)gn.onclick=()=>openLevel(nextI);const gc=$('#goCert');if(gc)gc.onclick=renderCert;
+  $('#bSet').onclick=openSettings;window.scrollTo(0,0);
+}
+function openLevel(i){cur={li:i,si:state.done[i]?0:Math.min(state.stepIdx[i]||0,LEVELS[i].steps.length-1)};
+  $('#home').classList.add('hidden');$('#certView').classList.add('hidden');$('#level').classList.remove('hidden');$('#foot').classList.remove('hidden');$('#bHome').classList.remove('hidden');renderStep()}
+function renderStep(){
+  loops=[];
+  const L=LEVELS[cur.li], S=L.steps[cur.si];
+  $('#tTitle').textContent=`Level ${cur.li+1}: ${L.title}`;
+  $('#dots').innerHTML=L.steps.map((s,i)=>`<i class="${i<cur.si?'on':''} ${i===cur.si?'cur':''}"></i>`).join('');
+  const box=$('#stepBox');box.innerHTML='';
+  ctx={attempts:0,hint:0,solved:false,S,key:cur.li+'-'+cur.si,auto:null};
+  const next=$('#bNext');next.disabled=true;next.textContent=cur.si===L.steps.length-1?'Level abschließen 🏁':'Weiter ▶';
+  $('#bHint').classList.toggle('hidden',!(S.hints&&S.hints.length&&!S.quiz));$('#bHint').textContent='💡 Hilfe';
+  const card=document.createElement('div');card.className='card';box.appendChild(card);
+  if(S.type==='info'){card.innerHTML=S.html();solved(true)}
+  else{
+    const tt=S.title?`<div class="kicker">${L.tag}${S.bonus?' · Bonus':''}</div><h3>${S.title}</h3>`:(S.bonus?`<div class="kicker">Bonus</div>`:'');
+    card.innerHTML=tt+(S.text?`<p>${typeof S.text==='function'?S.text():S.text}</p>`:'')+(S.pre?S.pre():'');
+    const api={solved:()=>solved(),wrong:()=>{ctx.attempts++},card,setAuto:f=>ctx.auto=f};
+    W[S.type](card,S,api);
+    const hb=document.createElement('div');hb.id='hintArea';card.appendChild(hb);
+    if(S.bonus){next.disabled=false;next.textContent='Überspringen / Weiter ▶'}
+  }
+  if(!state.done[cur.li]){state.stepIdx[cur.li]=cur.si;save()}
+  window.scrollTo(0,0);
+}
+function solved(silent){
+  if(ctx.solved)return;ctx.solved=true;
+  const S=ctx.S,next=$('#bNext');next.disabled=false;if(S.bonus)next.textContent='Weiter ▶';
+  if(S.proto)state.proto[S.proto[0]]=S.proto[1];
+  if(!silent&&!state.awarded[ctx.key]){
+    const p=S.quiz?(ctx.attempts===0?10:0):(ctx.attempts===0?10:ctx.attempts===1?6:3)+(S.bonus?5:0);
+    state.awarded[ctx.key]=1;if(S.quiz)state.quiz[ctx.key]=ctx.attempts===0;
+    if(p>0){state.points+=p;updPts();floatPts('+'+p)}
+  }
+  save();
+}
+function floatPts(t){const e=document.createElement('div');e.className='float';e.textContent=t;const r=$('#tPts').getBoundingClientRect();e.style.left=r.left+'px';e.style.top=(r.bottom+4)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1200)}
+function finishLevel(){
+  const i=cur.li,first=!state.done[i];state.done[i]=true;if(first){state.points+=20;updPts()}
+  state.stepIdx[i]=0;save();confetti();const last=i===LEVELS.length-1;
+  sheet(`<div class="win"><div class="big">${LEVELS[i].badge.split(' ')[0]}</div><h3 style="margin:10px 0 4px">Level ${i+1} geschafft!</h3>
+   <p>Neues Abzeichen: <b>${LEVELS[i].badge}</b>${first?'<br>Bonus: <b>+20 ⭐</b>':''}</p>
+   <button class="btn wide" style="width:100%" id="wNext">${last?'🪪 '+CONFIG.certButton:'Weiter zu Level '+(i+2)+' ▶'}</button>
+   <button class="btn sec" style="width:100%;margin-top:8px" id="wHome">Zur Übersicht</button></div>`,(s,close)=>{
+     $('#wNext',s).onclick=()=>{close();last?renderCert():openLevel(i+1)};$('#wHome',s).onclick=()=>{close();renderHome()}});
+}
+function confetti(){const cs=['#e4572e','#f0b400','#23915a','#1f6f8b','#7dffa6'];for(let k=0;k<40;k++){const c=document.createElement('div');c.className='conf';c.style.left=Math.random()*100+'vw';c.style.background=cs[k%5];c.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),2600)}}
+function quizScore(){return Object.values(state.quiz).filter(Boolean).length}
+function renderCert(){
+  loops=[];$('#home').classList.add('hidden');$('#level').classList.add('hidden');$('#foot').classList.add('hidden');$('#certView').classList.remove('hidden');$('#bHome').classList.remove('hidden');
+  $('#tTitle').textContent=CONFIG.certTitle;$('#dots').innerHTML='';
+  const q=quizScore(),n=QUIZ.length,all=LEVELS.every((l,i)=>state.done[i]),stars=q>=n*.9?3:q>=n*.65?2:q>=n*.4?1:0;
+  $('#certView').innerHTML=`<div class="wrap" style="padding:18px 16px 40px">
+   <div class="cert"><div class="kicker" style="color:#ffb199">${CONFIG.org}</div><h2>🪪 ${CONFIG.certTitle}</h2><div style="opacity:.85">${CONFIG.certSub}</div>
+   <div class="nm">${esc(state.name||CONFIG.defaultName)}</div><div style="opacity:.85">${all?`hat alle ${LEVELS.length} Level erfolgreich abgeschlossen.`:'hat noch nicht alle Level abgeschlossen.'}</div>
+   <div class="stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+   <div class="row"><div>⭐ <b>${state.points}</b> Punkte</div><div>📝 Quiz: <b>${q}/${n}</b></div><div>💡 Hilfen: <b>${state.hints}</b></div><div>📅 ${new Date().toLocaleDateString('de-DE')}</div></div>
+   <div class="badges" style="margin-top:14px">${LEVELS.map((L,i)=>`<span class="bdg ${state.done[i]?'':'off'}" style="color:#15202e">${L.badge}</span>`).join('')}</div></div>
+   <p class="tip" style="margin-top:14px">📸 Mach einen Screenshot von deinem Ausweis und gib ihn bei deiner Lehrkraft ab.</p>
+   <p class="tip">${CONFIG.nextTime}</p><button class="btn wide" style="width:100%" id="cHome">Zur Übersicht</button></div>`;
+  $('#cHome').onclick=renderHome;window.scrollTo(0,0);
+}
+function openSettings(){
+  sheet(`<h3>⚙️ Einstellungen</h3><label><b>Dein Name</b><input class="name" id="sName" value="${esc(state.name)}" maxlength="30"></label>
+  <button class="btn blue" style="width:100%;margin-top:10px" id="sSave">Name speichern</button>
+  <hr style="margin:18px 0;border:0;border-top:1px solid var(--line)"><b>Für Lehrkräfte</b>
+  <p class="tip" style="margin:4px 0 8px">Code eingeben: schaltet alle Level frei und zeigt die Lösungsübersicht.</p>
+  <div style="display:flex;gap:8px"><input class="name" id="sPin" placeholder="Code" autocomplete="off"><button class="btn blue" id="sUnl">OK</button></div><div id="sMsg" class="tip"></div>
+  ${state.teacher?`<button class="btn sec" style="width:100%;margin-top:8px" id="sSol">📄 Lösungsübersicht anzeigen</button>`:''}
+  <hr style="margin:18px 0;border:0;border-top:1px solid var(--line)">
+  <button class="btn sec" style="width:100%" id="sReset">🗑️ Fortschritt löschen</button><button class="btn sec" style="width:100%;margin-top:8px" data-close>Schließen</button>`,(s,close)=>{
+   $('#sSave',s).onclick=()=>{state.name=$('#sName',s).value.trim();save();close();renderHome()};
+   $('#sUnl',s).onclick=()=>{if($('#sPin',s).value.trim().toUpperCase()===CONFIG.code.toUpperCase()){state.teacher=true;save();close();renderHome();openSettings()}else $('#sMsg',s).textContent='Code falsch.'};
+   const so=$('#sSol',s);if(so)so.onclick=()=>{close();sheet(solutionsHTML()+'<button class="btn sec" style="width:100%;margin-top:12px" data-close>Schließen</button>')};
+   $('#sReset',s).onclick=(e)=>{if(e.target.dataset.sure){const n=state.name;state=JSON.parse(JSON.stringify(S0));state.name=n;save();close();renderHome()}else{e.target.dataset.sure=1;e.target.textContent='Wirklich löschen? Nochmal tippen.'}};
+  });
+}
+function askName(){
+  sheet(`<div style="text-align:center"><div style="font-size:54px">${CONFIG.startEmoji}</div><h3>${CONFIG.title}</h3><p>${CONFIG.nameQuestion}</p></div>
+  <input class="name" id="nIn" placeholder="Vorname" maxlength="30" autocomplete="off"><button class="btn wide" style="width:100%;margin-top:10px" id="nGo">Los geht's ▶</button>`,(s,close)=>{
+   const go=()=>{state.name=$('#nIn',s).value.trim()||CONFIG.defaultName;save();close();renderHome()};$('#nGo',s).onclick=go;$('#nIn',s).addEventListener('keydown',e=>{if(e.key==='Enter')go()})});
+}
+
+/* ---------- Lösungsübersicht (aus den Level-Daten erzeugt) ---------- */
+function solutionsHTML(){
+  const one=S=>{const t=S.title?`<b>${stripTags(S.title)}</b>: `:'';
+    switch(S.type){
+     case 'mcq':return t+stripTags(S.q)+' → <span class="a">'+stripTags(S.o.find(o=>o.ok).t)+'</span>';
+     case 'pick':return t+'<span class="a">'+S.items.filter(i=>i.ok).map(i=>stripTags(i.t)).join(', ')+'</span>';
+     case 'place':return t+S.slots.map((a,i)=>`${i+1} = <span class="a">${stripTags(a)}</span>`).join(' · ');
+     case 'seq':return t+'<ol>'+S.items.map(x=>`<li class="a">${stripTags(x)}</li>`).join('')+'</ol>';
+     case 'calc':return t+'<ul>'+S.rows.filter(r=>!r.given).map(r=>`<li>${stripTags(r.pre)} <span class="a">${String(r.ans).replace('.',',')} ${r.u||''}</span></li>`).join('')+'</ul>';
+     case 'decide':return t+S.cards.map(c=>`${stripTags(c.title)} → <span class="a">${stripTags(S.actions[c.ans])}</span>`).join(' · ');
+     case 'cloze':return t+S.parts.map(p=>`<span class="a">${stripTags(p[1][p[2]])}</span>`).join(' | ');
+     case 'sim':return t+'<span class="a">'+(S.solution||'(siehe Simulation)')+'</span>';
+     default:return '';}};
+  return `<div class="sol"><h3>📄 Lösungsübersicht – ${CONFIG.title}</h3>`+LEVELS.map((L,i)=>`<h4>Level ${i+1}: ${L.title} <small class="m">(${L.tag})</small></h4><ol>`+L.steps.filter(s=>s.type!=='info'&&s.type!=='quizEnd').map(s=>`<li>${one(s)}</li>`).join('')+'</ol>').join('')+'</div>';
+}
+
+/* ---------- Widgets ---------- */
+function mcqW(container,S,onOk,onWrong){
+  const d=document.createElement('div');d.className='mcq';
+  d.innerHTML=`<p class="q">${typeof S.q==='function'?S.q():S.q}</p><div class="opts"></div><div class="fb"></div>`;
+  const ob=$('.opts',d),fb=$('.fb',d);
+  (S.noShuffle?S.o:shuffle(S.o)).forEach(o=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o.t;b._ok=!!o.ok;
+    b.onclick=()=>{if(d.dataset.done)return;
+      if(o.ok){b.classList.add('ok');d.dataset.done=1;fb.className='fb ok';fb.innerHTML='✅ '+(o.fb||'Richtig!');$$('.opt',ob).forEach(x=>x.disabled=true);onOk&&onOk()}
+      else{b.classList.add('bad');b.disabled=true;shake(b);fb.className='fb bad';fb.innerHTML='❌ '+(o.fb||'Noch nicht – versuch es nochmal.');onWrong&&onWrong();
+        if(S.quiz){$$('.opt',ob).forEach(x=>{x.disabled=true;if(x._ok)x.classList.add('ok')});d.dataset.done=1;onOk&&onOk()}}};
+    ob.appendChild(b)});
+  container.appendChild(d);return d;
+}
+const W={
+ mcq:(c,S,api)=>mcqW(c,S,api.solved,api.wrong),
+ pick:(c,S,api)=>{
+  const g=document.createElement('div');g.className='grid3';
+  shuffle(S.items).forEach(it=>{const t=document.createElement('button');t.className='tile';t.innerHTML=(ICON[it.k]||`<span style="font-size:40px">${it.e||'📦'}</span>`)+`<span>${it.t}</span>`;t._it=it;t.onclick=()=>{if(ctx.solved)return;t.classList.toggle('sel');t.classList.remove('wrong')};g.appendChild(t)});
+  c.appendChild(g);const b=document.createElement('button');b.className='btn blue';b.style.cssText='width:100%;margin-top:12px';b.textContent='Prüfen ✔';c.appendChild(b);
+  const fb=document.createElement('div');fb.className='fb';c.appendChild(fb);
+  b.onclick=()=>{if(ctx.solved)return;const tiles=$$('.tile',g);let wrong=[],miss=0;
+    tiles.forEach(t=>{const s=t.classList.contains('sel');if(s&&!t._it.ok){wrong.push(t);t.classList.add('wrong')}if(!s&&t._it.ok)miss++;if(s&&t._it.ok)t.classList.add('good')});
+    if(!wrong.length&&!miss){fb.className='fb ok';fb.innerHTML='✅ Perfekt – alles richtig ausgewählt!<br>'+S.items.filter(i=>i.ok&&i.fb).map(i=>'• '+i.fb).join('<br>');tiles.forEach(t=>t.disabled=true);api.solved()}
+    else{api.wrong();fb.className='fb bad';fb.innerHTML=wrong.map(t=>'❌ <b>'+stripTags(t._it.t)+':</b> '+(t._it.fb||'gehört nicht dazu.')).join('<br>')+(miss?`<br>🔍 Es fehlt noch ${miss===1?'ein Teil':miss+' Teile'}.`:'');shake(b)}};
+ },
+ place:(c,S,api)=>{
+  c.insertAdjacentHTML('beforeend',`<div class="fig">${S.svg}</div>`);
+  const sl=document.createElement('div');sl.className='slots';
+  S.slots.forEach((a,i)=>{const b=document.createElement('button');b.className='slot';b.innerHTML=`<span class="n">${i+1}</span><span class="dv">… antippen</span>`;b._ans=a;sl.appendChild(b)});
+  const ch=document.createElement('div');ch.className='chips';shuffle(S.labels).forEach(l=>{const b=document.createElement('button');b.className='chip';b.textContent=l;ch.appendChild(b)});
+  const fb=document.createElement('div');fb.className='fb';
+  c.appendChild(sl);c.insertAdjacentHTML('beforeend','<p class="tip" style="margin:8px 0 0">Begriffe:</p>');c.appendChild(ch);c.appendChild(fb);
+  let selC=null,selS=null;
+  const tryIt=()=>{if(!selC||!selS)return;
+    if(selC.textContent===selS._ans){selS.classList.add('filled');selS.classList.remove('act');$('.dv',selS).textContent=selC.textContent;selC.remove();fb.className='fb';fb.innerHTML='';selC=selS=null;
+      if($$('.slot',sl).every(s=>s.classList.contains('filled'))){fb.className='fb ok';fb.innerHTML='✅ Alles richtig zugeordnet!';api.solved()}}
+    else{api.wrong();shake(selS);fb.className='fb bad';fb.innerHTML=`❌ „${selC.textContent}“ passt nicht zu Nummer ${$$('.slot',sl).indexOf(selS)+1}.`;selC.classList.remove('sel');selS.classList.remove('act');selC=selS=null}};
+  $$('.slot',sl).forEach(s=>s.onclick=()=>{if(s.classList.contains('filled'))return;$$('.slot',sl).forEach(x=>x.classList.remove('act'));selS=s;s.classList.add('act');if(!selC){fb.className='fb info';fb.innerHTML='👇 Jetzt unten den passenden Begriff antippen.'}tryIt()});
+  ch.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;$$('.chip',ch).forEach(x=>x.classList.remove('sel'));selC=b;b.classList.add('sel');if(!selS){fb.className='fb info';fb.innerHTML='👆 Jetzt die passende Nummer antippen.'}tryIt()});
+ },
+ seq:(c,S,api)=>{
+  const done=document.createElement('div');done.className='seqlist';const pool=document.createElement('div');pool.className='seqlist';pool.style.marginTop='12px';
+  const fb=document.createElement('div');fb.className='fb';let n=0;
+  c.insertAdjacentHTML('beforeend','<p class="tip" style="margin:0 0 6px">Deine Reihenfolge:</p>');c.appendChild(done);
+  c.insertAdjacentHTML('beforeend','<p class="tip" style="margin:12px 0 0">Tippe den nächsten Schritt an:</p>');c.appendChild(pool);c.appendChild(fb);
+  done.innerHTML=`<div class="tip" data-empty>— noch leer —</div>`;
+  shuffle(S.items.map((t,i)=>({t,i}))).forEach(it=>{const b=document.createElement('button');b.className='seqitem';b._i=it.i;b.innerHTML=`<span class="n">?</span><span>${it.t}</span>`;
+    b.onclick=()=>{if(it.i===n){n++;const e=$('[data-empty]',done);e&&e.remove();b.classList.add('done');$('.n',b).textContent=n;b.onclick=null;done.appendChild(b);fb.className='fb';fb.innerHTML='';
+        if(n===S.items.length){fb.className='fb ok';fb.innerHTML='✅ Super – die Reihenfolge stimmt!';api.solved()}}
+      else{api.wrong();shake(b);fb.className='fb bad';fb.innerHTML=`❌ Das kommt ${it.i>n?'später':'früher'}. Was muss <b>davor</b> passieren?`}};pool.appendChild(b)});
+ },
+ calc:(c,S,api)=>{
+  const w=document.createElement('div');w.className='calc';
+  S.rows.forEach(r=>{const d=document.createElement('div');d.className='crow'+(r.given?' given':'');
+    if(r.given)d.innerHTML=r.given;else{d.innerHTML=`<span>${r.pre}</span><input inputmode="decimal" autocomplete="off" style="${r.w?'width:'+r.w+'px':''}" aria-label="Ergebnis"><span class="u">${r.u||''}</span>`;$('input',d)._r=r}
+    w.appendChild(d)});
+  c.appendChild(w);c.insertAdjacentHTML('beforeend',`<p class="tip">🧮 Rechner oben rechts · Komma oder Punkt ist egal.</p>`);
+  const b=document.createElement('button');b.className='btn blue';b.style.cssText='width:100%';b.textContent='Prüfen ✔';c.appendChild(b);
+  const fb=document.createElement('div');fb.className='fb';c.appendChild(fb);
+  b.onclick=()=>{if(ctx.solved)return;let bad=0,empty=0;
+    $$('input',w).forEach(i=>{const v=parseNum(i.value);i.classList.remove('okI','badI');if(i.value.trim()===''){empty++;return}
+      const ok=Math.abs(v-i._r.ans)<=i._r.tol;i.classList.add(ok?'okI':'badI');if(!ok)bad++});
+    if(empty){fb.className='fb info';fb.innerHTML='✏️ Füll erst alle Kästchen aus.';return}
+    if(!bad){fb.className='fb ok';fb.innerHTML='✅ Richtig gerechnet!'+(S.after?'<br>'+S.after:'');$$('input',w).forEach(i=>i.disabled=true);S.rows.forEach(r=>{if(r.proto)state.proto[r.proto[0]]=r.proto[1]});api.solved()}
+    else{api.wrong();fb.className='fb bad';fb.innerHTML='❌ Die rot markierten Kästchen stimmen noch nicht. Tipp: 💡 Hilfe unten.';shake(b)}};
+ },
+ decide:(c,S,api)=>{let n=0;
+  S.cards.forEach(d=>{const card=document.createElement('div');card.className='dcard';card.innerHTML=`<h4>${d.title}</h4><div class="tip">${d.info||''}</div>`;c.appendChild(card);
+    if(d.draw){const o=makeScope(card,{title:d.title});loop(()=>d.draw(o))}
+    const bs=document.createElement('div');bs.className='dbtns';const fb=document.createElement('div');fb.className='fb';
+    S.actions.forEach((a,i)=>{const b=document.createElement('button');b.innerHTML=a;b._ok=i===d.ans;b.onclick=()=>{if(card.classList.contains('ok'))return;
+      if(i===d.ans){b.classList.add('ok');card.classList.add('ok');fb.className='fb ok';fb.innerHTML='✅ '+(d.okfb||'Richtig!');n++;if(n===S.cards.length)api.solved()}
+      else{b.classList.add('bad');shake(b);api.wrong();fb.className='fb bad';fb.innerHTML='❌ '+((d.fb&&d.fb[i])||'Noch nicht – schau nochmal genau hin.')}};bs.appendChild(b)});
+    card.appendChild(bs);card.appendChild(fb)});
+ },
+ cloze:(c,S,api)=>{const P=S.parts;
+  c.insertAdjacentHTML('beforeend',`<div class="cloze"><p>${P.map((p,i)=>`${p[0]}<select data-i="${i}"><option value="">— wählen —</option>${shuffle(p[1].map((t,j)=>({t,j}))).map(o=>`<option value="${o.j}">${o.t}</option>`).join('')}</select>${p[3]||''}`).join(' ')}</p></div>`);
+  const b=document.createElement('button');b.className='btn blue';b.style.width='100%';b.textContent='Prüfen ✔';c.appendChild(b);const say=statusFb(c);const out=document.createElement('div');c.appendChild(out);
+  b.onclick=()=>{if(ctx.solved)return;let bad=0,empty=0;$$('select',c).forEach(s=>{s.classList.remove('okI','badI');if(s.value===''){empty++;return}const ok=+s.value===P[+s.dataset.i][2];s.classList.add(ok?'okI':'badI');if(!ok)bad++});
+    if(empty){say('info','✏️ Bitte alle Felder auswählen.');return}
+    if(bad){api.wrong();say('bad',`❌ ${bad} Feld${bad>1?'er':''} stimmt noch nicht (rot). Schau in dein Protokoll 📋.`);return}
+    $$('select',c).forEach(s=>s.disabled=true);say('ok','✅ Alles richtig!');if(S.doc)out.innerHTML=S.doc();api.solved()};
+ },
+ sim:(c,S,api)=>S.run(c,api),
+ quizEnd:(c,S,api)=>{const q=quizScore(),n=QUIZ.length;
+  c.innerHTML=`<div class="win"><div class="big">${q>=n*.9?'🏆':q>=n*.65?'🥈':q>=n*.4?'🥉':'💪'}</div><h3>Du hast ${q} von ${n} Fragen beim ersten Versuch richtig!</h3>
+   <p>${q>=n*.65?'Stark – du bist bereit für den Einsatz!':'Gut gemacht! Schau dir die Level mit Fehlern nochmal an – du kannst sie jederzeit wiederholen.'}</p></div>`;api.solved()}
+};
+
+/* ---------- Start ---------- */
+function buildQuizLevel(){
+  const QL=LEVELS[LEVELS.length-1];
+  QL.steps=[{type:'info',html:()=>person(`<p style="margin:0">Letzte Hürde, ${esc(state.name||CONFIG.defaultName)}! ${QUIZ.length} Fragen. Für jede Frage, die du <b>beim ersten Versuch</b> richtig hast, gibt's Punkte. Keine Hilfen – du schaffst das! 💪</p>`)}]
+   .concat(QUIZ.map((q,i)=>({type:'mcq',quiz:1,q:`<small class="m">Frage ${i+1} von ${QUIZ.length}</small><br>${q.q}`,o:q.o.map(o=>Object.assign({},o,{fb:o.ok?q.why:'Leider nicht. '+q.why})),hints:[]})))
+   .concat([{type:'quizEnd'}]);
+}
+function start(){
+  state=load();document.title=CONFIG.title;buildQuizLevel();
+  $('#bNext').onclick=()=>{const L=LEVELS[cur.li];if(cur.si<L.steps.length-1){cur.si++;renderStep()}else finishLevel()};
+  $('#bHint').onclick=()=>{const S=ctx.S;if(!S.hints||!S.hints.length)return;const n=ctx.hint;if(n>=S.hints.length){shake($('#hintArea'));return}
+    const lbl=['💡 Denkanstoß','📘 Wort-Hilfe','✏️ Erster Schritt'][n]||'💡 Tipp';
+    const d=document.createElement('div');d.className='hintbox';d.innerHTML=`<b>${lbl}:</b> ${S.hints[n]}`;$('#hintArea').appendChild(d);
+    ctx.hint++;state.hints++;save();$('#bHint').textContent=ctx.hint>=S.hints.length?'💡 Alle Hilfen offen':`💡 Hilfe (${ctx.hint+1}/${S.hints.length})`;d.scrollIntoView({behavior:'smooth',block:'nearest'})};
+  $('#bHome').onclick=renderHome;$('#bCalc').onclick=openCalc;$('#bProto').onclick=openProto;
+  renderHome();if(!state.name)askName();
+}
+/* =================== ENDE ENGINE =================== */
+/* ==== INHALT START: Kapitel 3.2 Ultraschallprüfung mit dem Tauchprüfkopf ==== */
+const CONFIG={
+  title:'Tauchprüfzelle: Echos trennen',
+  org:'Werkstoffprüfung · Tauchprüfzelle TZ-07',
+  mission:'Mission: Schichtübergabe TZ-07 – drei Echos, eine Freigabe',
+  missionText:'Die Vorschicht hat einen Probelauf mit einer Acrylplatte im Wasserbecken gemacht. Drei Echos sind auf dem Schirm, aber keiner weiß, welches wozu gehört. Bis das geklärt ist, bleibt die Auswertung gesperrt. Schaffst du die Freigabe?',
+  person:{name:'Frau Brandt',role:'Schichtleitung Tauchprüfzelle',ava:'👩‍🔬'},
+  defaultName:'Azubi', startEmoji:'🌊📟', nameQuestion:'Du übernimmst heute die Tauchprüfzelle. Wie heißt du?',
+  certTitle:'Prüf-Ausweis Tauchtechnik', certSub:'Stufe 2 · Ultraschallprüfung mit dem Tauchprüfkopf (Kap. 3.2)', certButton:'Meinen Prüf-Ausweis zeigen',
+  nextTime:'Nächstes Mal: Echoabfolge planen – Wasserweg und Bereich so wählen, dass alle Echos sicher getrennt sind. 🎯',
+  key:'sim-tauchpruefkopf-13nf-v1',
+  code:'13NF'
+};
+const PROTO=[
+  {k:'s',label:'Wasserweg s (Einstellung A)',u:'mm',d:1},
+  {k:'d',label:'Dicke d der Acrylplatte',u:'mm',d:1},
+  {k:'geraet',label:'Geräteeinstellung'},
+  {k:'tO',label:'Oberflächenecho t_O (berechnet)',u:'µs',d:2},
+  {k:'tRW',label:'Rückwandecho t_RW (berechnet)',u:'µs',d:2},
+  {k:'e12',label:'Echo 1 / Echo 2 (abgelesen)'},
+  {k:'tE',label:'Einfache Laufzeit bis zur Rückwand',u:'µs',d:2},
+  {k:'cM',label:'Materialjustierung c (Acryl)',u:'m/s',d:0},
+  {k:'dtW',label:'Verschiebung bei Δs = 5,0 mm (berechnet)',u:'µs',d:2},
+  {k:'zu',label:'Echozuordnung'},
+  {k:'stoer',label:'Störungsdiagnose'}
+];
+const GL={
+  tauch:['Tauchtechnik','Prüfkopf und Prüfling liegen <b>im Wasser</b>. Das Wasser überträgt den Schall (Ankopplung) und bildet eine <b>Vorlaufstrecke</b>. Automatische Prüfanlagen arbeiten oft so.'],
+  vorlauf:['Vorlaufstrecke s','Der Weg, den der Schall <b>im Wasser</b> zwischen Prüfkopf und Oberfläche des Prüflings zurücklegt. Im Wasser ist der Schall langsam: c<sub>W</sub> = 1480 m/s.'],
+  koppel:['Ankopplung','Zwischen Prüfkopf und Prüfling darf keine Luft sein – Luft lässt fast keinen Ultraschall durch. Beim Kontaktprüfkopf nimmt man Gel, bei der Tauchtechnik das Wasser.'],
+  oe:['Oberflächenecho (OE)','Der Teil des Schalls, der schon an der <b>Oberfläche</b> des Prüflings zurückgeworfen wird. Er war nur im Wasser: t<sub>O</sub> = 2s : c<sub>W</sub>.'],
+  rwe:['Rückwandecho (RWE)','Der Schall läuft durchs Wasser, dann durch den Prüfling bis zur <b>Rückwand</b> und wieder zurück: t<sub>RW</sub> = 2s : c<sub>W</sub> + 2d : c<sub>M</sub>.'],
+  oe2:['2. Oberflächenecho','Ein Mehrfachecho im Wasser: Das Oberflächenecho wird am Prüfkopf noch einmal reflektiert und läuft ein zweites Mal hin und zurück. Es enthält den Wasserweg <b>viermal</b>: t = 4s : c<sub>W</sub>.'],
+  abild:['A-Bild','Das Bild auf dem Ultraschallgerät: nach rechts die Laufzeit bzw. der Schallweg, nach oben die Echohöhe (Amplitude).'],
+  skt:['Skalenteil (SkT)','Ein Kästchen in x-Richtung. Bei 10 Skalenteilen und 200 mm Bereich ist 1 SkT = 20 mm.'],
+  just:['Justierung','Das Gerät weiß, mit welcher Schallgeschwindigkeit es rechnen soll und wo der Nullpunkt liegt. Dann zeigt die x-Achse echte Millimeter <b>für diesen Werkstoff</b>.'],
+  lauf:['Laufzeit','Zeit, die der Schall für seinen Weg braucht: t = Weg : Geschwindigkeit. Beim Echo zählt <b>Hin- und Rückweg</b>.'],
+  cw:['c<sub>W</sub>','Schallgeschwindigkeit in Wasser: 1480 m/s.'],
+  cm:['c<sub>M</sub>','Schallgeschwindigkeit im Material des Prüflings. Acryl (Lernmodell): 2700 m/s. Stahl (longitudinal): 5920 m/s.'],
+  amp:['Amplitude (Echohöhe)','Wie hoch ein Echo auf dem Schirm ist. Sie zeigt, wie viel Schall zurückkommt – <b>nicht</b>, wie weit weg die Fläche ist.'],
+  nass:['Nasszone','Bereich rund ums Wasserbecken, in dem es spritzen oder tropfen kann. Gerät, Stecker und Kabelverbindungen bleiben <b>außerhalb und trocken</b>.'],
+  versch:['Verschiebung (Taste 8)','Schiebt das Bild nach links oder rechts, ohne die Schallgeschwindigkeit zu ändern. So legt man z. B. das Oberflächenecho auf den Nullpunkt.'],
+  mikro:['µs (Mikrosekunde)','1 µs = 0,000 001 s = 10<sup>−6</sup> s. Im Taschenrechner: ×10⁻⁶.']
+};
+const CW=1480, CM=2700, CS=5920, DD=20;
+/* Echos im idealisierten Lernmodell: Zeiten hin+zurück in µs (s, d in mm; c in m/s → mm/(m/s) = ms → ×1000 = µs) */
+function echoes(s){const tO=2*s/CW*1000,tM=2*DD/CM*1000;return [{id:'oe',n:'OE',t:tO,a:88},{id:'rwe',n:'RWE',t:tO+tM,a:58},{id:'oe2',n:'2. OE',t:2*tO,a:36}]}
+const r1=x=>Math.round(x*10)/10;
+
+const ICON={
+  echo:`<svg viewBox="0 0 56 56"><rect x="3" y="12" width="50" height="32" rx="6" fill="#c8232c"/><rect x="15" y="16" width="32" height="22" rx="2" fill="#07140f"/><path d="M17 34h6l1-14 1 14h8l1-8 1 8h10" stroke="#7dffa6" stroke-width="1.5" fill="none"/><circle cx="9" cy="22" r="2.5" fill="#eee"/><circle cx="9" cy="30" r="2.5" fill="#eee"/></svg>`,
+  tauch:`<svg viewBox="0 0 56 56"><path d="M28 2v12" stroke="#222" stroke-width="3"/><rect x="18" y="14" width="20" height="32" rx="3" fill="#9aa4ae" stroke="#16233a" stroke-width="2"/><rect x="18" y="42" width="20" height="5" fill="#16233a"/><path d="M22 50q6 4 12 0" stroke="#4fb3ff" stroke-width="2" fill="none"/></svg>`,
+  becken:`<svg viewBox="0 0 56 56"><path d="M6 12v38h44V12" stroke="#16233a" stroke-width="3" fill="none"/><rect x="8" y="22" width="40" height="27" fill="#4fb3ff" opacity=".5"/><path d="M8 22q5-3 10 0t10 0 10 0 10 0" stroke="#1f6f8b" stroke-width="2" fill="none"/></svg>`,
+  acryl:`<svg viewBox="0 0 56 56"><path d="M6 30l14-10h30L36 30z" fill="#e6f5fb" stroke="#1f6f8b" stroke-width="2"/><path d="M6 30v8h30v-8M36 38l14-10v-8" fill="#cfe9f4" stroke="#1f6f8b" stroke-width="2"/></svg>`,
+  auflage:`<svg viewBox="0 0 56 56"><path d="M6 44l10-20 10 20zM30 44l10-20 10 20z" fill="#9aa4ae" stroke="#16233a" stroke-width="2"/></svg>`,
+  schieber:`<svg viewBox="0 0 56 56"><rect x="4" y="22" width="48" height="8" fill="#b8c2cc" stroke="#16233a" stroke-width="1.5"/><path d="M8 22V8h6v14M26 22V10h6v12" fill="#9aa4ae" stroke="#16233a" stroke-width="1.5"/><path d="M8 30v16h6V30M26 30v12h6V30" fill="#9aa4ae" stroke="#16233a" stroke-width="1.5"/><path d="M36 25h14" stroke="#16233a"/></svg>`,
+  winkel:`<svg viewBox="0 0 56 56"><path d="M6 40h44L40 20H14z" fill="#b0b8c0" stroke="#16233a" stroke-width="2"/><path d="M20 20v-10h14v10" fill="#9aa4ae" stroke="#16233a" stroke-width="2"/><path d="M22 40l12 12" stroke="#e4572e" stroke-width="2"/></svg>`
+};
+
+/* ---------- Szenen-SVG: Tauchbecken nach Abb. 3.5 ---------- */
+function tankSVG(s,o={}){
+  const k=2.2, top=141, bot=185, pb=top-s*k, px=215;
+  const m=(x,y,n)=>`<g><circle cx="${x}" cy="${y}" r="12" fill="#e4572e" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${n}</text></g>`;
+  const arr=(x,y1,y2,lab)=>`<path d="M${x} ${y1}V${y2}" stroke="#b83f1c" stroke-width="1.6"/><path d="M${x-4} ${y1+6}L${x} ${y1}L${x+4} ${y1+6}M${x-4} ${y2-6}L${x} ${y2}L${x+4} ${y2-6}" stroke="#b83f1c" stroke-width="1.6" fill="none"/><path d="M${px+16} ${y1}H${x+4}M300 ${y2}H${x+4}" stroke="#b83f1c" stroke-width=".8" stroke-dasharray="3 3"/>${lab?`<text x="${x+8}" y="${(y1+y2)/2+5}" font-size="14" font-weight="700" fill="#b83f1c">${lab}</text>`:''}`;
+  const tilt=o.tilt?`transform="rotate(10 ${px} ${pb})"`:'';
+  return `<svg viewBox="0 0 440 230" role="img" aria-label="Tauchprüfung" style="max-height:290px">
+  <rect x="14" y="6" width="104" height="58" rx="8" fill="#c8232c"/><rect x="36" y="13" width="72" height="42" rx="3" fill="#07140f"/>
+  <path d="M40 48h8l2-26 2 26h14l2-14 2 14h10l1-8 1 8h14" stroke="#7dffa6" stroke-width="1.4" fill="none"/>
+  <circle cx="25" cy="24" r="4" fill="#eee"/><circle cx="25" cy="38" r="4" fill="#eee"/>
+  <path d="M118 30H${px}V${pb-52}" stroke="#222" stroke-width="3" fill="none"/>
+  <path d="M60 56V212H340V56" stroke="#16233a" stroke-width="3" fill="none"/>
+  <rect x="61.5" y="66" width="277" height="144.5" fill="#4fb3ff" opacity=".32"/>
+  <path d="M62 66q10-4 20 0t20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 17 0" stroke="#1f6f8b" stroke-width="1.5" fill="none" opacity=".7"/>
+  <path d="M148 ${bot}l12 24h-24zM282 ${bot}l12 24h-24z" fill="#9aa4ae" stroke="#16233a" stroke-width="2"/>
+  <rect x="130" y="${top}" width="170" height="${bot-top}" fill="#e6f5fb" stroke="#1f6f8b" stroke-width="2.5"/>
+  <text x="140" y="${top+26}" font-size="13" fill="#1f6f8b" font-weight="700">Acrylplatte</text>
+  <g stroke="#1f6f8b" stroke-width="2" ${tilt}><path d="M${px-5} ${pb+3}V${bot-3}M${px+5} ${bot-3}V${pb+3}"/><path d="M${px-9} ${bot-9}l4 6 4-6M${px+1} ${pb+9}l4-6 4 6" fill="none"/></g>
+  <g ${tilt}><rect x="${px-16}" y="${pb-52}" width="32" height="52" rx="3" fill="#9aa4ae" stroke="#16233a" stroke-width="2"/><rect x="${px-16}" y="${pb-6}" width="32" height="6" fill="#16233a"/></g>
+  ${o.bubble?`<circle cx="${px+1}" cy="${(pb+top)/2}" r="${Math.max(3,Math.min(8,s*k/2-2))}" fill="#fff" stroke="#1f6f8b" stroke-width="1.5"/><circle cx="${px+10}" cy="${(pb+top)/2-8}" r="3" fill="#fff" stroke="#1f6f8b"/>`:''}
+  ${o.dim!==false?arr(318,pb,top,o.values?'s = '+fmt(s,1)+' mm':'s')+arr(318,top,bot,o.values?'d = 20 mm':'d'):''}
+  ${o.wet?`<g fill="#4fb3ff"><path d="M60 40q4 8 0 12q-4-4 0-12zM50 52q3 6 0 9q-3-3 0-9zM118 44q3 6 0 9q-3-3 0-9z"/></g><text x="22" y="80" font-size="12" font-weight="800" fill="#e4572e">⚠ nass!</text>`:''}
+  ${(o.markers||[]).map(q=>m(q[0],q[1],q[2])).join('')}
+  </svg>`;
+}
+const ABB35=tankSVG(15,{markers:[[66,76,1],[251,70,2],[96,120,3],[262,163,4],[282,198,5]]});
+const SKIZZE=tankSVG(15,{markers:[[378,113,1],[378,166,2],[262,163,3],[251,70,4]]});
+const ABILD=`<svg viewBox="0 0 400 210"><rect x="30" y="10" width="340" height="160" rx="4" fill="#07140f"/>
+ ${Array.from({length:11},(_,i)=>`<path d="M${30+i*34} 10V170" stroke="rgba(125,255,166,.18)"/>`).join('')}${Array.from({length:6},(_,i)=>`<path d="M30 ${10+i*32}H370" stroke="rgba(125,255,166,.18)"/>`).join('')}
+ <path d="M31 168l3-150 3 150h54l3-120 3 120h46l3-80 3 80h18l3-40 3 40h170" stroke="#7dffa6" stroke-width="2" fill="none"/>
+ <path d="M30 186H372M364 181l8 5-8 5" stroke="#16233a" stroke-width="2" fill="none"/><path d="M16 170V6M11 14l5-8 5 8" stroke="#16233a" stroke-width="2" fill="none"/>
+ <path d="M166 176v14M200 176v14M166 183h34" stroke="#e4572e" stroke-width="2"/>
+ <g font-weight="800" font-size="14" fill="#fff" text-anchor="middle">
+ <circle cx="52" cy="30" r="12" fill="#e4572e"/><text x="52" y="35">1</text>
+ <circle cx="300" cy="198" r="12" fill="#e4572e"/><text x="300" y="203">2</text>
+ <circle cx="16" cy="100" r="12" fill="#e4572e"/><text x="16" y="105">3</text>
+ <circle cx="183" cy="198" r="12" fill="#e4572e"/><text x="183" y="203">4</text></g></svg>`;
+
+/* ---------- Messbild-Helfer ---------- */
+/* p: {s, unit:'mm'|'µs', c, delay (µs), range (mm), amp:[f,f,f], marks:'id'|'num'|false, flick} */
+function drawEchoes(o,p){
+  const E=echoes(p.s), mm=p.unit==='mm', c=p.c||CS, del=p.delay||0;
+  const X=t=>mm?c*(t-del)/2000:t, xmax=mm?(p.range||200):60;
+  const amp=p.amp||[1,1,1];
+  const peaks=E.map((e,i)=>({x:X(e.t),a:Math.min(96,e.a*amp[i]*(p.flick?rand(.25,1):1))}));
+  const marks=p.marks?E.map((e,i)=>({x:X(e.t),label:p.marks==='num'?'Echo '+(i+1):e.n,row:i+1})).filter(m=>m.x>-1&&m.x<xmax):[];
+  drawScope(o.cv,{xmin:0,xmax,ymin:0,ymax:100,ylabels:[0,50,100],peaks,pulse:X(0),grass:2.5,marks,targets:p.targets,hl:p.hl,
+    corner:mm?`x: Schallweg in mm (c = ${c} m/s)`:'x: Laufzeit in µs (hin + zurück)'});
+  return E.map(e=>X(e.t));
+}
+
+/* ---------- Simulationen ---------- */
+function simGeraet(c,api){
+  const R=[{n:'Prüfkopf',o:['Normal','Winkel 45°','Tauch'],i:1,ok:2},
+           {n:'Schallgeschw.',o:[1480,2700,3255,5920,6320],i:2,ok:3,u:' m/s'},
+           {n:'Bereich',o:[50,100,200,500],i:1,ok:2,u:' mm'}];
+  const FB=[{0:'Der <b>Normalprüfkopf</b> wird direkt mit Koppelgel aufgesetzt (3.1). Im Becken arbeitest du mit dem <b>Tauchprüfkopf</b>.',1:'Der <b>Winkelprüfkopf</b> gehört zu 3.3 (Schweißnähte). Hier brauchst du den <b>Tauchprüfkopf</b>.'},
+            {0:'1480 m/s ist <b>Wasser</b>. Die Anleitung sagt: Justierung auf Stahl zunächst <b>beibehalten</b>.',1:'2700 m/s ist Acryl – das kommt erst in Aufgabe 5 („Justieren Sie nun mit dem Material …“).',2:'3255 m/s ist die <b>transversale</b> Geschwindigkeit von Stahl (Winkelprüfkopf, 3.3). Du brauchst die <b>longitudinale</b>.',4:'6320 m/s ist Aluminium – das ist nicht dein Justierwerkstoff.'},
+            {0:'Zu klein: Wegen des Wasserwegs kommen die Echos spät – sie lägen außerhalb des Schirms. Vorgabe: 200 mm.',1:'Mit 100 mm liegen Rückwandecho und 2. Oberflächenecho außerhalb des Schirms. Den <b>Bereich</b> darfst du vergrößern, die Justierung bleibt trotzdem erhalten. Vorgabe: 200 mm.',3:'Zu groß: Die Echos wären zusammengequetscht und schlecht ablesbar. Vorgabe: 200 mm.'}];
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Auftrag:</b> Mit ◀ ▶ einstellen: <b>Tauchprüfkopf</b> · Justierung Stahl <b>longitudinal</b> beibehalten · Anzeigebereich <b>200 mm</b>. Dann „✓ Bestätigen“.</div>`);
+  const dev=document.createElement('div');dev.className='dev';
+  dev.innerHTML=`<div class="scr">${R.map((r,k)=>`<div class="mrow" style="flex-wrap:wrap"><span>${r.n}</span><span style="display:flex;align-items:center;gap:6px"><button class="arrow" data-k="${k}" data-d="-1">◀</button><b data-v="${k}" style="min-width:86px;text-align:center"></b><button class="arrow" data-k="${k}" data-d="1">▶</button></span></div>`).join('')}</div><div class="keys"><button data-ok>✓ Bestätigen</button></div><div class="brand">ECHOGRAPH · LERNMODELL</div>`;
+  c.appendChild(dev);
+  const show=()=>R.forEach((r,k)=>$(`[data-v="${k}"]`,dev).textContent=r.o[r.i]+(r.u||''));show();
+  $$('.arrow',dev).forEach(b=>b.onclick=()=>{if(ctx.solved)return;const r=R[+b.dataset.k];r.i=(r.i+ +b.dataset.d+r.o.length)%r.o.length;show()});
+  const o=makeScope(c,{title:'A-Bild (Wasserweg 15 mm)'});const say=statusFb(c);
+  loop(()=>{const pos=drawEchoes(o,{s:15,unit:'mm',c:R[1].o[R[1].i],range:R[2].o[R[2].i]});
+    const vis=pos.filter(x=>x<R[2].o[R[2].i]).length;o.ro.innerHTML=`<span>Echos auf dem Schirm: <b>${vis} von 3</b></span><span>1 SkT = <b>${fmt(R[2].o[R[2].i]/10,0)} mm</b></span>`});
+  let done=false;
+  $('[data-ok]',dev).onclick=()=>{if(done)return;
+    for(let k=0;k<3;k++){if(R[k].i!==R[k].ok){api.wrong();say('bad','❌ <b>'+R[k].n+':</b> '+FB[k][R[k].i]);shake(dev);return}}
+    done=true;state.proto.geraet='Tauchprüfkopf · 5920 m/s (Stahl) · Bereich 200 mm';save();
+    say('ok','✅ Gerät bereit! Justierung Stahl bleibt, alle drei Echos passen auf den Schirm.');
+    mcqW(c,{q:'Der Bereich ist 200 mm, der Schirm hat 10 Skalenteile. Wie viel ist <b>1 SkT</b>?',o:[
+      {t:'20 mm',ok:1,fb:'Genau: 200 mm : 10 SkT = 20 mm pro Skalenteil.'},
+      {t:'10 mm',fb:'Das galt bei der 100-mm-Justierung aus 3.1. Jetzt ist der Bereich 200 mm.'},
+      {t:'200 mm',fb:'200 mm ist der ganze Schirm – der hat aber 10 Kästchen.'},
+      {t:'2 mm',fb:'Da hast du durch 100 geteilt. Es sind nur 10 Skalenteile.'}]},api.solved,api.wrong);
+  };
+  api.setAuto(()=>{R.forEach(r=>r.i=r.ok);show();$('[data-ok]',dev).click()});
+}
+
+function simWasserweg(c,api){
+  let s=6;const seen={lo:false,hi:false};
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Auftrag:</b> Verändere den Wasserweg s. Probier einen <b>kleinen</b> (unter 11 mm) und einen <b>großen</b> Wasserweg (über 20 mm). Stelle dann <b>Einstellung A: s = 15,0 mm</b> ein und speichere das Schirmbild.</div>`);
+  const fig=document.createElement('div');fig.className='fig';c.appendChild(fig);
+  const o=makeScope(c,{title:'A-Bild · Echograph',units:['mm','µs']});
+  const ctl=ctlRow({label:'Wasserweg s (Prüfkopf ↕)',min:4,max:30,step:.5,val:s,fine:.5,coarse:5,fmtV:v=>fmt(v,1)+' mm',onChange:v=>{s=v;upd()}});
+  c.appendChild(ctl);
+  const cl=checklist(['Kleinen Wasserweg ausprobiert (unter 11 mm)','Großen Wasserweg ausprobiert (über 20 mm)','Einstellung A (s = 15,0 mm) als Schirmbild gespeichert']);c.appendChild(cl);
+  const warn=document.createElement('div');warn.className='fb';c.appendChild(warn);
+  const b=document.createElement('button');b.className='btn blue';b.style.width='100%';b.textContent='📸 Schirmbild speichern';c.appendChild(b);
+  const say=statusFb(c);
+  function upd(){fig.innerHTML=tankSVG(s,{values:true});
+    if(s<11){seen.lo=true;cl.set(0,true)} if(s>20){seen.hi=true;cl.set(1,true)}
+    const E=echoes(s);
+    if(E[2].t<E[1].t){warn.className='fb bad';warn.innerHTML='⚠️ Das <b>2. Oberflächenecho</b> liegt jetzt <b>vor</b> dem Rückwandecho – Verwechslungsgefahr!'}
+    else if(E[2].t-E[1].t<3){warn.className='fb info';warn.innerHTML='👀 Rückwandecho und 2. Oberflächenecho liegen sehr dicht beieinander.'}
+    else{warn.className='fb ok';warn.innerHTML='👍 Das Rückwandecho liegt deutlich vor dem 2. Oberflächenecho.'}}
+  upd();o.onUnit=()=>{};
+  loop(()=>{const pos=drawEchoes(o,{s,unit:o.unit,marks:'id'});const u=o.unit==='mm'?' mm':' µs';
+    o.ro.innerHTML=`<span>OE <b>${fmt(pos[0],1)}${u}</b></span><span>RWE <b>${fmt(pos[1],1)}${u}</b></span><span>2. OE <b>${fmt(pos[2],1)}${u}</b></span>`});
+  let done=false;
+  b.onclick=()=>{if(done)return;
+    if(!seen.lo||!seen.hi){say('info','🔍 Probier erst einen kleinen <b>und</b> einen großen Wasserweg aus – beobachte, was mit der Reihenfolge der Echos passiert.');return}
+    const E=echoes(s);
+    if(E[2].t<E[1].t){api.wrong();say('bad','❌ So nicht speichern: Das 2. Oberflächenecho liegt vor dem Rückwandecho. Die Anleitung verlangt: Rückwandecho <b>vor</b> dem 2. Oberflächenecho.');shake(b);return}
+    if(s!==15){say('info',`Die Reihenfolge passt bei ${fmt(s,1)} mm. Für den Vergleich mit der Vorschicht brauchen wir aber genau <b>Einstellung A: s = 15,0 mm</b>.`);return}
+    done=true;cl.set(2,true);state.proto.s=15;save();
+    say('ok','✅ Schirmbild A gespeichert: OE bei 60,0 mm, RWE bei 103,9 mm, 2. OE bei 120,0 mm (Stahl-Justierung).');
+    mcqW(c,{q:'Was hast du bei einem <b>zu kleinen</b> Wasserweg (unter ca. 11 mm) beobachtet?',o:[
+      {t:'Das 2. Oberflächenecho rutscht vor das Rückwandecho – man könnte es für die Rückwand halten.',ok:1,fb:'Genau. Deshalb wählt man den Wasserweg groß genug. Für 20 mm Acryl gilt: s größer als ca. 11 mm.'},
+      {t:'Das Rückwandecho verschwindet ganz.',fb:'Es verschwindet nicht – es wird vom 2. Oberflächenecho „überholt“. Schieb nochmal auf 6 mm und schau hin.'},
+      {t:'Alle Echos rücken gleich weit zusammen, die Reihenfolge bleibt.',fb:'Das 2. OE enthält den Wasserweg viermal, die anderen nur zweimal. Deshalb ändert sich die Reihenfolge.'},
+      {t:'Das Oberflächenecho wird doppelt so hoch.',fb:'Die Höhe ist hier nicht der Punkt – es geht um die Lage (Zeit) der Echos.'}]},api.solved,api.wrong);
+  };
+  api.setAuto(()=>{ctl.set(8);ctl.set(24);ctl.set(15);b.click()});
+}
+
+function simAblesen(c,api){
+  const E=echoes(15), got={};
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Auftrag:</b> Tippe im A-Bild auf <b>Echo 1</b> und <b>Echo 2</b> (die ersten beiden Echos nach dem Sendeimpuls). Das Gerät zeigt dir die Laufzeit.</div>`);
+  const o=makeScope(c,{title:'A-Bild · Einstellung A (Laufzeit)'});const say=statusFb(c);
+  const tb=document.createElement('div');c.appendChild(tb);
+  const table=()=>{tb.innerHTML=`<table class="tb"><tr><th>Echo</th><th>abgelesen</th><th>berechnet</th></tr>
+    <tr><td>Echo 1</td><td>${got[0]!=null?'<b>'+fmt(got[0],1)+' µs</b>':'—'}</td><td>t<sub>O</sub> = 20,27 µs</td></tr>
+    <tr><td>Echo 2</td><td>${got[1]!=null?'<b>'+fmt(got[1],1)+' µs</b>':'—'}</td><td>t<sub>RW</sub> = 35,08 µs</td></tr></table>`};table();
+  let asked=false;
+  const pick=x=>{if(asked)return;
+    if(x<3){say('info','Das ganz links ist der <b>Sendeimpuls</b> (t = 0) – kein Echo.');return}
+    let best=-1,bd=4;E.forEach((e,i)=>{const d=Math.abs(e.t-x);if(d<bd){bd=d;best=i}});
+    if(best<0){say('info','Da ist kein Echo. Tippe genau auf eine Spitze.');return}
+    if(best===2){say('info','Das ist <b>Echo 3</b> bei 40,5 µs. Du brauchst jetzt nur die ersten beiden Echos.');return}
+    got[best]=r1(E[best].t);table();say('info',`Echo ${best+1}: ${fmt(got[best],1)} µs gespeichert.`);
+    if(got[0]!=null&&got[1]!=null){asked=true;state.proto.e12='20,3 µs / 35,1 µs';save();
+      mcqW(c,{q:'Vergleiche Ablesung und Rechnung. Passt das?',o:[
+        {t:'Ja: 20,3 ≈ 20,27 und 35,1 ≈ 35,08 – der Unterschied kommt nur vom Runden.',ok:1,fb:'Richtig. Echo 1 passt zum Oberflächenecho, Echo 2 zum Rückwandecho.'},
+        {t:'Nein: 0,03 µs Unterschied heißt, die Rechnung ist falsch.',fb:'Das Gerät zeigt nur eine Nachkommastelle. 20,27 wird zu 20,3 gerundet – das passt.'},
+        {t:'Nein: Das Rückwandecho müsste bei 40,5 µs liegen, weil es das späteste ist.',fb:'Fehlvorstellung „spät = Rückwand“! Deine Rechnung sagt 35,08 µs – das ist Echo 2.'}]},api.solved,api.wrong)}};
+  o.cv.addEventListener('pointerdown',e=>{const x=scopeToX(o.cv,e.clientX);if(x!=null)pick(x)});
+  loop(()=>{drawEchoes(o,{s:15,unit:'µs',marks:false});
+    const L=[];[0,1].forEach(i=>{if(got[i]!=null)L.push({x:got[i],label:'Echo '+(i+1)+': '+fmt(got[i],1)+' µs',row:i+1})});
+    const cv=o.cv;if(L.length){const c2=cv.getContext('2d');const lay=cv._lay;L.forEach(m=>{const x=lay.pl+(m.x-lay.xmin)/(lay.xmax-lay.xmin)*lay.gw;c2.strokeStyle='#4fc3ff';c2.lineWidth=2;c2.beginPath();c2.moveTo(x,lay.pt);c2.lineTo(x,lay.pt+lay.gh);c2.stroke();
+      c2.font='bold 12px -apple-system,sans-serif';const w=c2.measureText(m.label).width+10;const bx=Math.min(Math.max(x-w/2,lay.pl),lay.pl+lay.gw-w);c2.fillStyle='#4fc3ff';c2.fillRect(bx,lay.pt+2+m.row*20,w,18);c2.fillStyle='#021';c2.textAlign='left';c2.fillText(m.label,bx+5,lay.pt+15+m.row*20)})}
+    o.ro.innerHTML='<span>👆 Auf eine Echospitze tippen</span>'});
+  api.setAuto(()=>{pick(E[0].t);pick(E[1].t)});
+}
+
+function simJustage(c,api){
+  let cv=CS,del=0;
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Aus der Anleitung (3.2, Aufgabe 5):</b> „Justieren Sie nun mit dem Material des Prüflings.“<br><b>Ziel:</b> Oberflächenecho auf <b>0 mm</b>, Rückwandecho auf <b>20 mm</b> (gelbe Linien) – so dick ist die Platte laut Messschieber.</div>`);
+  const o=makeScope(c,{title:'A-Bild · Bereich 100 mm'});
+  const cD=ctlRow({label:'① Verschiebung (Taste 8)',min:0,max:40,step:.1,val:0,fine:.1,coarse:1,fmtV:v=>fmt(v,1)+' µs',onChange:v=>del=v});
+  const cC=ctlRow({label:'② Schallgeschwindigkeit',min:1000,max:7000,step:10,val:CS,fine:10,coarse:100,fmtV:v=>v+' m/s',onChange:v=>cv=v});
+  c.appendChild(cD);c.appendChild(cC);
+  const cl=checklist(['Oberflächenecho auf 0 mm','Rückwandecho auf 20 mm']);c.appendChild(cl);
+  const b=document.createElement('button');b.className='btn blue';b.style.width='100%';b.textContent='✓ Justierung übernehmen';c.appendChild(b);
+  const say=statusFb(c);let P=[0,0,0];
+  loop(()=>{P=drawEchoes(o,{s:15,unit:'mm',c:cv,delay:del,range:100,targets:[0,20],marks:'id'});
+    const okO=Math.abs(P[0])<=.5,okR=Math.abs(P[1]-20)<=.3&&okO;cl.set(0,okO);cl.set(1,okR);
+    o.ro.innerHTML=`<span>OE <b>${fmt(P[0],1)} mm</b></span><span>RWE <b>${fmt(P[1],1)} mm</b></span><span>Abstand <b>${fmt(P[1]-P[0],1)} mm</b></span>`});
+  let done=false;
+  b.onclick=()=>{if(done)return;P=echoes(15).map(e=>cv*(e.t-del)/2000);const gap=P[1]-P[0];
+    if(Math.abs(P[0])>.5){api.wrong();say('bad','❌ Das Oberflächenecho steht noch nicht auf 0. Nutze ① <b>Verschiebung</b>: Sie schiebt das Bild, ohne die Geschwindigkeit zu ändern.');shake(b);return}
+    if(Math.abs(cv-CW)<60){api.wrong();say('bad','❌ 1480 m/s ist Wasser! Der Abstand OE–RWE ist aber der Weg <b>in der Acrylplatte</b>. Du justierst auf den Prüfling.');shake(b);return}
+    if(Math.abs(gap-20)>.3){api.wrong();say('bad',`❌ Der Abstand ist ${fmt(gap,1)} mm, soll 20 mm sein. ${gap>20?'Zu groß → Gerät rechnet mit zu großer Geschwindigkeit. ② verkleinern.':'Zu klein → ② vergrößern.'}`);shake(b);return}
+    done=true;state.proto.cM=Math.round(cv/10)*10;save();
+    say('ok',`✅ Justiert auf Acryl: c = ${cv} m/s. Jetzt zeigt das Gerät die Plattendicke direkt an: 20 mm.`);
+    mcqW(c,{q:'Rechts vom Rückwandecho steht bei etwa 27 mm noch ein Echo. Ist das ein Fehler 27 mm tief im Acryl?',o:[
+      {t:'Nein – die Platte ist nur 20 mm dick. Es ist das 2. Oberflächenecho (Mehrfachecho im Wasser).',ok:1,fb:'Genau. Hinter der Rückwand gibt es kein Material mehr. Das Echo kommt aus dem Wasserweg.'},
+      {t:'Ja – jedes Echo auf dem Schirm ist eine Fehlstelle.',fb:'Nein: Oberfläche und Rückwand sind keine Fehler. Und 27 mm liegt außerhalb der 20-mm-Platte.'},
+      {t:'Ja – es ist eine zweite Rückwand.',fb:'Eine Platte hat nur eine Rückwand. Das Echo kommt aus dem Wasserweg.'}]},api.solved,api.wrong);
+  };
+  api.setAuto(()=>{cD.set(20.3);cC.set(2700);b.click()});
+}
+
+function simWanderung(c,api){
+  let s=15;const vis={};const A=[20.3,35.1,40.5],B=[27.0,41.8,54.1];
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Aus der Anleitung (3.2, Aufgabe 6):</b> „Ändern Sie den Abstand zwischen Prüfkopf und Oberfläche des Prüflings wiederum …“<br><b>Auftrag:</b> Schieb den Wasserweg von <b>Einstellung A (15,0 mm)</b> auf <b>Einstellung B (20,0 mm)</b>. Beobachte, wie weit jedes Echo wandert.</div>`);
+  const fig=document.createElement('div');fig.className='fig';c.appendChild(fig);
+  const o=makeScope(c,{title:'A-Bild · Probelauf (Echos unbeschriftet)'});
+  const ctl=ctlRow({label:'Wasserweg s',min:12,max:25,step:.5,val:s,fine:.5,coarse:2.5,fmtV:v=>fmt(v,1)+' mm',onChange:v=>{s=v;upd()}});c.appendChild(ctl);
+  const cl=checklist(['Einstellung A (15,0 mm) angesehen','Einstellung B (20,0 mm) angesehen']);c.appendChild(cl);
+  const tb=document.createElement('div');c.appendChild(tb);
+  let asked=false;
+  function upd(){fig.innerHTML=tankSVG(s,{values:true});if(s===15)vis.A=1;if(s===20)vis.B=1;cl.set(0,!!vis.A);cl.set(1,!!vis.B);
+    tb.innerHTML=`<table class="tb"><tr><th></th><th>A (15 mm)</th><th>B (20 mm)</th><th>wandert</th></tr>${[0,1,2].map(i=>`<tr><td>Echo ${i+1}</td><td>${vis.A?fmt(A[i],1)+' µs':'?'}</td><td>${vis.B?fmt(B[i],1)+' µs':'?'}</td><td>${vis.A&&vis.B?'<b>'+fmt(B[i]-A[i],1)+' µs</b>':'?'}</td></tr>`).join('')}</table>`;
+    if(vis.A&&vis.B&&!asked){asked=true;
+      mcqW(c,{q:'Welches Echo wandert am <b>stärksten</b>, wenn der Wasserweg wächst?',o:[
+        {t:'Echo 3 – etwa doppelt so weit wie Echo 1 und 2',ok:1,fb:'Genau: Echo 1 und 2 wandern je 6,7 µs, Echo 3 wandert 13,6 µs.'},
+        {t:'Echo 1 – es ist am nächsten am Wasser',fb:'Schau in die Tabelle: Echo 1 wandert 6,7 µs, Echo 3 wandert 13,6 µs.'},
+        {t:'Alle gleich weit',fb:'Echo 1 und 2 ja – aber Echo 3 wandert deutlich mehr. Schau in die letzte Spalte.'},
+        {t:'Echo 2 – es ist das Rückwandecho, der längste Weg',fb:'Echo 2 wandert genauso wie Echo 1 (6,7 µs). Der Weg in der Probe ändert sich ja nicht.'}]},api.solved,api.wrong)}}
+  upd();
+  loop(()=>{const pos=drawEchoes(o,{s,unit:'µs',marks:'num'});o.ro.innerHTML=pos.map((x,i)=>`<span>Echo ${i+1} <b>${fmt(x,1)} µs</b></span>`).join('')});
+  api.setAuto(()=>{ctl.set(15);ctl.set(20)});
+}
+
+function simStoerung(c,api){
+  const ST=[{k:'ok',t:'✅ Blasenfrei & ausgerichtet'},{k:'bub',t:'🫧 Luftblase im Schallweg'},{k:'tilt',t:'↗️ Prüfkopf leicht schief'},{k:'far',t:'↕️ Wasserweg vergrößert'}];
+  let st='ok';const seen={ok:1};
+  c.insertAdjacentHTML('beforeend',`<div class="task"><b>Lage:</b> Im zweiten Probelauf bleiben die Peakzeiten fast gleich, aber <b>alle Echohöhen schwanken</b> und werden zeitweise sehr klein.<br><b>Auftrag:</b> Probiere alle vier Zustände aus. Vergleiche <b>Zeit</b> (links–rechts) und <b>Höhe</b> (oben–unten).</div>`);
+  const fig=document.createElement('div');fig.className='fig';c.appendChild(fig);
+  const row=document.createElement('div');row.className='btnrow';row.innerHTML=ST.map(x=>`<button class="btn sec small" data-s="${x.k}">${x.t}</button>`).join('');c.appendChild(row);
+  const o=makeScope(c,{title:'A-Bild · Probelauf 2'});
+  const cl=checklist(['Blasenfrei & ausgerichtet angesehen','Luftblase angesehen','Schiefer Prüfkopf angesehen','Größerer Wasserweg angesehen']);c.appendChild(cl);cl.set(0,true);
+  let asked=false;
+  const set=k=>{st=k;seen[k]=1;ST.forEach((x,i)=>cl.set(i,!!seen[x.k]));$$('[data-s]',row).forEach(b=>b.classList.toggle('blue',b.dataset.s===k));
+    fig.innerHTML=tankSVG(k==='far'?20:15,{bubble:k==='bub',tilt:k==='tilt',dim:false});
+    if(Object.keys(seen).length===4&&!asked){asked=true;
+      mcqW(c,{q:'Probelauf 2: <b>Zeiten gleich</b>, <b>Höhen schwanken</b>. Was ist die wahrscheinlichste Ursache?',o:[
+        {t:'Gestörte Schallübertragung – Luftblase oder schiefer Prüfkopf',ok:1,fb:'Richtig. Eine Blase oder Fehlstellung schluckt Schall → Höhe sinkt. Der Weg bleibt gleich → Zeit bleibt gleich.'},
+        {t:'Der Wasserweg hat sich geändert',fb:'Dann wären <b>alle Echos gewandert</b> (Zeit ändert sich). Die Zeiten bleiben aber gleich.'},
+        {t:'Die Acrylplatte hat einen Riss',fb:'Ein Riss gäbe ein <b>zusätzliches</b> Echo an fester Stelle – nicht schwankende Höhen bei allen Echos.'},
+        {t:'Die Schallgeschwindigkeit im Wasser springt hin und her',fb:'Dann würden die Zeiten schwanken. Hier schwanken nur die Höhen.'}]},()=>{
+      mcqW(c,{q:'Welche <b>Ersthandlung</b> ist richtig?',o:[
+        {t:'Schallweg ansehen, Blase vorsichtig entfernen bzw. Prüfkopf gerade ausrichten – Gerät und Stecker bleiben trocken außerhalb der Nasszone.',ok:1,fb:'Sauber: erst die Ursache prüfen, dann erneut messen. Und Elektrik bleibt trocken.'},
+        {t:'Kabelstecker am Beckenrand lösen und neu einstecken',fb:'⚡ Gefahr! Elektrische Anschlüsse nie in der Nasszone öffnen. Betriebsanweisung: „Keine nassen elektrischen Geräte verwenden.“'},
+        {t:'Verstärkung hochdrehen, bis die Echos wieder groß sind',fb:'Das versteckt nur das Problem. Die Blase bleibt – und die Höhe allein sagt nichts über die Ursache.'}]},api.solved,api.wrong)},api.wrong)}};
+  $$('[data-s]',row).forEach(b=>b.onclick=()=>set(b.dataset.s));set('ok');
+  loop(()=>{const amp=st==='tilt'?[.35,.22,.14]:[1,1,1];
+    const pos=drawEchoes(o,{s:st==='far'?20:15,unit:'µs',amp,flick:st==='bub',marks:'num'});
+    o.ro.innerHTML=`<span>Zeiten: <b>${pos.map(x=>fmt(x,1)).join(' · ')} µs</b></span><span>Höhen: <b>${st==='ok'?'stabil hoch':st==='bub'?'schwanken stark':st==='tilt'?'alle klein':'stabil hoch'}</b></span>`});
+  api.setAuto(()=>{ST.forEach(x=>set(x.k))});
+}
+
+/* ---------- Level ---------- */
+const LEVELS=[
+{title:'Tauchprüfplatz übernehmen',tag:'Versuchsaufbau',sub:'Material, Aufbau, Schallweg',badge:'🌊 Tauch-Starter',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0 0 8px">Hallo ${esc(state.name||CONFIG.defaultName)}, willkommen in der Tauchprüfzelle! Hier liegen Prüfkopf und Bauteil <b>im Wasser</b> – das nennt man ${T('tauch')}.</p><p style="margin:0">Die Vorschicht hat einen Probelauf mit einer Acrylplatte gemacht. Auf dem Schirm sind <b>drei Echos</b>, aber keiner hat sie beschriftet. Die Auswertung ist gesperrt, bis du sie sicher zuordnest. Erst mal: Arbeitsplatz checken.</p>`)+
+   `<div class="task"><b>Aus der Anleitung (3.2):</b> „Prüfling und Prüfkopf tauchen in Wasser ein; das Wasser dient zur Ankopplung und als Vorlaufstrecke.“</div><div class="fig">${tankSVG(15,{dim:true})}</div>`},
+ {type:'mcq',q:()=>`Wozu dient das Wasser im Becken? (${T('koppel','Tipp: Ankopplung')})`,o:[
+   {t:'Es überträgt den Schall zum Prüfling (Ankopplung) und bildet eine Vorlaufstrecke.',ok:1,fb:'Genau: Ankopplung + Vorlaufstrecke – beides steht so in der Anleitung.'},
+   {t:'Es kühlt den Prüfkopf, damit er nicht zu heiß wird.',fb:'Ultraschallprüfköpfe werden dabei nicht heiß. Das Wasser ersetzt das Koppelgel.'},
+   {t:'Es macht den Schall schneller.',fb:'Im Gegenteil: Im Wasser ist der Schall mit 1480 m/s viel langsamer als in Stahl (5920 m/s).'},
+   {t:'Es reinigt den Prüfling während der Prüfung.',fb:'Sauber wird er vielleicht auch – aber das ist nicht die Aufgabe des Wassers bei der Prüfung.'}],
+  hints:['Denk an 3.1: Was musstest du zwischen Normalprüfkopf und Prüfling auftragen?','Luft lässt fast keinen Ultraschall durch. Etwas muss die Lücke füllen.','Die Anleitung nennt zwei Aufgaben: Ankopplung und …']},
+ {type:'pick',title:'Pack den Tauchprüfplatz',text:'Tippe alles an, was du für Versuch 3.2 brauchst. Vorsicht: Es sind Fallen dabei.',items:[
+   {k:'echo',t:'Ultraschallprüfgerät (Echograph)',ok:1,fb:'Echograph: erzeugt Impulse und zeigt das A-Bild.'},
+   {k:'tauch',t:'Tauchprüfkopf',ok:1,fb:'Tauchprüfkopf: wasserdicht, sendet und empfängt.'},
+   {k:'becken',t:'Wasserbecken mit Wasser',ok:1,fb:'Becken: Wasser als Ankopplung und Vorlaufstrecke.'},
+   {k:'acryl',t:'Prüfling: Acrylplatte',ok:1,fb:'Acrylplatte: dein Prüfling (d = 20 mm).'},
+   {k:'auflage',t:'2 Auflagen für den Prüfling',ok:1,fb:'Auflagen: Die Platte liegt frei im Wasser – so gibt es ein sauberes Rückwandecho.'},
+   {k:'schieber',t:'Messschieber',ok:1,fb:'Messschieber: zum Nachmessen von d (Kontrolle, wie in 3.1).'},
+   {e:'🧴',t:'Koppelgel',fb:'Bei der Tauchtechnik übernimmt das <b>Wasser</b> die Ankopplung – Gel brauchst du nicht.'},
+   {k:'winkel',t:'Winkelprüfkopf',fb:'Der gehört zu 3.3 (Schweißnähte), nicht ins Wasserbecken.'},
+   {e:'⚡',t:'Hochspannungsnetzteil',fb:'Brauchst du nicht – und Achtung: Die Anleitung warnt ausdrücklich vor Verwechslungen mit dem Hochspannungsnetzteil!'},
+   {e:'🔌',t:'Steckdosenleiste auf dem Beckenrand',fb:'⚠️ Gefahr! Steckdosen und Stecker gehören <b>nie</b> in die Nasszone.'}],
+  hints:['Du brauchst: Gerät, Prüfkopf, Wasser, Prüfling – und etwas, worauf der Prüfling liegt.','Denk an Abbildung 3.5: Unter der Platte sind zwei Dreiecke. Und zum Kontrollieren von d misst du nach.','Genau 6 Teile. Kein Gel, kein Winkelprüfkopf, nichts Elektrisches am Becken.']},
+ {type:'place',title:'Aufbau beschriften (Abb. 3.5)',text:'Tippe eine Nummer an, dann den passenden Begriff.',svg:ABB35,
+  slots:['Ultraschallprüfgerät','Tauchprüfkopf','Wasser (Ankopplung + Vorlaufstrecke)','Prüfling (Acrylplatte)','Auflage'],
+  labels:['Ultraschallprüfgerät','Tauchprüfkopf','Wasser (Ankopplung + Vorlaufstrecke)','Prüfling (Acrylplatte)','Auflage','Koppelgel','Reflektor','Winkelprüfkopf'],
+  hints:['Oben links ist ein Gerät mit Bildschirm.','Der graue Zylinder im Wasser sendet den Schall – er hängt am Kabel.','1 Gerät · 2 Prüfkopf · 3 Wasser · 4 Platte · 5 Dreieck darunter.']},
+ {type:'seq',title:'Schallweg vom Impuls bis zum A-Bild',text:'Bring die Schritte in die richtige Reihenfolge.',items:[
+   'Das Gerät sendet einen elektrischen Impuls.',
+   'Der Tauchprüfkopf wandelt ihn in Ultraschall um.',
+   'Der Schall läuft durchs Wasser (Weg s).',
+   'An der Oberfläche wird ein Teil zurückgeworfen – das Oberflächenecho.',
+   'Der Rest läuft durch die Platte (Weg d) und wird an der Rückwand zurückgeworfen.',
+   'Der Prüfkopf wandelt die Echos in elektrische Signale um.',
+   'Das Gerät zeigt die Echos im A-Bild.'],
+  hints:['Am Anfang und am Ende steht das Gerät.','Der Schall trifft erst aufs Wasser, dann auf die Oberfläche, dann auf die Rückwand.','Impuls → Ultraschall → Wasser → Oberfläche → Platte/Rückwand → Prüfkopf → A-Bild.']},
+ {type:'mcq',q:()=>`Sicherheit: Wo steht der Echograph, und wie schaltest du ihn am Ende aus? (${T('nass')})`,o:[
+   {t:'Außerhalb der Nasszone, trocken – ausschalten über den Ausschalter an der Frontplatte.',ok:1,fb:'Richtig – genau so steht es in der Betriebsanweisung (4.3).'},
+   {t:'Auf dem Beckenrand, damit das Kabel reicht – ausschalten durch Stecker ziehen.',fb:'Beckenrand = Nasszone. Und laut Betriebsanweisung schaltet man die Prüfgeräte über den Ausschalter an der Frontplatte aus.'},
+   {t:'Egal wo – das Gerät ist ja spritzwassergeschützt.',fb:'„Keine nassen elektrischen Geräte verwenden. Geräte vor Nässe schützen.“ (Betriebsanweisung)'},
+   {t:'Im Wasser neben dem Prüfkopf, dann ist das Kabel kurz.',fb:'⚡ Auf keinen Fall! Nur der Tauchprüfkopf ist für das Wasser gebaut.'}],
+  hints:['Schau in die Betriebsanweisung am Ende der Anleitung.','Elektrik und Wasser: so weit wie möglich auseinander.','Zum Ausschalten nimmst du den Schalter am Gerät, nicht den Stecker.']}
+]},
+{title:'Echograph einstellen',tag:'Durchführung',sub:'A-Bild lesen, Gerät einstellen',badge:'📟 Geräte-Profi',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0 0 8px">Bevor du misst, schau dir das ${T('abild')} an und stell das Gerät ein. Die Vorschicht hat noch den Winkelprüfkopf eingestellt …</p><p style="margin:0">Wichtig: Die ${T('just')} aus 3.1 bleibt erst mal: Das Gerät rechnet mit <b>Stahl, c = 5920 m/s</b>. Den <b>Anzeigebereich</b> darfst du vergrößern – das ändert die Justierung nicht.</p>`)+
+   `<div class="task"><b>Aus der Anleitung (3.2, Aufgabe 1):</b> „Behalten Sie zunächst die Justierung auf 100 mm Stahl bei.“</div>`},
+ {type:'place',title:'Das A-Bild lesen',text:'Was zeigen die Nummern?',svg:ABILD,
+  slots:['Sendeimpuls','x-Achse: Schallweg bzw. Laufzeit','y-Achse: Echohöhe (Amplitude)','1 Skalenteil (SkT)'],
+  labels:['Sendeimpuls','x-Achse: Schallweg bzw. Laufzeit','y-Achse: Echohöhe (Amplitude)','1 Skalenteil (SkT)','Wassertemperatur','Dicke d'],
+  hints:['Ganz links am Anfang: Da hat das Gerät gerade gesendet.','Nach rechts: wie lange/wie weit. Nach oben: wie viel Schall zurückkommt.','1 Sendeimpuls · 2 x-Achse · 3 y-Achse · 4 ein Kästchen.']},
+ {type:'sim',title:'Gerät einstellen',run:simGeraet,solution:'Prüfkopf: Tauch · Schallgeschwindigkeit 5920 m/s (Stahl longitudinal, Justierung beibehalten) · Bereich 200 mm; 1 SkT = 20 mm.',
+  hints:['Mit ◀ ▶ blätterst du durch die Werte. Erst wenn alles stimmt: Bestätigen.','Stahl longitudinal kennst du aus 3.1 Aufgabe 1: c<sub>l</sub> = 5920 m/s.','Tauch · 5920 m/s · 200 mm.']},
+ {type:'mcq',q:'Das Gerät ist auf <b>Stahl</b> justiert. Was zeigt die x-Achse in mm an?',o:[
+   {t:'Den Schallweg so, als ob der Schall die ganze Zeit durch Stahl laufen würde',ok:1,fb:'Genau. Das Gerät kennt nur eine Geschwindigkeit. Für Wasser stimmen die mm deshalb nicht – das siehst du gleich.'},
+   {t:'Immer den echten Abstand in Wasser und Platte',fb:'Das Gerät misst eine <b>Zeit</b> und rechnet mit einer einzigen Geschwindigkeit um. Echte mm gibt es nur für den Justierwerkstoff.'},
+   {t:'Die Wassertiefe im Becken',fb:'Die Wassertiefe misst das Gerät nicht.'},
+   {t:'Die Echohöhe in mm',fb:'Die Echohöhe ist die y-Achse (Amplitude), nicht die x-Achse.'}],
+  hints:['Das Gerät misst eigentlich eine Laufzeit.','Aus der Laufzeit macht es mm – mit der eingestellten Geschwindigkeit.','Eingestellt ist 5920 m/s = Stahl.']}
+]},
+{title:'Wasserweg einstellen',tag:'Durchführung',sub:'Aufgaben 1–3: Echoreihenfolge',badge:'📏 Vorlauf-Profi',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0">Jetzt wird's nass! Mit der Höhe des Prüfkopfs stellst du die ${T('vorlauf')} ein. Ziel: Das ${T('rwe')} soll gut sichtbar <b>vor</b> dem ${T('oe2')} liegen. Die Echos sind im Lernmodus beschriftet.</p>`)+
+   `<div class="task"><b>Aus der Anleitung (3.2, Aufgabe 1):</b> „Wählen Sie den Abstand zwischen Prüfkopf und Oberfläche des Prüflings (die Wasservorlaufstrecke) derart, dass sein erstes Rückwandecho gut erkennbar vor dem zweiten Oberflächenecho liegt.“<br><b>Aufgabe 3:</b> „Dokumentieren Sie Ihren Aufbau mit einem Schirmbild.“</div>`},
+ {type:'sim',title:'Wasserweg einstellen',run:simWasserweg,solution:'Kleinen (< 11 mm) und großen (> 20 mm) Wasserweg ausprobieren; bei s < 11 mm liegt das 2. OE vor dem RWE. Einstellung A: s = 15,0 mm speichern (OE 60,0 mm, RWE 103,9 mm, 2. OE 120,0 mm).',
+  hints:['Zieh den Regler ganz nach links und ganz nach rechts. Achte auf die Reihenfolge von RWE und 2. OE.','Das 2. OE enthält den Wasserweg viermal, das RWE nur zweimal – bei kleinem s überholt das 2. OE das RWE.','Nach dem Ausprobieren: genau 15,0 mm einstellen, dann 📸 speichern.']},
+ {type:'mcq',q:'Der Wasserweg ist 15 mm. Das Gerät (Stahl-Justierung) zeigt das Oberflächenecho aber bei <b>60 mm</b>. Warum?',o:[
+   {t:'Das Gerät rechnet mit 5920 m/s (Stahl). Wasser ist 4-mal langsamer – deshalb erscheint der Wasserweg 4-mal so lang.',ok:1,fb:'Richtig: 5920 : 1480 = 4. Deshalb gilt: 15 mm Wasser → 60 mm „Stahl-mm“.'},
+   {t:'Der Schall läuft hin und zurück, also doppelt so weit.',fb:'Das berücksichtigt das Gerät schon (es zeigt den einfachen Weg). Doppelweg wäre außerdem nur Faktor 2, nicht 4.'},
+   {t:'Der Prüfkopf ist falsch eingestellt.',fb:'Der Prüfkopf ist richtig. Es liegt an der Schallgeschwindigkeit, mit der das Gerät umrechnet.'},
+   {t:'Das Wasser dehnt sich im Becken aus.',fb:'Nein – 15 mm bleiben 15 mm. Das Gerät rechnet nur mit der falschen Geschwindigkeit für Wasser.'}],
+  hints:['Das Gerät misst eine Zeit und rechnet in mm um.','Mit welcher Geschwindigkeit rechnet es? Wie schnell ist der Schall aber im Wasser?','Vergleiche 5920 m/s mit 1480 m/s.']},
+ {type:'calc',title:'Anzeige-Faktor nachrechnen',text:()=>`Rechne nach, wie das Gerät (Stahl-Justierung) Wasser und Acryl „verzerrt“.`,rows:[
+   {given:'Gerät rechnet mit 5920 m/s · Wasser: 1480 m/s · Acryl: 2700 m/s'},
+   {pre:'Faktor Wasser = 5920 : 1480 =',ans:4,tol:.02,u:''},
+   {pre:'Anzeige für s = 15 mm Wasser: 15 mm · 4 =',ans:60,tol:.3,u:'mm'},
+   {pre:'Anzeige für d = 20 mm Acryl: 20 mm · 5920 : 2700 =',ans:43.85,tol:.3,u:'mm'}],
+  after:'Das Gerät zeigt also 60 mm und 43,9 mm – in Wirklichkeit sind es 15 mm Wasser und 20 mm Acryl!',
+  hints:['Teile die Geräte-Geschwindigkeit durch die echte Geschwindigkeit.','Faktor mal echter Weg = angezeigter Weg.','5920 : 1480 = 4 → 15 · 4 = 60. Für Acryl: 20 · 5920 : 2700.']},
+ {type:'place',title:'Skizze bemaßen (Aufgabe 2)',text:'Beschrifte deine Skizze mit den <b>echten</b> Werten – nicht mit den Geräte-Anzeigen!',svg:SKIZZE,proto:['d',20],
+  slots:['s = 15,0 mm (Wasser)','d = 20,0 mm','Acryl, c = 2700 m/s','Tauchprüfkopf'],
+  labels:['s = 15,0 mm (Wasser)','d = 20,0 mm','Acryl, c = 2700 m/s','Tauchprüfkopf','s = 60 mm (Anzeige)','d = 43,9 mm (Anzeige)','Stahl, c = 5920 m/s'],
+  hints:['1 ist der Abstand Prüfkopf–Platte, 2 die Plattendicke.','Die Geräte-Anzeigen (60 mm, 43,9 mm) sind wegen der Stahl-Justierung verzerrt.','1: s = 15,0 mm · 2: d = 20,0 mm · 3: Acryl 2700 m/s · 4: Tauchprüfkopf.']}
+]},
+{title:'Laufzeiten berechnen',tag:'Auswertung',sub:'Aufgabe 4 + Laufzeitbilanz',badge:'⏱️ Laufzeit-Profi',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0">Jetzt rechnest du nach, ob die Echos zu Wasserweg und Platte passen. Trick: Jedes Medium bekommt <b>seine eigene</b> Geschwindigkeit. Und ein Echo läuft immer <b>hin und zurück</b>.</p>`)+
+   `<div class="task"><b>Aus der Anleitung (3.2, Aufgabe 4):</b> „Berechnen Sie die einfache Laufzeit des Ultraschalls bis zur Rückwand des Prüflings.“</div>
+   <table class="tb"><tr><th>Größe</th><th>Wert</th></tr><tr><td>Wasserweg s</td><td>15,0 mm</td></tr><tr><td>Dicke d</td><td>20,0 mm</td></tr><tr><td>${T('cw')}</td><td>1480 m/s</td></tr><tr><td>${T('cm')} (Acryl)</td><td>2700 m/s</td></tr></table>`},
+ {type:'mcq',q:()=>`Welche Formel beschreibt die ${T('lauf')} des Rückwandechos?`,o:[
+   {t:'t<sub>RW</sub> = 2s : c<sub>W</sub> + 2d : c<sub>M</sub>',ok:1,fb:'Genau: doppelter Wasserweg mit Wasser-Geschwindigkeit plus doppelter Plattenweg mit Acryl-Geschwindigkeit.'},
+   {t:'t<sub>RW</sub> = 2(s + d) : c<sub>W</sub>',fb:'Fehler: nur eine Geschwindigkeit. In der Platte ist der Schall aber viel schneller als im Wasser.'},
+   {t:'t<sub>RW</sub> = s : c<sub>W</sub> + d : c<sub>M</sub>',fb:'Das ist nur der Hinweg (einfache Laufzeit). Das Echo muss aber auch zurück.'},
+   {t:'t<sub>RW</sub> = 2(s + d) : c<sub>M</sub>',fb:'Nur eine Geschwindigkeit – im Wasser ist der Schall aber nur 1480 m/s schnell.'}],
+  hints:['Zwei Medien → zwei Teilzeiten, dann addieren.','Zeit = Weg : Geschwindigkeit – für jedes Medium einzeln.','Hin und zurück: 2s im Wasser und 2d in der Platte.']},
+ {type:'calc',title:'Oberflächenecho: Wasseranteil',text:()=>`${T('oe')}: t<sub>O</sub> = 2s : c<sub>W</sub>. Ergebnis in ${T('mikro')}.`,proto:['tO',20.27],rows:[
+   {given:'s = 15,0 mm = 0,0150 m'},
+   {pre:'Doppelter Wasserweg: 2 · 0,0150 m =',ans:.03,tol:.0005,u:'m'},
+   {pre:'t<sub>O</sub> = 0,030 m : 1480 m/s =',ans:20.27,tol:.06,u:'µs'}],
+  after:'t<sub>O</sub> ≈ 20,27 µs. Kontrolle: 20,27 · 10⁻⁶ s.',
+  hints:['Erst mm in m: durch 1000 teilen.','Hin und zurück: Weg mal 2. Dann durch 1480 m/s teilen.','0,030 : 1480 = 0,00002027 s = 20,27 µs (mal 1 000 000).']},
+ {type:'calc',title:'Rückwandecho: Materialanteil dazu',text:()=>`${T('rwe')}: t<sub>RW</sub> = t<sub>O</sub> + 2d : c<sub>M</sub>`,proto:['tRW',35.08],rows:[
+   {given:'d = 20,0 mm = 0,0200 m · c<sub>M</sub> = 2700 m/s'},
+   {pre:'Materialanteil: 2 · 0,0200 m : 2700 m/s =',ans:14.81,tol:.05,u:'µs'},
+   {pre:'t<sub>RW</sub> = 20,27 µs + 14,81 µs =',ans:35.08,tol:.06,u:'µs'}],
+  after:'t<sub>RW</sub> ≈ 35,08 µs.',
+  hints:['Die Platte ist 20 mm dick – hin und zurück sind das 40 mm = 0,040 m.','0,040 m : 2700 m/s, dann in µs umrechnen.','14,81 µs + 20,27 µs.']},
+ {type:'sim',title:'Echos ablesen und vergleichen',run:simAblesen,solution:'Echo 1 = 20,3 µs, Echo 2 = 35,1 µs; passt zu t_O = 20,27 µs und t_RW = 35,08 µs (Rundung).',
+  hints:['Ganz links ist der Sendeimpuls – den nicht antippen.','Tippe die erste und die zweite Spitze danach an.','Echo 1 ≈ 20 µs, Echo 2 ≈ 35 µs.']},
+ {type:'mcq',q:'Echo 2 − Echo 1 = 35,1 µs − 20,3 µs = 14,8 µs. Welcher Weg steckt in dieser Differenz?',o:[
+   {t:'Nur der doppelte Weg in der Platte (2d : c<sub>M</sub>) – der Wasseranteil fällt heraus.',ok:1,fb:'Richtig! Beide Echos haben denselben Wasserweg. In der Differenz bleibt nur die Platte übrig: 2d : c<sub>M</sub> = 14,81 µs.'},
+   {t:'Der doppelte Wasserweg',fb:'Den Wasserweg haben <b>beide</b> Echos – er fällt beim Subtrahieren weg.'},
+   {t:'Wasser und Platte zusammen',fb:'Das wäre die ganze Zeit t<sub>RW</sub> = 35,1 µs, nicht die Differenz.'},
+   {t:'Nur der einfache Weg in der Platte (d : c<sub>M</sub>)',fb:'d : c<sub>M</sub> = 7,41 µs. Die Differenz ist doppelt so groß – hin und zurück.'}],
+  hints:['Schreib beide Formeln untereinander und zieh sie voneinander ab.','t<sub>RW</sub> − t<sub>O</sub> = (2s:c<sub>W</sub> + 2d:c<sub>M</sub>) − 2s:c<sub>W</sub>','Übrig bleibt 2d : c<sub>M</sub>.']},
+ {type:'calc',title:'Einfache Laufzeit bis zur Rückwand (Aufgabe 4)',text:'„Einfach“ heißt: nur <b>hin</b> bis zur Rückwand – nicht zurück.',proto:['tE',17.54],rows:[
+   {pre:'Wasser: 0,0150 m : 1480 m/s =',ans:10.14,tol:.03,u:'µs'},
+   {pre:'Acryl: 0,0200 m : 2700 m/s =',ans:7.41,tol:.03,u:'µs'},
+   {pre:'t<sub>einfach</sub> = 10,14 µs + 7,41 µs =',ans:17.55,tol:.03,u:'µs'}],
+  after:'t<sub>einfach</sub> ≈ 17,5 µs – genau die Hälfte von t<sub>RW</sub> = 35,08 µs.',
+  hints:['Diesmal kein „mal 2“ – nur der Hinweg.','Jedes Medium einzeln: Weg in m durch Geschwindigkeit, dann in µs.','10,14 + 7,41 = 17,55 (Kontrolle: 35,08 : 2 = 17,54).']}
+]},
+{title:'Auf Acryl justieren',tag:'Durchführung',sub:'Aufgabe 5: Materialjustierung',badge:'🎚️ Justier-Profi',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0">Mit Stahl-Justierung zeigt das Gerät die Platte als 43,9 mm an – das verwirrt jeden. Jetzt stellst du das Gerät auf <b>Acryl</b> ein. Mit der ${T('versch')} legst du das Oberflächenecho auf den Nullpunkt. Dann zeigt der Schirm die Plattendicke direkt an.</p>`)},
+ {type:'sim',title:'Justieren mit dem Material des Prüflings',run:simJustage,solution:'Verschiebung ≈ 20,3 µs (OE auf 0 mm), Schallgeschwindigkeit 2700 m/s (RWE auf 20 mm); Echo bei ≈ 27 mm ist das 2. OE, kein Fehler.',
+  hints:['Erst ① Verschiebung: Schieb das Oberflächenecho auf die linke gelbe Linie (0 mm).','Dann ② Geschwindigkeit: Ist der Abstand zu groß, ist c zu groß.','Verschiebung ≈ 20,3 µs · c = 2700 m/s (Acryl).']},
+ {type:'mcq',q:'Warum zeigt das Gerät jetzt <b>genau 20 mm</b> zwischen Oberflächen- und Rückwandecho?',o:[
+   {t:'Die Zeit zwischen den Echos ist nur Weg in der Platte – und das Gerät rechnet jetzt mit der Acryl-Geschwindigkeit.',ok:1,fb:'Richtig: Zeitdifferenz = 2d : c<sub>M</sub>. Mit c = 2700 m/s rechnet das Gerät daraus wieder d = 20 mm.'},
+   {t:'Weil der Wasserweg jetzt 20 mm ist.',fb:'Der Wasserweg ist 15 mm und hat mit dem Abstand OE–RWE nichts zu tun – er fällt heraus.'},
+   {t:'Weil die Verschiebung die Platte dünner macht.',fb:'Die Verschiebung schiebt nur das Bild. Den Abstand ändert nur die Geschwindigkeit.'},
+   {t:'Weil das Gerät die Dicke vom Messschieber übernimmt.',fb:'Das Gerät kennt den Messschieber nicht. Es rechnet aus Laufzeit und Geschwindigkeit.'}],
+  hints:['Welcher Weg liegt zwischen Oberflächen- und Rückwandecho?','Diese Zeit ist 2d : c<sub>M</sub>.','Das Gerät rechnet Weg = c · Zeit : 2 – jetzt mit dem richtigen c.']},
+ {type:'calc',bonus:1,title:'Profi: Dicke aus der Stahl-Anzeige',text:'Mit Stahl-Justierung lag das RWE 43,9 mm hinter dem OE. Rechne auf die echte Dicke um.',rows:[
+   {pre:'d = 43,9 mm · 2700 : 5920 =',ans:20.02,tol:.15,u:'mm'}],
+  after:'≈ 20 mm – passt zum Messschieber.',
+  hints:['Die Anzeige ist um den Faktor 5920 : 2700 zu groß.','Also rückwärts: mal 2700, geteilt durch 5920.','43,9 · 2700 : 5920 ≈ 20,0']}
+]},
+{title:'Echos zuordnen',tag:'Auswertung',sub:'Aufgabe 6: Echo-Wanderung A → B',badge:'🔎 Echo-Detektiv',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0 0 8px">Jetzt zum Problem der Vorschicht: Drei <b>unbeschriftete</b> Echos, zwei Wasserwege. Viele denken: „Das späteste Echo ist die Rückwand.“ Stimmt das?</p><p style="margin:0">Dein Beweis-Trick: Ändere <b>nur den Wasserweg</b> und schau, wie weit jedes Echo wandert.</p>`)+
+   `<table class="tb"><tr><th>Anzeige</th><th>A: s = 15,0 mm</th><th>B: s = 20,0 mm</th></tr><tr><td>Echo 1</td><td>20,3 µs</td><td>27,0 µs</td></tr><tr><td>Echo 2</td><td>35,1 µs</td><td>41,8 µs</td></tr><tr><td>Echo 3</td><td>40,5 µs</td><td>54,1 µs</td></tr></table>`},
+ {type:'mcq',q:'Deine Vorhersage: Der Wasserweg wächst von 15 auf 20 mm. Was passiert?',o:[
+   {t:'Oberflächen- und Rückwandecho wandern gleich weit; das 2. Oberflächenecho wandert doppelt so weit.',ok:1,fb:'Starke Vorhersage! OE und RWE haben je 2s Wasserweg, das 2. OE hat 4s.'},
+   {t:'Nur das Oberflächenecho wandert – die Platte bleibt ja gleich.',fb:'Fehlvorstellung! Auch das RWE läuft erst durchs Wasser. Mehr Wasser → auch das RWE kommt später.'},
+   {t:'Alle drei Echos wandern genau gleich weit.',fb:'Fast: OE und RWE ja. Aber ein Echo läuft zweimal durchs Wasser …'},
+   {t:'Das Rückwandecho wandert am weitesten, weil es den längsten Weg hat.',fb:'Der Weg in der Platte ändert sich nicht. Entscheidend ist nur, wie oft das Echo durchs <b>Wasser</b> läuft.'}],
+  hints:['Welche Echos laufen durchs Wasser? Wie oft?','OE: 2s · RWE: 2s + 2d · 2. OE: 4s.','Was sich ändert, ist nur s.']},
+ {type:'sim',title:'Echo-Wanderung beobachten',run:simWanderung,solution:'A (15 mm) und B (20 mm) einstellen: Echo 1 und 2 wandern je 6,7 µs, Echo 3 wandert 13,6 µs → Echo 3 wandert am stärksten.',
+  hints:['Stell den Regler auf 15,0 mm und dann auf 20,0 mm.','Achte auf die Spalte „wandert“ in der Tabelle.','Echo 3 wandert etwa doppelt so weit wie Echo 1 und 2.']},
+ {type:'calc',title:'Verschiebungen ausrechnen',text:()=>`Vergleiche die erwartete Verschiebung mit den Messwerten.`,proto:['dtW',6.76],rows:[
+   {given:'Δs = 20,0 mm − 15,0 mm = 5,0 mm = 0,0050 m'},
+   {pre:'Erwartet für OE und RWE: 2 · 0,0050 m : 1480 m/s =',ans:6.76,tol:.03,u:'µs'},
+   {pre:'Echo 1: 27,0 µs − 20,3 µs =',ans:6.7,tol:.02,u:'µs'},
+   {pre:'Echo 2: 41,8 µs − 35,1 µs =',ans:6.7,tol:.02,u:'µs'},
+   {pre:'Echo 3: 54,1 µs − 40,5 µs =',ans:13.6,tol:.02,u:'µs'}],
+  after:'Echo 1 und 2 wandern wie erwartet (6,7 ≈ 6,76 µs). Echo 3 wandert doppelt so weit.',
+  hints:['Nur der Wasserweg ändert sich – um 5 mm, hin und zurück also 10 mm.','0,010 m : 1480 m/s, dann in µs.','6,76 µs · dann jeweils B minus A.']},
+ {type:'decide',title:'Welches Echo ist was?',text:'Ordne jedes Echo mit seiner Wanderung als Beweis zu.',actions:['Oberflächenecho','Rückwandecho','2. Oberflächenecho'],cards:[
+   {title:'Echo 1',info:'A: 20,3 µs → B: 27,0 µs · wandert 6,7 µs · erstes Echo nach dem Sendeimpuls',ans:0,okfb:'Oberflächenecho: passt zu t<sub>O</sub> = 20,27 µs und wandert 6,7 µs.',
+    fb:[null,'Das Rückwandecho braucht zusätzlich 14,8 µs durch die Platte – Echo 1 kommt dafür zu früh.','Das 2. OE wandert doppelt so weit (13,5 µs). Echo 1 wandert nur 6,7 µs.']},
+   {title:'Echo 2',info:'A: 35,1 µs → B: 41,8 µs · wandert 6,7 µs · Abstand zu Echo 1 bleibt 14,8 µs',ans:1,okfb:'Rückwandecho: gleiche Wanderung wie Echo 1, fester Abstand 14,8 µs = 2d : c<sub>M</sub>.',
+    fb:['Es gibt nur <b>eine</b> Oberfläche – und die hat schon Echo 1.',null,'Ein 2. OE würde doppelt so weit wandern. Echo 2 wandert nur 6,7 µs – wie Echo 1.']},
+   {title:'Echo 3',info:'A: 40,5 µs → B: 54,1 µs · wandert 13,6 µs – etwa doppelt so viel',ans:2,okfb:'2. Oberflächenecho: doppelte Wanderung, weil der Wasserweg 4-mal drinsteckt.',
+    fb:['Die Oberfläche hat schon Echo 1 – und das OE wandert nur 6,7 µs.','Fehlvorstellung „spät = Rückwand“! Das RWE wandert genauso wie das OE (6,7 µs). Echo 3 wandert 13,6 µs.',null]}],
+  proto:['zu','Echo 1 = OE · Echo 2 = RWE · Echo 3 = 2. OE'],
+  hints:['Vergleiche die Wanderung: 6,7 µs oder 13,6 µs?','OE und RWE wandern gleich weit. Das 2. OE wandert doppelt so weit.','Echo 1 = OE (früh) · Echo 2 = RWE (Abstand 14,8 µs) · Echo 3 = 2. OE.']},
+ {type:'mcq',bonus:1,q:'Profi-Frage: Warum wandert das 2. Oberflächenecho etwa <b>doppelt</b> so weit?',o:[
+   {t:'Es läuft zweimal hin und zurück durchs Wasser (4s). Jeder mm mehr Wasserweg zählt 4-fach: Δt = 4 · Δs : c<sub>W</sub> ≈ 13,5 µs.',ok:1,fb:'Perfekt! 4 · 0,0050 m : 1480 m/s = 13,51 µs – passt zu gemessenen 13,6 µs.'},
+   {t:'Weil es an der Rückwand zweimal reflektiert wird.',fb:'Dann wäre es ein Mehrfachecho in der <b>Platte</b> – das würde bei mehr Wasserweg nur 6,7 µs wandern.'},
+   {t:'Weil es die doppelte Amplitude hat.',fb:'Die Höhe sagt nichts über die Wanderung. Die Zeit hängt nur vom Weg ab.'},
+   {t:'Weil der Schall im Wasser beim zweiten Mal langsamer wird.',fb:'Die Schallgeschwindigkeit im Wasser bleibt 1480 m/s.'}],
+  hints:['Wie oft durchläuft das 2. OE die Wasserstrecke?','Zweimal hin und zurück = 4s.','Δt = 4 · Δs : c<sub>W</sub>.']}
+]},
+{title:'Störung prüfen & freigeben',tag:'Anwendung / Freigabe',sub:'Luftblase? Prüfbericht TZ-07',badge:'✅ Freigabe-Profi',steps:[
+ {type:'info',html:()=>person(`<p style="margin:0">Fast geschafft! Im zweiten Probelauf ist etwas komisch: Die ${T('amp','Echohöhen')} springen. Bevor du freigibst, klärst du: Hat sich der Weg geändert – oder ist die Übertragung gestört? Danach schreibst du die Übergabe <b>TZ-07</b>.</p>`)},
+ {type:'sim',title:'Luftblase, Schieflage oder Wasserweg?',run:simStoerung,solution:'Alle vier Zustände ansehen. Zeiten gleich + Höhen schwanken → Übertragungsstörung (Luftblase/Fehlstellung). Ersthandlung: Blase entfernen bzw. ausrichten, Elektrik trocken außerhalb der Nasszone.',
+  hints:['Tippe nacheinander alle vier Knöpfe an und vergleiche Zeit und Höhe.','Eine Wegänderung verschiebt die Echos nach rechts. Eine Blase ändert vor allem die Höhe.','Zeiten gleich, Höhen schwanken → Blase/Schieflage. Handlung: Blase weg, Elektrik bleibt trocken.']},
+ {type:'seq',title:'Arbeitsfolge bis zur Übergabe',text:'Bring die Arbeitsschritte in die richtige Reihenfolge.',items:[
+   'Prüfen: Gerät, Stecker und Kabel trocken außerhalb der Nasszone',
+   'Schallweg auf Luftblasen prüfen, Prüfkopf gerade ausrichten',
+   'Wasserweg einstellen und Schirmbild speichern',
+   'Echos über die Wanderung zuordnen und Prüfbericht TZ-07 ausfüllen',
+   'Echograph über den Ausschalter an der Frontplatte ausschalten',
+   'Prüfling und Auflagen abtrocknen – Acryl mit weichem Tuch (keine Kratzer)'],
+  hints:['Sicherheit kommt immer zuerst.','Erst eine störungsfreie Messung, dann Auswertung, dann aufräumen.','Sicherheit → Blasen → Messen → Zuordnen/Bericht → Ausschalten → Abtrocknen.']},
+ {type:'decide',title:'Drei Fälle aus der Schicht',text:'Wie entscheidest du?',actions:['✅ Zuordnung freigeben','🔁 Störung beheben, neu messen','⛔ Stopp – Sicherheit'],cards:[
+   {title:'Fall A',info:'Zeiten wie im Modell (20,3 / 35,1 / 40,5 µs), Höhen stabil, Wanderung A → B passt.',ans:0,okfb:'Alles belegt: Zeiten, Wanderung, stabile Kopplung.',
+    fb:[null,'Es gibt keine Störung – Zeiten und Höhen sind stabil.','Kein Sicherheitsproblem erkennbar.'],draw:o=>drawEchoes(o,{s:15,unit:'µs',marks:'num'})},
+   {title:'Fall B',info:'Zeiten gleich, Höhen springen stark. Im Wasser unter dem Prüfkopf sieht man Bläschen.',ans:1,okfb:'Richtig: erst die Blase entfernen, dann neu messen.',
+    fb:['Mit schwankender Kopplung ist die Messung nicht belastbar.',null,'Keine Gefahr für Menschen – aber die Messung muss wiederholt werden.'],draw:o=>drawEchoes(o,{s:15,unit:'µs',flick:true,marks:'num'})},
+   {title:'Fall C',info:'Echos sehen gut aus – aber der Stecker am Gerät ist tropfnass, auf dem Echograph steht Wasser.',ans:2,okfb:'Richtig: Wasser an der Elektrik → sofort stoppen, Lehrkraft informieren.',
+    fb:['Gute Echos helfen nicht, wenn die Elektrik nass ist. Sicherheit geht vor!','Erst die Gefahr beseitigen – nicht einfach weitermessen.',null]}],
+  hints:['Frag dich bei jedem Fall: Ist es gefährlich? Ist die Messung gestört?','Nasse Elektrik = immer Stopp.','A freigeben · B neu messen · C Stopp.']},
+ {type:'cloze',title:'Übergabe TZ-07 ausfüllen',parts:[
+   ['Einstellung A: Wasserweg s = ',['15,0 mm','60 mm','20,0 mm'],0,', Acrylplatte d = 20,0 mm.'],
+   ['Echo 1 (20,3 µs) ist das ',['Oberflächenecho','Rückwandecho','2. Oberflächenecho'],0,'.'],
+   ['Echo 2 (35,1 µs) ist das Rückwandecho; Abstand zu Echo 1: ',['14,8 µs','6,7 µs','35,1 µs'],0,' (doppelter Weg in der Platte).'],
+   ['Echo 3 wandert bei 5 mm mehr Wasserweg um ',['13,6 µs','6,7 µs','0 µs'],0,' → 2. Oberflächenecho.'],
+   ['Einfache Laufzeit bis zur Rückwand: ',['17,5 µs','35,1 µs','7,4 µs'],0,'.'],
+   ['Materialjustierung: c = ',['2700 m/s','5920 m/s','1480 m/s'],0,', Oberflächenecho auf 0 mm.'],
+   ['Freigabe: ',['Zuordnung vorläufig frei','alle Bauteile endgültig frei','keine Aussage möglich'],0,' – vor jeder Messung Blasen, Ausrichtung und trockene Elektrik prüfen.']],
+  doc:()=>`<div class="doc"><div class="stamp">FREIGEGEBEN</div><h4 style="margin-top:34px">Übergabe TZ-07 · Tauchprüfung</h4><dl>
+   <dt>Aufbau</dt><dd>Tauchprüfkopf · Wasser s = 15,0 mm · Acryl d = 20,0 mm</dd>
+   <dt>Wegmodell</dt><dd>t<sub>O</sub> = 2s : c<sub>W</sub> · t<sub>RW</sub> = 2s : c<sub>W</sub> + 2d : c<sub>M</sub></dd>
+   <dt>Echo 1</dt><dd>20,3 µs → Oberflächenecho (wandert 6,7 µs)</dd>
+   <dt>Echo 2</dt><dd>35,1 µs → Rückwandecho (wandert 6,7 µs, Abstand 14,8 µs)</dd>
+   <dt>Echo 3</dt><dd>40,5 µs → 2. Oberflächenecho (wandert 13,6 µs)</dd>
+   <dt>Laufzeit</dt><dd>einfach bis Rückwand 17,5 µs</dd>
+   <dt>Justierung</dt><dd>Acryl 2700 m/s, OE auf 0 mm, RWE bei 20 mm</dd>
+   <dt>Kontrolle</dt><dd>blasenfrei, ausgerichtet, Elektrik trocken außerhalb der Nasszone</dd>
+   <dt>Grenze</dt><dd>Lernmodell – vorläufige Freigabe der Echozuordnung</dd>
+   <dt>Prüfer*in</dt><dd>${esc(state.name||CONFIG.defaultName)} · ${new Date().toLocaleDateString('de-DE')}</dd></dl></div>`,
+  hints:['Alle Werte stehen in deinem Protokoll 📋.','Achtung Fallen: 60 mm und 5920 m/s sind Geräte-/Stahlwerte, nicht die echten.','15,0 mm · OE · 14,8 µs · 13,6 µs · 17,5 µs · 2700 m/s · vorläufig freigegeben.']}
+]},
+{title:'Abschlussquiz',tag:'Quiz',sub:'Zeig, was du kannst',badge:'🏅 Tauchprüfer*in',steps:[]}
+];
+const QUIZ=[
+ {q:'Wozu dient das Wasser bei der Tauchtechnik?',o:[{t:'Ankopplung und Vorlaufstrecke',ok:1},{t:'Kühlung des Prüfkopfs'},{t:'Es macht den Schall schneller'},{t:'Reinigung des Prüflings'}],why:'Das Wasser überträgt den Schall (statt Gel) und bildet die Vorlaufstrecke.'},
+ {q:'Welche Formel gilt für das Oberflächenecho?',o:[{t:'t<sub>O</sub> = 2s : c<sub>W</sub>',ok:1},{t:'t<sub>O</sub> = s : c<sub>W</sub>'},{t:'t<sub>O</sub> = 2s : c<sub>M</sub>'},{t:'t<sub>O</sub> = 2(s + d) : c<sub>W</sub>'}],why:'Hin und zurück durchs Wasser: 2s, geteilt durch die Wasser-Geschwindigkeit.'},
+ {q:'s = 20 mm, c<sub>W</sub> = 1480 m/s. Wann kommt das Oberflächenecho?',o:[{t:'27,0 µs',ok:1},{t:'13,5 µs'},{t:'54,1 µs'},{t:'6,8 µs'}],why:'2 · 0,020 m : 1480 m/s = 27,0 µs. (13,5 µs wäre nur der Hinweg.)'},
+ {q:'Was steckt in der Differenz Rückwandecho − Oberflächenecho?',o:[{t:'Nur der doppelte Weg in der Platte (2d : c<sub>M</sub>)',ok:1},{t:'Nur der Wasserweg'},{t:'Wasser und Platte zusammen'},{t:'Der einfache Weg in der Platte'}],why:'Den Wasserweg haben beide Echos – er fällt heraus.'},
+ {q:'Das Gerät ist auf Stahl (5920 m/s) justiert. Wie zeigt es 15 mm Wasserweg an?',o:[{t:'60 mm',ok:1},{t:'15 mm'},{t:'30 mm'},{t:'3,75 mm'}],why:'Wasser ist 4-mal langsamer (5920 : 1480 = 4) → Anzeige 4-mal so lang.'},
+ {q:'Der Wasserweg wächst um 5 mm. Wie weit wandern Oberflächen- und Rückwandecho?',o:[{t:'Beide ca. 6,8 µs',ok:1},{t:'Nur das OE wandert, das RWE bleibt'},{t:'OE 6,8 µs, RWE 13,5 µs'},{t:'Keines wandert'}],why:'Beide enthalten 2s Wasserweg: 2 · 0,005 m : 1480 m/s ≈ 6,76 µs.'},
+ {q:'Ein Echo wandert bei mehr Wasserweg doppelt so weit wie das OE. Was ist es?',o:[{t:'Das 2. Oberflächenecho',ok:1},{t:'Das Rückwandecho'},{t:'Ein Fehler in der Platte'},{t:'Der Sendeimpuls'}],why:'Das 2. OE enthält den Wasserweg 4-mal → doppelte Wanderung.'},
+ {q:'„Das späteste Echo ist immer das Rückwandecho.“ Stimmt das?',o:[{t:'Nein – erst die Wanderung bei geändertem Wasserweg zeigt, welches Echo was ist.',ok:1},{t:'Ja, die Rückwand ist am weitesten weg.'},{t:'Ja, wenn das Echo hoch genug ist.'},{t:'Nein, das früheste Echo ist das Rückwandecho.'}],why:'Das 2. OE kann später (oder bei kleinem s sogar früher) als das RWE liegen. Zeit und Wanderung entscheiden, nicht die Lage allein.'},
+ {q:'Wann liegt bei 20 mm Acryl das Rückwandecho vor dem 2. Oberflächenecho?',o:[{t:'Wenn der Wasserweg groß genug ist (über ca. 11 mm)',ok:1},{t:'Wenn der Wasserweg möglichst klein ist'},{t:'Immer, egal wie groß s ist'},{t:'Nur mit Koppelgel'}],why:'Bedingung: 4s : c<sub>W</sub> > 2s : c<sub>W</sub> + 2d : c<sub>M</sub> → s > d · c<sub>W</sub> : c<sub>M</sub> ≈ 11 mm.'},
+ {q:'Nach der Justierung auf Acryl (2700 m/s, OE auf 0) zeigt das RWE …',o:[{t:'… 20 mm, die echte Plattendicke',ok:1},{t:'… 43,9 mm'},{t:'… 15 mm, den Wasserweg'},{t:'… 35,1 mm'}],why:'Der Abstand OE–RWE ist reiner Plattenweg – mit der richtigen Geschwindigkeit ergibt das d = 20 mm.'},
+ {q:'Die Zeiten bleiben gleich, die Echohöhen schwanken stark. Ursache?',o:[{t:'Gestörte Übertragung, z. B. Luftblase oder schiefer Prüfkopf',ok:1},{t:'Der Wasserweg hat sich geändert'},{t:'Die Platte ist dicker geworden'},{t:'Die Schallgeschwindigkeit des Wassers schwankt'}],why:'Eine Wegänderung verschiebt die Zeiten. Schwankende Höhen deuten auf gestörte Kopplung.'},
+ {q:'Was gilt für Echograph und Stecker an der Tauchprüfzelle?',o:[{t:'Trocken außerhalb der Nasszone; ausschalten am Ausschalter der Frontplatte',ok:1},{t:'Auf den Beckenrand stellen, damit das Kabel reicht'},{t:'Stecker bei Problemen im Nassbereich nachstecken'},{t:'Zum Ausschalten den Stecker ziehen'}],why:'Betriebsanweisung: keine nassen elektrischen Geräte; Ultraschallprüfgeräte über den Ausschalter an der Frontplatte ausschalten.'}
+];
+/* ==== INHALT ENDE ==== */
+
+start();
+</script>
+</body>
+</html>
