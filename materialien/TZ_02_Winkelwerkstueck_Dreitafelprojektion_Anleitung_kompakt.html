@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modul 2b: Dreitafelprojektion des Winkelwerkstücks</title><style>
+:root{--ink:#16242c;--blue:#005f73;--navy:#0b3954;--orange:#ee9b00;--red:#ae2012;--green:#4f772d;--wash:#eef5f5;--line:#b9c7cd}
+*{box-sizing:border-box}
+body{margin:0;background:#d9dee0;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);font-size:16.5px;line-height:1.55;counter-reset:s}
+.page{max-width:900px;margin:24px auto;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.15);padding:0 0 40px}
+header{background:linear-gradient(135deg,#00708a,#0b3954);color:#fff;padding:34px 48px 26px}
+header h1{margin:0 0 14px;font-size:30px;line-height:1.25}
+.meta{display:flex;flex-wrap:wrap;gap:8px 30px;font-size:14.5px;opacity:.95}
+main{padding:10px 48px}
+h2{color:var(--navy);font-size:24px;margin:34px 0 14px}
+h2.phase{display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--blue);padding-bottom:8px}
+.badge{background:var(--blue);color:#fff;border-radius:6px;padding:2px 11px;font-size:18px}
+table{border-collapse:collapse;width:100%;margin:12px 0 16px;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--navy)}
+ol.steps{list-style:none;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;border:1px solid var(--line);border-radius:12px;padding:16px 18px 14px 66px;margin:18px 0;break-inside:avoid;page-break-inside:avoid}
+ol.steps>li::before{content:counter(s);position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps h3{margin:0 0 6px;color:var(--navy);font-size:18px}
+ol.steps p{margin:6px 0}
+.menu{display:inline-block;border:1.5px solid var(--blue);color:var(--blue);border-radius:6px;padding:0 6px;font-weight:600;line-height:1.35}
+kbd{color:var(--ink);font-family:Consolas,monospace;font-size:12.5px;border:1px solid #999;border-radius:4px;padding:0 5px;background:#f7f7f7}
+.check,.tipp,.warn,.info{border-left:5px solid;border-radius:6px;padding:9px 14px;margin:10px 0;font-size:14.5px}
+.check{background:#e8f0e3;border-color:var(--green)} .check b{color:var(--green)}
+.tipp{background:#fff4dd;border-color:var(--orange)}
+.warn{background:#f9e3e1;border-color:var(--red)}
+.info{background:var(--wash);border-color:var(--blue);break-inside:avoid}
+.checkpoint{background:var(--green);color:#fff;border-radius:8px;padding:12px 16px;margin:14px 0;font-size:15px}
+.teacher{background:#f1ebf7;border:2px dashed #7b4fa0;border-radius:10px;padding:12px 18px;margin:18px 0;font-size:14px}
+.teacher h4{margin:0 0 6px;color:#5b2f80}
+.teacher ul{margin:4px 0 0 18px;padding:0}
+figure{margin:12px 0 6px;text-align:center}
+figcaption{font-style:italic;color:#4b5a60;font-size:13.5px;margin-top:6px}
+.legend{font-size:13.5px;margin:6px 0 0;padding-left:18px}
+.legend .bl{color:#0a7ea4;font-weight:700} .legend .or{color:#c27c00;font-weight:700}
+ul.mat{margin:6px 0;padding-left:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+@media(max-width:700px){main{padding:8px 16px}header{padding:24px 18px}ol.steps>li{padding-left:56px}.two{grid-template-columns:1fr}}
+@media print{
+ @page{size:A4;margin:12mm 12mm 14mm}
+ body{background:#fff;font-size:11pt}
+ .page{box-shadow:none;margin:0;max-width:none}
+ header,.badge,ol.steps>li::before,.checkpoint,.check,.tipp,.warn,.info,th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .teacher{display:none}
+ main{padding:0 6mm}
+ h2.phase{break-after:avoid}
+ .pb{break-before:page}
+ figure svg{max-height:92mm;width:auto!important;max-width:100%}
+}
+
+.merk{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.merk div{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:8px 10px;text-align:center;font-size:14.5px}
+.merk b{display:block;color:var(--blue);font-size:16px}
+@media(max-width:700px){.merk{grid-template-columns:1fr}}
+</style></head>
+<body><div class="page">
+<header><h1>Modul 2b: Dreitafelprojektion des Winkelwerkstücks</h1>
+<div class="meta"><span>Name: ____________________</span><span>Klasse: 11NP</span><span>Datum: ___________</span></div>
+<div class="meta" style="margin-top:14px"><span>Vordruck: LMB-02-001 (A4 hoch, Maßstab 1:1)</span></div></header>
+<main>
+<p>Du zeichnest das Winkelwerkstück aus <b>Modul 2</b> von Hand in <b>drei Ansichten</b> und bemaßt es. Du brauchst: Vordruck LMB-02-001, Zeichenbrett mit Zeichenkopf, Bleistift <b>H</b> (vorzeichnen) und <b>HB</b> (nachziehen), Zirkel, Geodreieck, Radierer.</p>
+
+<div class="teacher"><h4>Hinweise für die Lehrkraft (wird nicht gedruckt)</h4><ul>
+<li>Projektionsmethode 1 (DIN ISO 128-30). Vorderansicht = Blick aus −Y wie „Vorne“ in FreeCAD: Grundplatte vorn, Wand mit Bohrungen hinten.</li>
+<li>Bemaßung nach DIN 406-11 / DIN ISO 129-1, Linien nach DIN ISO 128-24 (Liniengruppe 0,5). Musterlösung liegt als eigene PDF bei.</li>
+<li>Waagerechte Linien sind mit dem Geodreieck am Lineal beschrieben. Ob das Lineal Ihres rotring profil schwenkbar ist, bitte prüfen. Noch nicht im Unterricht erprobt.</li>
+<li>Vordruck mit „Tatsächliche Größe / 100 %“ drucken.</li></ul></div>
+
+<div class="two">
+<div><svg style="width:100%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="-22 -12 130 110" font-family="Liberation Sans, Arial"><defs><marker id="ra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L10,5 L0,9z" fill="#ae2012"/></marker></defs><polygon points="19.00,85.00 61.00,85.00 61.00,76.00 19.00,76.00" fill="#dbe7ea" stroke="#16242c" stroke-width="0.5" stroke-linejoin="round"/><polygon points="19.00,76.00 61.00,76.00 71.50,68.50 29.50,68.50" fill="#c4d6db" stroke="#16242c" stroke-width="0.5" stroke-linejoin="round"/><polygon points="29.50,68.50 71.50,68.50 71.50,17.50 29.50,17.50" fill="#dbe7ea" stroke="#16242c" stroke-width="0.5" stroke-linejoin="round"/><polygon points="29.50,17.50 71.50,17.50 77.80,13.00 35.80,13.00" fill="#c4d6db" stroke="#16242c" stroke-width="0.5" stroke-linejoin="round"/><polygon points="61.00,85.00 77.80,73.00 77.80,13.00 71.50,17.50 71.50,68.50 61.00,76.00" fill="#a9c1c8" stroke="#16242c" stroke-width="0.5" stroke-linejoin="round"/><ellipse cx="41.50" cy="44.50" rx="3" ry="3" fill="#56707a" stroke="#16242c" stroke-width="0.4"/><ellipse cx="41.50" cy="29.50" rx="3" ry="3" fill="#56707a" stroke="#16242c" stroke-width="0.4"/><ellipse cx="59.50" cy="44.50" rx="3" ry="3" fill="#56707a" stroke="#16242c" stroke-width="0.4"/><ellipse cx="59.50" cy="29.50" rx="3" ry="3" fill="#56707a" stroke="#16242c" stroke-width="0.4"/><line x1="27.4" y1="64.0" x2="36.64" y2="57.4" stroke="#ae2012" stroke-width="0.8" marker-end="url(#ra)"/><text x="24.4" y="68.0" font-size="3.33" text-anchor="end" fill="#ae2012" font-weight="bold">Blickrichtung</text><text x="24.4" y="72.0" font-size="3.33" text-anchor="end" fill="#ae2012" font-weight="bold">Vorderansicht</text><line x1="3.4000000000000004" y1="43.0" x2="21.4" y2="43.0" stroke="#ae2012" stroke-width="0.8" marker-end="url(#ra)"/><text x="3.4000000000000004" y="40.0" font-size="3.33" text-anchor="start" fill="#ae2012" font-weight="bold">von links</text><line x1="36.4" y1="-5.0" x2="36.4" y2="14.200000000000003" stroke="#ae2012" stroke-width="0.8" marker-end="url(#ra)"/><text x="34.4" y="-4.0" font-size="3.33" text-anchor="end" fill="#ae2012" font-weight="bold">von oben</text></svg></div>
+<div><table><tr><th>Maß</th><th>Wert</th></tr>
+<tr><td>Breite × Tiefe × Höhe</td><td>70 × 40 × 100 mm</td></tr>
+<tr><td>Grundplatte / Wand</td><td>je 15 mm dick</td></tr>
+<tr><td>Bohrungen</td><td>4 × Ø 10, durch die Wand</td></tr>
+<tr><td>Lochmitten waagerecht</td><td>20 und 50 mm von links</td></tr>
+<tr><td>Lochmitten senkrecht</td><td>55 und 80 mm von unten</td></tr></table></div></div>
+
+<h2>Drei Merksätze</h2>
+<div class="merk"><div><b>Breite bleibt Breite</b>Vorderansicht ↓ Draufsicht</div><div><b>Höhe bleibt Höhe</b>Vorderansicht → Seitenansicht</div><div><b>Tiefe bleibt Tiefe</b>Draufsicht ↗ 45°-Linie ↗ Seitenansicht</div></div>
+<p>Was du <b>von oben</b> siehst, zeichnest du <b>unten</b>. Was du <b>von links</b> siehst, zeichnest du <b>rechts</b> (Projektionsmethode 1).</p>
+<figure><svg style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 40" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="0" y="0" width="150" height="40" fill="#fff"/>
+<line x1="2.00" y1="6.00" x2="42.00" y2="6.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<text x="47.00" y="5.40" font-size="3.61" text-anchor="start" font-weight="bold" fill="#000">Volllinie, breit (0,5 mm)</text>
+<text x="47.00" y="9.40" font-size="3.19" text-anchor="start" fill="#444">sichtbare Körperkanten und Umrisse</text>
+<line x1="2.00" y1="15.00" x2="42.00" y2="15.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<text x="47.00" y="14.40" font-size="3.61" text-anchor="start" font-weight="bold" fill="#000">Volllinie, schmal (0,25 mm)</text>
+<text x="47.00" y="18.40" font-size="3.19" text-anchor="start" fill="#444">Maßlinien, Maßhilfslinien, Hinweislinien, Projektionslinien</text>
+<line x1="2.00" y1="24.00" x2="42.00" y2="24.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<text x="47.00" y="23.40" font-size="3.61" text-anchor="start" font-weight="bold" fill="#000">Strichlinie, schmal (0,25 mm)</text>
+<text x="47.00" y="27.40" font-size="3.19" text-anchor="start" fill="#444">verdeckte Kanten (Strich ca. 3 mm, Lücke ca. 1 mm)</text>
+<line x1="2.00" y1="33.00" x2="42.00" y2="33.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<text x="47.00" y="32.40" font-size="3.61" text-anchor="start" font-weight="bold" fill="#000">Strich-Punktlinie, schmal (0,25 mm)</text>
+<text x="47.00" y="36.40" font-size="3.19" text-anchor="start" fill="#444">Mittellinien, Symmetrieachsen (Strich ca. 8 mm)</text>
+
+</svg><figcaption>Linienarten: Erst alles dünn mit H vorzeichnen, am Ende die Körperkanten breit nachziehen.</figcaption></figure>
+
+<h2 class="phase "><span class="badge">A</span>Vorbereiten</h2>
+<ol class="steps">
+<li><h3>Druck prüfen und Blatt einspannen</h3><p>Miss die Strecke am unteren Blattrand: Sie muss <b>100 mm</b> lang sein. Lege das Blatt hochkant oben links unter die <b>Klemmleiste</b>. Schiebe das Lineal auf die senkrechte Trennlinie und drehe das Blatt, bis beide genau übereinanderliegen. Klemmleiste schließen.</p>
+<p><b>Senkrecht</b> zeichnest du am Lineal. <b>Waagerecht</b> zeichnest du am Geodreieck, das du mit seiner Mittellinie auf die Linealkante legst.</p><div class="check"><b>☐ Kontrolle:</b> Die senkrechte Trennlinie liegt auf ganzer Länge an der Linealkante.</div><div class="warn"><b>Fehler?</b> Strecke kürzer als 100 mm? Neu drucken mit <b>Tatsächliche Größe</b>.</div></li>
+<li><h3>Den Vordruck verstehen</h3><figure><svg style="width:48%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="0" y="0" width="210" height="297" fill="#fff"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9z" fill="#ee9b00"/></marker></defs><circle cx="130" cy="150" r="1.6" fill="#ee9b00"/><text x="133" y="147.5" font-size="5.56" text-anchor="start" fill="#ee9b00" font-weight="bold">O</text><text x="75" y="85" font-size="4.44" text-anchor="middle" fill="#ee9b00" font-weight="bold">Feld 1: Vorderansicht</text><text x="165" y="85" font-size="4.44" text-anchor="middle" fill="#ee9b00" font-weight="bold">Feld 2: Seitenansicht</text><text x="165" y="91" font-size="4.44" text-anchor="middle" fill="#ee9b00" font-weight="bold">von links</text><text x="75" y="200" font-size="4.44" text-anchor="middle" fill="#ee9b00" font-weight="bold">Feld 3: Draufsicht</text><text x="178" y="175" font-size="4.44" text-anchor="middle" fill="#ee9b00" font-weight="bold">Feld 4</text><line x1="0" y1="140" x2="130" y2="140" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="65.0" y="138.8" font-size="4.17" text-anchor="middle" fill="#ee9b00" font-weight="bold">130 mm vom linken Blattrand</text><line x1="124" y1="0" x2="124" y2="150" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="125.2" y="76.2" font-size="4.17" text-anchor="start" fill="#ee9b00" font-weight="bold">150 mm</text><text x="75" y="270" font-size="4.44" text-anchor="middle" fill="#0a7ea4" font-weight="bold">Schriftfeld</text>
+</svg><figcaption>Die vier Felder. O ist der Schnittpunkt der Trennlinien.</figcaption></figure><p>Die zwei Trennlinien heißen <b>Rissachsen</b>. Die <b>45°-Linie</b> ist vorgedruckt und beginnt im Punkt O. Im Schriftfeld stehen schon <b>Maßstab 1 : 1</b> und <b>Maße in mm</b>.</p><div class="check"><b>☐ Kontrolle:</b> Du findest die Felder für Vorderansicht, Draufsicht und Seitenansicht.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">B</span>Vorderansicht</h2>
+<ol class="steps">
+<li><h3>Umriss und Grundplatte</h3><p>Zeichne dünn ein Rechteck <b>70 breit, 100 hoch</b>. Lage: rechte Kante <b>8 mm</b> links der senkrechten Achse, Unterkante <b>12 mm</b> über der waagerechten Achse. Ziehe <b>15 mm</b> über der Unterkante eine Linie quer: die Grundplatte.</p><div class="check"><b>☐ Kontrolle:</b> Links und oben bleibt Platz für die Maße.</div></li>
+<li><h3>Mittellinien und Kreise</h3><figure><svg style="width:78%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="17 7 117 148" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="17" y="7" width="117" height="148" fill="#fff"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<polygon points="52.00,38.00 122.00,38.00 122.00,138.00 52.00,138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="123.00" x2="122.00" y2="123.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<circle cx="72.00" cy="83.00" r="5" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<circle cx="72.00" cy="58.00" r="5" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<circle cx="102.00" cy="83.00" r="5" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<circle cx="102.00" cy="58.00" r="5" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="110.00" y2="83.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="110.00" y2="58.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="91.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="91.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9z" fill="#ee9b00"/></marker></defs><line x1="122" y1="145" x2="130" y2="145" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="126.0" y="143.8" font-size="4.17" text-anchor="middle" fill="#ee9b00" font-weight="bold">8</text><line x1="119" y1="138" x2="119" y2="150" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="117.8" y="145.2" font-size="4.17" text-anchor="end" fill="#ee9b00" font-weight="bold">12</text><line x1="52" y1="32" x2="122" y2="32" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="87.0" y="30.8" font-size="4.17" text-anchor="middle" fill="#ee9b00" font-weight="bold">70</text><line x1="46" y1="38" x2="46" y2="138" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="44.8" y="89.2" font-size="4.17" text-anchor="end" fill="#ee9b00" font-weight="bold">100</text>
+</svg><figcaption>Vorderansicht dünn vorgezeichnet (blau). Orange: Abstände zu den Achsen.</figcaption></figure><p>Mittellinien senkrecht bei <b>20</b> und <b>50 mm</b> von der linken Kante, waagerecht bei <b>55</b> und <b>80 mm</b> über der Unterkante. Stelle den Zirkel auf den <b>Radius 5 mm</b> ein und zeichne die vier Kreise.</p><div class="check"><b>☐ Kontrolle:</b> Die Mittellinien stehen ca. 3 mm über die Kreise hinaus.</div><div class="warn"><b>Fehler?</b> Kreis zu groß? Du hast 10 mm (Durchmesser) statt 5 mm (Radius) eingestellt.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">C</span>Draufsicht</h2>
+<ol class="steps">
+<li><h3>Draufsicht konstruieren</h3><figure><svg style="width:62%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="17 7 117 236" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="17" y="7" width="117" height="236" fill="#fff"/>
+<line x1="52.00" y1="138.00" x2="52.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="122.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="67.00" y1="138.00" x2="67.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="77.00" y1="138.00" x2="77.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="97.00" y1="138.00" x2="97.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="107.00" y1="138.00" x2="107.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<polygon points="52.00,38.00 122.00,38.00 122.00,138.00 52.00,138.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="52.00" y1="123.00" x2="122.00" y2="123.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="72.00" cy="83.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="72.00" cy="58.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="102.00" cy="83.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="102.00" cy="58.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="110.00" y2="83.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="110.00" y2="58.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="91.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="91.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="52.00,165.00 122.00,165.00 122.00,205.00 52.00,205.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="180.00" x2="122.00" y2="180.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="67.00" y1="165.00" x2="67.00" y2="180.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="77.00" y1="165.00" x2="77.00" y2="180.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="162.00" x2="72.00" y2="183.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="97.00" y1="165.00" x2="97.00" y2="180.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="107.00" y1="165.00" x2="107.00" y2="180.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="162.00" x2="102.00" y2="183.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9z" fill="#ee9b00"/></marker></defs><line x1="46" y1="150" x2="46" y2="165" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="44.8" y="158.7" font-size="4.17" text-anchor="end" fill="#ee9b00" font-weight="bold">15</text><line x1="46" y1="165" x2="46" y2="205" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="44.8" y="186.2" font-size="4.17" text-anchor="end" fill="#ee9b00" font-weight="bold">40</text><line x1="126" y1="165" x2="126" y2="180" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="127.2" y="173.7" font-size="4.17" text-anchor="start" fill="#ee9b00" font-weight="bold">15</text>
+</svg><figcaption>Draufsicht (blau) über senkrechte Projektionslinien.</figcaption></figure><p>Lote die Außenkanten und die Lochränder dünn <b>nach unten</b>. Zeichne die Draufsicht <b>15 mm</b> unter der waagerechten Achse, <b>40 mm</b> tief. Die Wand ist der <b>obere</b> 15-mm-Streifen. Die Bohrungen sind von oben nicht sichtbar: Zeichne sie im Wandstreifen als <b>Strichlinien</b> mit Mittellinie.</p><div class="check"><b>☐ Kontrolle:</b> 70 × 40 mm, oben der Wandstreifen mit 4 Strichlinien.</div><div class="warn"><b>Fehler?</b> Wand unten? Gespiegelt! Oben in der Draufsicht liegt die <b>Rückseite</b> des Werkstücks.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">D</span>Seitenansicht über die 45°-Linie</h2>
+<ol class="steps">
+<li><h3>Höhen und Tiefen übertragen</h3><p><b>Höhen:</b> Ziehe die Kanten der Vorderansicht waagerecht nach rechts (100, Lochränder 85/75/60/50, 15, 0).<br>
+<b>Tiefen:</b> Ziehe die drei waagerechten Kanten der Draufsicht nach rechts bis zur <b>45°-Linie</b>, dann senkrecht nach oben.</p><div class="check"><b>☐ Kontrolle:</b> Die Seitenansicht beginnt <b>15 mm</b> rechts der Achse, genau so weit wie die Draufsicht unter der Achse.</div></li>
+<li><h3>L-Profil zeichnen</h3><figure><svg style="width:90%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="17 7 186 236" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="17" y="7" width="186" height="236" fill="#fff"/>
+<line x1="52.00" y1="138.00" x2="52.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="122.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="67.00" y1="138.00" x2="67.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="77.00" y1="138.00" x2="77.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="97.00" y1="138.00" x2="97.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="107.00" y1="138.00" x2="107.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="38.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="53.00" x2="185.00" y2="53.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="63.00" x2="185.00" y2="63.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="78.00" x2="185.00" y2="78.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="88.00" x2="185.00" y2="88.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="123.00" x2="185.00" y2="123.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="185.00" y2="138.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="165.00" x2="145.00" y2="165.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="145.00" y1="165.00" x2="145.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="180.00" x2="160.00" y2="180.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="160.00" y1="180.00" x2="160.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="205.00" x2="185.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="185.00" y1="205.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<polygon points="52.00,38.00 122.00,38.00 122.00,138.00 52.00,138.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="52.00" y1="123.00" x2="122.00" y2="123.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="72.00" cy="83.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="72.00" cy="58.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="102.00" cy="83.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="102.00" cy="58.00" r="5" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="110.00" y2="83.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="110.00" y2="58.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="91.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="91.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="52.00,165.00 122.00,165.00 122.00,205.00 52.00,205.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="52.00" y1="180.00" x2="122.00" y2="180.00" fill="none" stroke="#555" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="67.00" y1="165.00" x2="67.00" y2="180.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="77.00" y1="165.00" x2="77.00" y2="180.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="162.00" x2="72.00" y2="183.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="97.00" y1="165.00" x2="97.00" y2="180.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="107.00" y1="165.00" x2="107.00" y2="180.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="162.00" x2="102.00" y2="183.00" fill="none" stroke="#555" stroke-width="0.18" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="145.00,138.00 185.00,138.00 185.00,123.00 160.00,123.00 160.00,38.00 145.00,38.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="145.00" y1="88.00" x2="160.00" y2="88.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="78.00" x2="160.00" y2="78.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="83.00" x2="163.00" y2="83.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="63.00" x2="160.00" y2="63.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="53.00" x2="160.00" y2="53.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="58.00" x2="163.00" y2="58.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9z" fill="#ee9b00"/></marker></defs><line x1="130" y1="147" x2="145" y2="147" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="137.5" y="145.8" font-size="4.17" text-anchor="middle" fill="#ee9b00" font-weight="bold">15</text><line x1="127" y1="150" x2="127" y2="165" stroke="#ee9b00" stroke-width="0.4" marker-start="url(#oa)" marker-end="url(#oa)"/><text x="125.8" y="158.7" font-size="4.17" text-anchor="end" fill="#ee9b00" font-weight="bold">15</text>
+</svg><figcaption>Seitenansicht (blau) über die 45°-Linie konstruiert.</figcaption></figure><p>Verbinde die Schnittpunkte zum <b>L</b>: Wand <b>links</b>, Grundplatte nach <b>rechts</b>. Die Bohrungen zeichnest du als Strichlinien in der Wand.</p><div class="check"><b>☐ Kontrolle:</b> 40 breit, 100 hoch, Wand und Grundplatte je 15 mm.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">E</span>Nachziehen</h2>
+<ol class="steps">
+<li><h3>Körperkanten breit nachziehen</h3><figure><svg style="width:90%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="17 7 186 236" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="17" y="7" width="186" height="236" fill="#fff"/>
+<line x1="52.00" y1="138.00" x2="52.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="122.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="67.00" y1="138.00" x2="67.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="77.00" y1="138.00" x2="77.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="97.00" y1="138.00" x2="97.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="107.00" y1="138.00" x2="107.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="38.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="53.00" x2="185.00" y2="53.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="63.00" x2="185.00" y2="63.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="78.00" x2="185.00" y2="78.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="88.00" x2="185.00" y2="88.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="123.00" x2="185.00" y2="123.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="185.00" y2="138.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="165.00" x2="145.00" y2="165.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="145.00" y1="165.00" x2="145.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="180.00" x2="160.00" y2="180.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="160.00" y1="180.00" x2="160.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="205.00" x2="185.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="185.00" y1="205.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<polygon points="52.00,38.00 122.00,38.00 122.00,138.00 52.00,138.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="123.00" x2="122.00" y2="123.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="72.00" cy="83.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="72.00" cy="58.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="102.00" cy="83.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="102.00" cy="58.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="110.00" y2="83.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="110.00" y2="58.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="91.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="91.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="52.00,165.00 122.00,165.00 122.00,205.00 52.00,205.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="180.00" x2="122.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="67.00" y1="165.00" x2="67.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="77.00" y1="165.00" x2="77.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="162.00" x2="72.00" y2="183.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="97.00" y1="165.00" x2="97.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="107.00" y1="165.00" x2="107.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="162.00" x2="102.00" y2="183.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="145.00,138.00 185.00,138.00 185.00,123.00 160.00,123.00 160.00,38.00 145.00,38.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="145.00" y1="88.00" x2="160.00" y2="88.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="78.00" x2="160.00" y2="78.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="83.00" x2="163.00" y2="83.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="63.00" x2="160.00" y2="63.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="53.00" x2="160.00" y2="53.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="58.00" x2="163.00" y2="58.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+
+</svg><figcaption>Fertige Ansichten. Projektionslinien bleiben ganz dünn stehen.</figcaption></figure><p>Mit HB in dieser Reihenfolge: <b>Kreise</b> → <b>waagerechte</b> Kanten → <b>senkrechte</b> Kanten → <b>Strich-</b> und <b>Mittellinien</b> (schmal).</p><div class="check"><b>☐ Kontrolle:</b> Sichtbare Kanten sind deutlich dicker als alle anderen Linien.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">F</span>Bemaßen</h2>
+<div class="info"><figure><svg style="width:85%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 6 152 62" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="0" y="6" width="152" height="62" fill="#fff"/>
+<polygon points="30.00,12.00 80.00,12.00 80.00,32.00 30.00,32.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="30.00" y1="32.00" x2="30.00" y2="44.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="80.00" y1="32.00" x2="80.00" y2="44.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="30.00" y1="42.00" x2="80.00" y2="42.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<path d="M30.00,42.00 L33.00,41.20 L33.00,42.80Z" fill="#000"/>
+<path d="M80.00,42.00 L77.00,42.80 L77.00,41.20Z" fill="#000"/>
+<text x="55.00" y="41.00" font-size="4.86" text-anchor="middle" fill="#000">50</text>
+<line x1="30.00" y1="12.00" x2="18.00" y2="12.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="30.00" y1="32.00" x2="18.00" y2="32.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="12.00" x2="20.00" y2="32.00" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round"/>
+<path d="M20.00,12.00 L20.80,15.00 L19.20,15.00Z" fill="#000"/>
+<path d="M20.00,32.00 L19.20,29.00 L20.80,29.00Z" fill="#000"/>
+<text x="19.00" y="22.00" font-size="4.86" text-anchor="middle" fill="#000" transform="rotate(-90 19.0 22.0)">20</text>
+<defs><marker id="ob" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9z" fill="#0a7ea4"/></marker></defs><line x1="92" y1="30" x2="80" y2="37" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="93" y="31" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Maßhilfslinie</text><line x1="92" y1="38" x2="65" y2="42" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="93" y="39" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Maßlinie (10 mm Abstand)</text><line x1="92" y1="46" x2="78" y2="42.4" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="93" y="47" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Maßpfeil, 3 mm lang</text><line x1="92" y1="54" x2="56" y2="39.5" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="93" y="55" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Maßzahl 3,5 mm hoch, ohne „mm“</text><line x1="92" y1="62" x2="80" y2="44" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="93" y="63" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Überstand 2 mm</text><line x1="6" y1="52" x2="18.8" y2="22" stroke="#0a7ea4" stroke-width="0.25" marker-end="url(#ob)"/><text x="7" y="53" font-size="3.19" text-anchor="start" fill="#0a7ea4" font-weight="bold">Maßzahl von rechts lesbar</text><text x="55" y="23" font-size="3.61" text-anchor="middle" fill="#555">Körper</text>
+</svg><figcaption>So ist eine Maßangabe aufgebaut.</figcaption></figure>
+<ul style="margin:6px 0 0 18px;padding:0">
+<li><b>Maßzahl ohne Einheit.</b> Die Einheit steht im Schriftfeld: „Maße in mm“.</li>
+<li><b>Maßzahl = echtes Maß.</b> Der Maßstab (hier 1 : 1) ändert nur die gezeichnete Länge, nie die Zahl.</li>
+<li><b>Abstände:</b> Maßlinie 10 mm von der Kante, weitere Maßlinien je 7 mm weiter außen. Maßhilfslinie 2 mm überstehen lassen.</li>
+<li><b>Pfeil</b> ca. 3 mm, ausgefüllt. <b>Zahl</b> 3,5 mm hoch, über der Maßlinie, lesbar von unten oder von rechts.</li>
+<li><b>Jedes Maß nur einmal</b>, nicht an Strichlinien. Gleiche Bohrungen: <b>4× Ø10</b>.</li></ul></div>
+<ol class="steps">
+<li><h3>Maße eintragen</h3><figure><svg style="width:90%;height:auto;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="17 7 186 236" font-family="Liberation Sans, Arial, sans-serif" role="img"><rect x="17" y="7" width="186" height="236" fill="#fff"/>
+<line x1="52.00" y1="138.00" x2="52.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="122.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="67.00" y1="138.00" x2="67.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="77.00" y1="138.00" x2="77.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="97.00" y1="138.00" x2="97.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="107.00" y1="138.00" x2="107.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="38.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="53.00" x2="185.00" y2="53.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="63.00" x2="185.00" y2="63.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="78.00" x2="185.00" y2="78.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="88.00" x2="185.00" y2="88.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="123.00" x2="185.00" y2="123.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="138.00" x2="185.00" y2="138.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="165.00" x2="145.00" y2="165.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="145.00" y1="165.00" x2="145.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="180.00" x2="160.00" y2="180.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="160.00" y1="180.00" x2="160.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="122.00" y1="205.00" x2="185.00" y2="205.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<line x1="185.00" y1="205.00" x2="185.00" y2="38.00" fill="none" stroke="#9aa7ad" stroke-width="0.13" stroke-linejoin="round"/>
+<polygon points="20.00,10.00 200.00,10.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.7" stroke-linejoin="round"/>
+<line x1="130.00" y1="10.00" x2="130.00" y2="247.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="20.00" y1="150.00" x2="200.00" y2="150.00" fill="none" stroke="#555" stroke-width="0.25" stroke-linejoin="round"/>
+<line x1="130.00" y1="150.00" x2="200.00" y2="220.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="22.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Vorderansicht</text>
+<text x="132.00" y="14.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Seitenansicht von links</text>
+<text x="22.00" y="154.00" font-size="3.47" text-anchor="start" fill="#7a8a90">Draufsicht</text>
+<text x="198.00" y="244.50" font-size="3.47" text-anchor="end" fill="#7a8a90">45°-Linie</text>
+<polygon points="20.00,247.00 200.00,247.00 200.00,287.00 20.00,287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="80.00" y1="247.00" x2="80.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="150.00" y1="247.00" x2="150.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="20.00" y1="255.00" x2="80.00" y2="255.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="263.00" x2="80.00" y2="263.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="271.00" x2="80.00" y2="271.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="20.00" y1="279.00" x2="80.00" y2="279.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="38.00" y1="247.00" x2="38.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="56.00" y1="247.00" x2="56.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="39.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Datum</text>
+<text x="57.00" y="252.30" font-size="3.06" text-anchor="start" fill="#000">Name</text>
+<text x="21.50" y="260.30" font-size="3.06" text-anchor="start" fill="#000">Gezeichnet</text>
+<text x="21.50" y="268.30" font-size="3.06" text-anchor="start" fill="#000">Geprüft</text>
+<text x="21.50" y="276.30" font-size="3.06" text-anchor="start" fill="#000">Klasse</text>
+<text x="21.50" y="284.30" font-size="3.06" text-anchor="start" fill="#000">Blatt</text>
+<text x="57.00" y="276.60" font-size="4.17" text-anchor="start" fill="#000">11NP</text>
+<text x="57.00" y="284.60" font-size="4.17" text-anchor="start" fill="#000">1 / 1</text>
+<line x1="80.00" y1="269.00" x2="150.00" y2="269.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="80.00" y1="278.00" x2="150.00" y2="278.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="115.00" y1="269.00" x2="115.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="81.50" y="250.60" font-size="3.06" text-anchor="start" fill="#000">Benennung</text>
+<text x="115.00" y="258.50" font-size="5.83" text-anchor="middle" font-weight="bold" fill="#000">Winkelwerkstück</text>
+<text x="115.00" y="265.00" font-size="4.86" text-anchor="middle" fill="#000">mit vier Bohrungen</text>
+<text x="81.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Werkstoff</text>
+<text x="81.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">S235JR</text>
+<text x="116.50" y="272.30" font-size="3.06" text-anchor="start" fill="#000">Allgemeintoleranz</text>
+<text x="116.50" y="276.60" font-size="4.17" text-anchor="start" fill="#000">ISO 2768-m</text>
+<text x="81.50" y="280.90" font-size="3.06" text-anchor="start" fill="#000">Maßstab</text>
+<text x="81.50" y="286.00" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">1 : 1</text>
+<text x="116.50" y="281.30" font-size="3.06" text-anchor="start" fill="#000">Maße in</text>
+<text x="116.50" y="285.60" font-size="4.17" text-anchor="start" fill="#000">mm</text>
+<polygon points="101.45,280.88 105.35,279.25 105.35,285.75 101.45,284.12" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.80" y1="282.50" x2="106.00" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="3.25" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<circle cx="108.92" cy="282.50" r="1.625" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="105.02" y1="282.50" x2="112.83" y2="282.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="108.92" y1="278.60" x2="108.92" y2="286.40" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="262.00" x2="200.00" y2="262.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="274.00" x2="200.00" y2="274.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="180.00" y1="274.00" x2="180.00" y2="287.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<polygon points="153.00,258.00 157.00,250.50 161.00,258.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<line x1="155.00" y1="254.50" x2="159.00" y2="254.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="162.50" y="254.00" font-size="2.78" text-anchor="start" font-weight="bold" fill="#000">Lorentz Metallbau GmbH</text>
+<text x="162.50" y="258.30" font-size="2.22" text-anchor="start" fill="#000">fiktives Ausbildungsunternehmen</text>
+<text x="151.50" y="265.30" font-size="3.06" text-anchor="start" fill="#000">Zeichnungsnummer</text>
+<text x="151.50" y="271.30" font-size="4.86" text-anchor="start" font-weight="bold" fill="#000">LMB-02-001</text>
+<text x="151.50" y="277.30" font-size="3.06" text-anchor="start" fill="#000">Format</text>
+<text x="151.50" y="284.50" font-size="4.86" text-anchor="start" fill="#000">A4</text>
+<text x="181.50" y="277.30" font-size="2.64" text-anchor="start" fill="#000">Druckkontrolle</text>
+<line x1="182.00" y1="282.00" x2="197.00" y2="282.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="182.00" y1="280.50" x2="182.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="197.00" y1="280.50" x2="197.00" y2="283.50" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="189.50" y="286.30" font-size="2.64" text-anchor="middle" fill="#000">15 mm</text>
+<line x1="100.00" y1="292.00" x2="200.00" y2="292.00" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="100.00" y1="290.80" x2="100.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="150.00" y1="290.80" x2="150.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<line x1="200.00" y1="290.80" x2="200.00" y2="293.20" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round"/>
+<text x="98.50" y="292.80" font-size="2.78" text-anchor="end" fill="#555">Druckkontrolle: diese Strecke muss genau 100 mm lang sein</text>
+<polygon points="52.00,38.00 122.00,38.00 122.00,138.00 52.00,138.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="123.00" x2="122.00" y2="123.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="72.00" cy="83.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="72.00" cy="58.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="102.00" cy="83.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="102.00" cy="58.00" r="5" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="110.00" y2="83.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="110.00" y2="58.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="91.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="91.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="52.00,165.00 122.00,165.00 122.00,205.00 52.00,205.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="52.00" y1="180.00" x2="122.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="67.00" y1="165.00" x2="67.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="77.00" y1="165.00" x2="77.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="72.00" y1="162.00" x2="72.00" y2="183.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="97.00" y1="165.00" x2="97.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="107.00" y1="165.00" x2="107.00" y2="180.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="102.00" y1="162.00" x2="102.00" y2="183.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<polygon points="145.00,138.00 185.00,138.00 185.00,123.00 160.00,123.00 160.00,38.00 145.00,38.00" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round"/>
+<line x1="145.00" y1="88.00" x2="160.00" y2="88.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="78.00" x2="160.00" y2="78.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="83.00" x2="163.00" y2="83.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="63.00" x2="160.00" y2="63.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="145.00" y1="53.00" x2="160.00" y2="53.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3,1" stroke-linejoin="round"/>
+<line x1="142.00" y1="58.00" x2="163.00" y2="58.00" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="8,1,1,1" stroke-linejoin="round"/>
+<line x1="52.00" y1="138.00" x2="40.00" y2="138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="83.00" x2="40.00" y2="83.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="42.00" y1="138.00" x2="42.00" y2="83.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M42.00,83.00 L42.80,86.00 L41.20,86.00Z" fill="#0a7ea4"/>
+<path d="M42.00,138.00 L41.20,135.00 L42.80,135.00Z" fill="#0a7ea4"/>
+<text x="41.00" y="110.50" font-size="4.86" text-anchor="middle" fill="#0a7ea4" transform="rotate(-90 41.0 110.5)">55</text>
+<line x1="52.00" y1="138.00" x2="33.00" y2="138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="58.00" x2="33.00" y2="58.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="35.00" y1="138.00" x2="35.00" y2="58.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M35.00,58.00 L35.80,61.00 L34.20,61.00Z" fill="#0a7ea4"/>
+<path d="M35.00,138.00 L34.20,135.00 L35.80,135.00Z" fill="#0a7ea4"/>
+<text x="34.00" y="98.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4" transform="rotate(-90 34.0 98.0)">80</text>
+<line x1="52.00" y1="138.00" x2="26.00" y2="138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="38.00" x2="26.00" y2="38.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="28.00" y1="138.00" x2="28.00" y2="38.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M28.00,38.00 L28.80,41.00 L27.20,41.00Z" fill="#0a7ea4"/>
+<path d="M28.00,138.00 L27.20,135.00 L28.80,135.00Z" fill="#0a7ea4"/>
+<text x="27.00" y="88.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4" transform="rotate(-90 27.0 88.0)">100</text>
+<line x1="52.00" y1="38.00" x2="52.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="72.00" y1="38.00" x2="72.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="28.00" x2="72.00" y2="28.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M52.00,28.00 L55.00,27.20 L55.00,28.80Z" fill="#0a7ea4"/>
+<path d="M72.00,28.00 L69.00,28.80 L69.00,27.20Z" fill="#0a7ea4"/>
+<text x="62.00" y="27.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4">20</text>
+<line x1="72.00" y1="38.00" x2="72.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="102.00" y1="38.00" x2="102.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="72.00" y1="28.00" x2="102.00" y2="28.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M72.00,28.00 L75.00,27.20 L75.00,28.80Z" fill="#0a7ea4"/>
+<path d="M102.00,28.00 L99.00,28.80 L99.00,27.20Z" fill="#0a7ea4"/>
+<text x="87.00" y="27.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4">30</text>
+<line x1="104.50" y1="53.67" x2="111.00" y2="33.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M104.50,53.67 L104.63,50.57 L106.17,51.05Z" fill="#0a7ea4"/>
+<line x1="111.00" y1="33.00" x2="129.00" y2="33.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<text x="120.00" y="32.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4">4× Ø10</text>
+<line x1="52.00" y1="205.00" x2="52.00" y2="217.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="122.00" y1="205.00" x2="122.00" y2="217.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="215.00" x2="122.00" y2="215.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M52.00,215.00 L55.00,214.20 L55.00,215.80Z" fill="#0a7ea4"/>
+<path d="M122.00,215.00 L119.00,215.80 L119.00,214.20Z" fill="#0a7ea4"/>
+<text x="87.00" y="214.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4">70</text>
+<line x1="52.00" y1="165.00" x2="40.00" y2="165.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="52.00" y1="205.00" x2="40.00" y2="205.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="42.00" y1="165.00" x2="42.00" y2="205.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M42.00,165.00 L42.80,168.00 L41.20,168.00Z" fill="#0a7ea4"/>
+<path d="M42.00,205.00 L41.20,202.00 L42.80,202.00Z" fill="#0a7ea4"/>
+<text x="41.00" y="185.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4" transform="rotate(-90 41.0 185.0)">40</text>
+<line x1="145.00" y1="38.00" x2="145.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="160.00" y1="38.00" x2="160.00" y2="26.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="145.00" y1="28.00" x2="160.00" y2="28.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M145.00,28.00 L148.00,27.20 L148.00,28.80Z" fill="#0a7ea4"/>
+<path d="M160.00,28.00 L157.00,28.80 L157.00,27.20Z" fill="#0a7ea4"/>
+<text x="152.50" y="27.00" font-size="4.86" text-anchor="middle" fill="#0a7ea4">15</text>
+<line x1="185.00" y1="123.00" x2="197.00" y2="123.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="185.00" y1="138.00" x2="197.00" y2="138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<line x1="195.00" y1="123.00" x2="195.00" y2="138.00" fill="none" stroke="#0a7ea4" stroke-width="0.3" stroke-linejoin="round"/>
+<path d="M195.00,123.00 L195.80,126.00 L194.20,126.00Z" fill="#0a7ea4"/>
+<path d="M195.00,138.00 L194.20,135.00 L195.80,135.00Z" fill="#0a7ea4"/>
+<text x="194.00" y="130.50" font-size="4.86" text-anchor="middle" fill="#0a7ea4" transform="rotate(-90 194.0 130.5)">15</text>
+
+</svg><figcaption>Alle 10 Maße (blau). Vergleiche mit der Musterlösung.</figcaption></figure><table><tr><th>Ansicht</th><th>Maße</th></tr>
+<tr><td>Vorderansicht</td><td>links 55, 80, 100 · oben 20, 30 · 4× Ø10</td></tr>
+<tr><td>Draufsicht</td><td>unten 70 · links 40</td></tr>
+<tr><td>Seitenansicht</td><td>oben 15 (Wand) · rechts 15 (Grundplatte)</td></tr></table><div class="tipp"><b>Tipp:</b> Erst alle Linien, dann die Pfeile, zum Schluss die Zahlen.</div></li>
+</ol>
+
+<h2 class="phase "><span class="badge">G</span>Abschluss</h2>
+<ol class="steps">
+<li><h3>Schriftfeld und Selbstkontrolle</h3><p>Trage <b>Datum</b> und <b>Name</b> bei „Gezeichnet“ ein. Prüfe dann:</p>
+<table><tr><th>Prüfung</th><th>Soll</th><th>✓</th></tr>
+<tr><td>Breite Vorder- = Draufsicht</td><td>70 mm</td><td></td></tr>
+<tr><td>Höhe Vorder- = Seitenansicht</td><td>100 mm</td><td></td></tr>
+<tr><td>Tiefe Drauf- = Seitenansicht</td><td>40 mm</td><td></td></tr>
+<tr><td>Wand oben (Draufsicht) und links (Seitenansicht)</td><td>ja</td><td></td></tr>
+<tr><td>Anzahl Maße</td><td>10</td><td></td></tr></table><div class="checkpoint"><b>Kontrollpunkt:</b> Vergleiche mit deinem FreeCAD-Modell aus Modul 2: Ansicht <kbd>1</kbd> vorne, <kbd>2</kbd> oben, <kbd>6</kbd> links.</div></li>
+</ol>
+</main></div></body></html>
