@@ -2044,6 +2044,13 @@ const CONFIG={
   certTitle:'Werkstatt-Ausweis', certSub:'Schwalbenschwanzführung und Maßstrategie · Werkstattkarte LL-6', certButton:'Meinen Werkstatt-Ausweis zeigen',
   nextTime:'Als Nächstes übst du das Bemaßen von Lochreihen in den Aufgaben „Üben“ dieser Woche. 🔩',
   minuten:90,
+  kuerzung:[{stufe:2,was:'Erklär-Duell der Partneraufgabe SL-8 gestrichen (die zwei team-Schritte bleiben)'},
+            {stufe:3,was:'Quiz von 11 auf 10 Fragen gekürzt (Frage zur Maßzahl bei 2:1 gestrichen, die 3 Transferfragen bleiben)'},
+            {stufe:4,was:'Level 1: „Breitere Grundplatte?“ als Bonus verschoben (Lernabschnitt 1 hat jetzt 5 Kernaufgaben)'},
+            {stufe:5,was:'Gegner 1: „Das Detail in 2:1“ als Bonus verschoben (3 Kernaufgaben)'},
+            {stufe:5,was:'Gegner 2: „Wie viele Löcher passen?“ als Bonus verschoben (3 Kernaufgaben)'},
+            {stufe:5,was:'Klassen-Gegner „Der Maßfresser“ auf 2 Runden gekürzt (Runde 3 „Die Platte am Anschlag“ gestrichen)'},
+            {stufe:6,was:'Finale auf 3 Schritte gekürzt: Ordnen der Arbeitsschritte gestrichen (die Karte zeigt die Arbeitsschritte fertig)'}],
   key:'sim-massstrategie-11np-w04-v1', code:'MASS11',
   board:{wer:'Das Fertigungsteam von Feinwerk Rheinau (eure Klasse): Wir bereiten die Lochleiste LL-6 für die Werkstatt vor.',
          ziel:'Eine Werkstattkarte, mit der die Leiste beim ersten Versuch auf den Schlitten passt.',
@@ -2243,7 +2250,7 @@ const LEVELS=[
   hints:['Schau auf das Bild der Karte. Was steht darin, und woher kommt es?','Der Haken bei der Länge kommt aus einer Rechnung mit den Abständen.','Ganz am Anfang steht die Frage, welche Maße für das Passen wichtig sind.']},
  {type:'info',html:()=>person(`<p>Danke, ${nm()}! So passiert uns das nicht noch einmal. Hier ist euer Fahrplan. Unterwegs prüfen Frau Petrović und Meister Albrecht eure Ergebnisse. Überzeugt sie!</p>`)+
    `<div class="mission" style="margin-top:6px"><h3>🧭 Unser Auftrag</h3><dl><dt>Wer?</dt><dd>${CONFIG.board.wer}</dd><dt>Ziel?</dt><dd>${CONFIG.board.ziel}</dd><dt>Wie?</dt><dd>${CONFIG.board.wie}</dd></dl></div>
-   <div class="task"><b>Stunde 1:</b> Level 1 Wichtige Maße → Level 2 Die Startkante → ⚔️ Zeichnungsprüfung → 🏰 Klassen-Gegner<br><b>Stunde 2:</b> Level 3 Die Lochreihe → 🤝 Partneraufgabe → ⚔️ Werkstattabnahme → 🏁 Werkstattkarte → 🎯 Quiz</div>
+   <div class="task"><b>Stunde 1:</b> Level 1 Wichtige Maße → Level 2 Die Startkante → ⚔️ Zeichnungsprüfung → 🏰 Klassen-Gegner → Level 3 Die Lochreihe<br><b>Stunde 2:</b> 🤝 Partneraufgabe → ⚔️ Werkstattabnahme → 🏁 Werkstattkarte → 🎯 Quiz</div>
    <div class="merke"><b>🎖 Dein Rang:</b> Du startest als <b>Praktikant</b>. Jeder überzeugte Prüfer bringt dich eine Stufe höher: Junior-Techniker → Techniker → Senior-Techniker.</div>`}
 ]},
 /* ===== 1 Level 1: Funktionsmaße ===== */
@@ -2265,7 +2272,7 @@ const LEVELS=[
   solution:'Funktionsmaße: Führungsbreite 40 mm und Flankenwinkel 60°. Grundplatte und Fase sind keine Funktionsmaße.',
   einfach:{text:'Tippe die Maße an, die für den Schlitten wichtig sind. Der Schlitten berührt nur die Oberseite und die schrägen Seiten.'},
   hints:['Wo berührt der Schlitten die Führung?','Er sitzt oben und liegt an den schrägen Seiten an.','Zwei Maße sind richtig: eins oben und ein Winkel.']},
- {type:'mcq',title:'Breitere Grundplatte?',q:'Tarik will die Grundplatte von 80 mm auf 90 mm verbreitern. Was passiert mit dem Schlitten?',
+ {type:'mcq',bonus:1,verschoben:1,title:'Bonus: Breitere Grundplatte?',q:'Tarik will die Grundplatte von 80 mm auf 90 mm verbreitern. Was passiert mit dem Schlitten?',
   einfach:{q:'Tarik macht die Grundplatte 10 mm breiter. Oben ändert sich nichts. Passt der Schlitten noch?'},
   profi:{q:'Die Breite der Grundplatte wird von 80 mm auf 90 mm geändert. Welche Folge hat das für die Funktion der Führung?'},
   o:[{t:'Er passt weiter, weil sich kein Funktionsmaß ändert.',ok:1,fb:'Richtig: Breite oben und Winkel bleiben gleich. Nur diese entscheiden über das Passen.'},
@@ -2317,7 +2324,7 @@ const LEVELS=[
    after:'Gezeichnet 30 mm, daran steht 15.'}}
 ]},
 /* ===== 3 Gegner 1 ===== */
-{title:'Gegner 1: Die Zeichnungsprüfung',tag:'Aufgabenblock 1',sub:'Funktionsmaße, Bezugskante und Maßstab verteidigen',badge:'🛡️ Prüferin überzeugt',hour:H1,short:'Prüfung',rankUp:'Junior-Techniker',
+{title:'Gegner 1: Die Zeichnungsprüfung',tag:'Aufgabenblock 1',sub:'Funktionsmaße und Bezugskante verteidigen',badge:'🛡️ Prüferin überzeugt',hour:H1,short:'Prüfung',rankUp:'Junior-Techniker',
  boss:{name:'Frau Petrović',role:'Zeichnungsprüfung: „Bei mir geht keine Zeichnung durch, die Fragen offenlässt!“',ava:'🧐',bar:'Zweifel',win:'Frau Petrović ist überzeugt!'},
  klasse:{name:'Der Maßfresser',role:'Ein hungriges Monster frisst Maße aus Zeichnungen. Rettet die Zeichnungen gemeinsam!',ava:'👾',bar:'Hunger',win:'Der Maßfresser ist satt und zieht ab. Die Klasse hat gewonnen!',
   runden:[
@@ -2330,16 +2337,10 @@ const LEVELS=[
    {type:'calc',title:'Runde 2: Das gefressene Loch',text:`Eine Zeichnung im Maßstab 2:1 zeigt ein Loch mit der Maßzahl Ø 10. ${OP('Berechne')}, wie groß das Loch auf dem Papier gezeichnet ist.`,
     rows:[{pre:'gezeichneter Durchmesser:',ans:20,tol:.01,u:'mm',traps:[[10,'Das ist die Maßzahl. Gezeichnet wird doppelt so groß.'],[5,'Bei 2:1 wird vergrößert, nicht verkleinert.']]}],
     after:'Gezeichnet 20 mm, die Maßzahl bleibt Ø 10.',
-    hints:['2:1 heißt doppelt so groß gezeichnet.','Die Maßzahl nennt das echte Maß.','10 mm · 2 = ?']},
-   {type:'mcq',title:'Runde 3: Die Platte am Anschlag',text:'Eine Platte liegt beim Bohren mit ihrer unteren Kante am Anschlag.',q:'Von welcher Kante misst du die Höhe aller Löcher?',o:[
-     {t:'von der unteren Kante am Anschlag',ok:1,fb:'Richtig: Diese Kante ist beim Bohren fest. Sie ist die Bezugskante.'},
-     {t:'von der oberen Kante der Platte',fb:'Die obere Kante liegt frei. Von dort misst die Werkstatt nicht.'},
-     {t:'von Loch zu Loch, immer weiter',fb:'Dann hätte jedes Loch einen anderen Startpunkt.'},
-     {t:'von der Mitte der Platte aus',fb:'An der Mitte kann man nichts anlegen.'}],
-    hints:['Was liegt beim Bohren fest an?','Die Bezugskante liegt am Anschlag.','Der Anschlag ist unten.']}]},
+    hints:['2:1 heißt doppelt so groß gezeichnet.','Die Maßzahl nennt das echte Maß.','10 mm · 2 = ?']}]},
  steps:[
- {type:'info',html:()=>person(`<p>Ich habe eure Zwischenergebnisse gesehen. Bevor eine Zeichnung in die Werkstatt geht, prüfe ich sie. Vier Aufgaben. Überzeugt mich!</p>`,BOSS1)+
-   `<div class="merke"><b>So funktioniert ein Gegner:</b> Du wählst selbst, welche Aufgabe du zuerst angehst. Jede gelöste Aufgabe senkt ihre Zweifel. Beim ersten Versuch gibt es bis zu 15 ⭐ pro Aufgabe, nach Fehlern weniger. Hilfen sind immer frei und kosten keine Sterne, auch der 🔁 Rückblick zur passenden Level-Aufgabe. Einen Fehlversuch kannst du für 8 ⭐ zurückkaufen. Die Bonus-Aufgabe ist freiwillig und zählt nicht für den Balken.</div>`},
+ {type:'info',html:()=>person(`<p>Ich habe eure Zwischenergebnisse gesehen. Bevor eine Zeichnung in die Werkstatt geht, prüfe ich sie. Drei Aufgaben. Überzeugt mich!</p>`,BOSS1)+
+   `<div class="merke"><b>So funktioniert ein Gegner:</b> Du wählst selbst, welche Aufgabe du zuerst angehst. Jede gelöste Aufgabe senkt ihre Zweifel. Beim ersten Versuch gibt es bis zu 15 ⭐ pro Aufgabe, nach Fehlern weniger. Hilfen sind immer frei und kosten keine Sterne, auch der 🔁 Rückblick zur passenden Level-Aufgabe. Einen Fehlversuch kannst du für 8 ⭐ zurückkaufen. Die Bonus-Aufgaben sind freiwillig und zählen nicht für den Balken.</div>`},
  {type:'decide',title:'Der passende Schlitten',text:'Für den Schlitten liegen vier Maße vor. Entscheide bei jedem, ob es ein Funktionsmaß ist.',actions:['🎯 Funktionsmaß','➖ kein Funktionsmaß'],cards:[
    {title:'Breite der Nut im Schlitten: 40 mm',ans:0,fb:[null,'Die Nut muss genau auf die Führung passen. Ist sie zu eng, klemmt der Schlitten.'],okfb:'Richtig: Die Nut sitzt auf der Führung.'},
    {title:'Winkel der schrägen Nutseiten: 60°',ans:0,fb:[null,'Der Winkel muss zur Führung passen, sonst liegt der Schlitten nicht an.'],okfb:'Richtig: Der Winkel muss zum Flankenwinkel passen.'},
@@ -2353,7 +2354,7 @@ const LEVELS=[
    {e:'⭕',t:'Der Durchmesser der Löcher fehlt ganz.',fb:'Schau genau hin: 3× Ø 6 steht in der Zeichnung.'}],
   okfb:'Drei Mängel gefunden: geschlossene Kette, doppeltes Maß und keine einheitliche Startkante. Besser: alles von der linken Kante aus.',
   hints:['Addiere die obere Kette und vergleiche mit dem Maß unten.','Das Maß 92 läuft vom ersten Loch bis zur rechten Kante.','Drei Aussagen sind Mängel, zwei stimmen nicht.'],recap:[2,2]},
- {type:'calc',title:'Das Detail in 2:1',text:`Ein Detail der Führung SF-40 ist im Maßstab 2:1 gezeichnet. Auf dem Papier misst du die Breite oben mit 80 mm und die gebrochene Kante mit 2 mm. ${OP('Gib an')}, welche Maßzahlen daran stehen müssen.`,
+ {type:'calc',bonus:1,verschoben:1,title:'Bonus: Das Detail in 2:1',text:`Ein Detail der Führung SF-40 ist im Maßstab 2:1 gezeichnet. Auf dem Papier misst du die Breite oben mit 80 mm und die gebrochene Kante mit 2 mm. ${OP('Gib an')}, welche Maßzahlen daran stehen müssen.`,
   data:()=>'<p>Maßstab 2:1, gemessen auf dem Papier: 80 mm und 2 mm</p>',
   rows:[{pre:'Maßzahl Breite oben:',ans:40,tol:.01,u:'mm',traps:[[80,'80 mm ist die gezeichnete Länge. Die Maßzahl nennt das echte Maß.'],[160,'Nicht noch einmal verdoppeln. Das Papier ist schon doppelt so groß.']]},
         {pre:'Maßzahl der Fase:',ans:1,tol:.01,u:'mm',traps:[[2,'2 mm ist die gezeichnete Länge. Echt ist sie halb so groß.'],[4,'Nicht verdoppeln, sondern halbieren.']]}],
@@ -2373,7 +2374,7 @@ const LEVELS=[
   hints:['Prüfe jede Zeile: Geht es um das Bild oder um die Zahl?','Das Bild wird vergrößert, die Zahl nicht.','Welche Zeile nennt eine Maßzahl?']}
 ]},
 /* ===== 4 Level 3: Bohrungsreihe ===== */
-{title:'Level 3: Die Bohrungsreihe',blatt:'2',tag:'Lernabschnitt 2',sub:'Anzahl, Teilung, Ränder und Gesamtlänge',badge:'🔩 Lochreihen-Profi',num:3,hour:H2,short:'Lochreihe',
+{title:'Level 3: Die Bohrungsreihe',blatt:'2',tag:'Lernabschnitt 2',sub:'Anzahl, Teilung, Ränder und Gesamtlänge',badge:'🔩 Lochreihen-Profi',num:3,hour:H1,short:'Lochreihe',
  ichkann:['Ich kann zählen, wie viele Lücken zwischen den Löchern liegen.','Ich kann aus Rand, Abstand und Anzahl die Länge einer Leiste ausrechnen.','Ich kann angeben, wie weit jedes Loch von der Kante entfernt ist.'],
  halt:{frage:'Warum braucht eine Werkstattkarte eine Probe, obwohl alle Maße darauf stehen?',
    impulse:['Wo können beim Bemaßen oder Abschreiben Zählfehler entstehen?','Was prüft man mit dem Messschieber am Rohteil, bevor gebohrt wird?','Was kostet es, wenn ein Teil mit falschen Löchern fertig ist?'],
@@ -2462,26 +2463,21 @@ const LEVELS=[
     rows:[{pre:K('x_8='),ans:SL_X8,tol:.01,u:'mm',traps:[[215,'Mit 8 Abständen gerechnet. Es sind 7.'],[175,'e₁ fehlt in der Rechnung.'],[210,'Das ist die ganze Leiste.']]},
           {pre:'kleinster erlaubter Rand:',ans:12,tol:.01,u:'mm',traps:[[6,'Das ist nur der Durchmesser. Die Regel verlangt das Doppelte.'],[3,'Nicht halbieren, sondern verdoppeln.']]}],
     after:'Letztes Loch bei 190 mm, Probe: 190 + 20 = 210 mm. Beide Ränder (15 mm und 20 mm) sind größer als 12 mm. Die Leiste hält die Werksregel ein.'},
-  hints:['Die Zeichnung nennt Ø und e₁, die Konstruktion t und die Formel, Lager und Qualität die Regel.','x₈ = e₁ + 7 · t.','Mindestrand = 2 · Ø.']},
- {type:'duell',title:'Erklär-Duell',text:'Eine Person erklärt, die andere prüft mit ihrer Prüfkarte. Danach tauscht ihr.',
-  runden:[{erklaert:'A',frage:'Warum rechnet ihr bei 8 Löchern mit 7 Abständen und nicht mit 8?',tipp:'Denk an die Lücken zwischen den Löchern.',
-           pruef:['sagt, dass Abstände zwischen zwei Löchern liegen','nennt 7 Lücken bei 8 Löchern','sagt, dass die Ränder extra gezählt werden','nennt den Fehler: mit 8 wären es 25 mm zu viel']},
-          {erklaert:'B',frage:'Warum tragt ihr nicht alle Teilmaße und zusätzlich die Gesamtlänge als Maße ein?',tipp:'Denk an die geschlossene Kette.',
-           pruef:['sagt, dass die Kette dann geschlossen ist','sagt, dass ein Maß doppelt steht','erklärt, dass sich doppelte Maße widersprechen können','nennt die Bezugskante als Startpunkt']}]}
+  hints:['Die Zeichnung nennt Ø und e₁, die Konstruktion t und die Formel, Lager und Qualität die Regel.','x₈ = e₁ + 7 · t.','Mindestrand = 2 · Ø.']}
 ]},
 /* ===== 6 Gegner 2 ===== */
 {title:'Gegner 2: Die Werkstattabnahme',tag:'Aufgabenblock 2',sub:'Lochreihen rechnen und prüfen',badge:'👷 Meister überzeugt',hour:H2,short:'Abnahme',rankUp:'Techniker',
  boss:{name:'Meister Albrecht',role:'Werkstattleitung: „In meine Werkstatt kommt nur, was stimmt!“',ava:'👷',bar:'Bedenken',win:'Meister Albrecht ist überzeugt!'},
  steps:[
- {type:'info',html:()=>person(`<p>Bevor eine Leiste in meine Werkstatt kommt, prüfe ich die Rechnung. Vier Aufgaben, die Reihenfolge wählst du selbst.</p>`,BOSS2)+
-   `<div class="merke"><b>Erinnerung:</b> Bis zu 15 ⭐ je Aufgabe, Hilfen und 🔁 Rückblick sind frei. Einen Fehlversuch kannst du für 8 ⭐ zurückkaufen. Die zwei Bonus-Aufgaben sind freiwillig.</div>`},
+ {type:'info',html:()=>person(`<p>Bevor eine Leiste in meine Werkstatt kommt, prüfe ich die Rechnung. Drei Aufgaben, die Reihenfolge wählst du selbst.</p>`,BOSS2)+
+   `<div class="merke"><b>Erinnerung:</b> Bis zu 15 ⭐ je Aufgabe, Hilfen und 🔁 Rückblick sind frei. Einen Fehlversuch kannst du für 8 ⭐ zurückkaufen. Die Bonus-Aufgaben sind freiwillig.</div>`},
  {type:'calc',title:'Die Teilung von LL-7',text:`Die Lochleiste LL-7 ist ${K('L=300')} mm lang und hat 7 Löcher. Beide Ränder sind ${K('e_1=e_2=30')} mm. ${OP('Berechne')} die Teilung ${K('t')}.`,
   data:()=>`<p>L = 300 mm, n = 7, e₁ = e₂ = 30 mm</p>${FORM()}`,
   rows:[{pre:K('(n-1)\\cdot t='),ans:240,tol:.01,u:'mm',traps:[[270,'Beide Ränder abziehen: 300 − 30 − 30.'],[300,'Die Ränder gehören nicht zu den Abständen.']]},
         {pre:K('t='),ans:40,tol:.01,u:'mm',traps:[[34.29,'Durch 7 geteilt. Zwischen 7 Löchern liegen 6 Abstände.'],[42.86,'Ränder abziehen und durch 6 teilen.'],[45,'Nur ein Rand ist abgezogen: 270 : 6 passt nicht.']]}],
   after:`${K('t=\\dfrac{300-30-30}{6}=40')} mm. Probe: 30 + 6 · 40 + 30 = 300 mm.`,
   hints:['Zieh von L beide Ränder ab.','Der Rest verteilt sich auf n − 1 Abstände.','240 : 6 = ?'],recap:[4,3]},
- {type:'calc',title:'Wie viele Löcher passen?',text:`Eine Leiste ist ${K('L=250')} mm lang. Beide Ränder sind 25 mm, die Teilung ist ${K('t=50')} mm. ${OP('Berechne')}, wie viele Löcher sie bekommt.`,
+ {type:'calc',bonus:1,verschoben:1,title:'Bonus: Wie viele Löcher passen?',text:`Eine Leiste ist ${K('L=250')} mm lang. Beide Ränder sind 25 mm, die Teilung ist ${K('t=50')} mm. ${OP('Berechne')}, wie viele Löcher sie bekommt.`,
   data:()=>`<p>L = 250 mm, e₁ = e₂ = 25 mm, t = 50 mm</p>${FORM()}`,
   rows:[{pre:K('n-1='),ans:4,tol:0,u:'',w:80,traps:[[5,'200 : 50 = 4 Abstände.'],[4.5,'Erst beide Ränder abziehen: 250 − 50 = 200.']]},
         {pre:K('n='),ans:5,tol:0,u:'',w:80,traps:[[4,'4 sind die Abstände. Löcher gibt es eins mehr.'],[6,'Zu 4 Abständen gehören 5 Löcher.']]}],
@@ -2520,10 +2516,7 @@ const LEVELS=[
    ['',[K('t=35')+' mm',K('t=70')+' mm',K('t=40')+' mm'],0,'.<br>'],
    ['<b>Ränder:</b> ',[K('e_1=20')+' mm und '+K('e_2=25')+' mm',K('e_1=25')+' mm und '+K('e_2=20')+' mm',K('e_1=e_2=20')+' mm'],0,'.']],
   hints:['Die Werte stehen unter 📂.','Die Leiste liegt links am Anschlag.','e₁ gehört zur Bezugskante links.']},
- {type:'seq',title:'Abschnitt 2: Arbeitsschritte',text:`${OP('Bringe')} die Arbeitsschritte für die Werkstatt in eine sinnvolle Reihenfolge.`,items:LL_SCHRITTE,
-  okfb:'So kann die Werkstatt Schritt für Schritt arbeiten.',
-  hints:['Bevor angerissen wird, muss klar sein, ob das Rohteil passt.','Erst anreißen, dann körnen, dann bohren.','Nachgemessen wird ganz am Ende.']},
- {type:'write',title:'Abschnitt 3: Hinweis für Lena',text:`${OP('Formuliere')} einen Satz für Lena: Warum misst sie alle Löcher von der linken Kante aus?`,save:'hinweis',min:25,
+ {type:'write',title:'Abschnitt 2: Hinweis für Lena',text:`${OP('Formuliere')} einen Satz für Lena: Warum misst sie alle Löcher von der linken Kante aus?`,save:'hinweis',min:25,
   keys:['kante','anschlag','bezug','start','direkt','messen','nachmessen','eindeutig','gleich','fest'],
   starters:['Miss alle Löcher von der linken Kante, weil','Die linke Kante liegt am Anschlag, deshalb','So kannst du jedes Loch'],
   wb:{w:['bezugskante','randabstand','teilung'],s:['Weil die Kante …, kann ich …','Von der Bezugskante aus …']},
@@ -2544,7 +2537,6 @@ const QUIZ=[
  {q:'Die Bezugskante ist …',o:[{t:'die Startkante aller Maße',ok:1},{t:'immer die längste Kante'},{t:'jede Kante mit einer Fase'},{t:'die Kante gegenüber vom Anschlag'}],why:'Von ihr aus werden alle Maße gemessen. Meist liegt sie am Anschlag.'},
  {q:'Eine Maßkette ist geschlossen, wenn …',o:[{t:'das Gesamtmaß auch dasteht',ok:1},{t:'alle Teilmaße gleich groß sind'},{t:'die Kette am Rand beginnt'},{t:'jedes Loch einen Ø hat'}],why:'Dann ergibt sich ein Maß aus den anderen und steht doppelt.'},
  {q:'Maßstab 2:1 bedeutet …',o:[{t:'doppelt so groß gezeichnet',ok:1},{t:'halb so groß gezeichnet'},{t:'alle Maßzahlen verdoppelt'},{t:'zwei Ansichten nötig'}],why:'Die Zeichnung ist vergrößert. Die Maßzahlen bleiben die echten Maße.'},
- {q:'Bei 2:1 ist ein Abstand am Bauteil 35 mm. Welche Maßzahl steht dran?',o:[{t:'35',ok:1},{t:'70'},{t:'17,5'},{t:'37'}],why:'Die Maßzahl nennt immer das echte Maß.'},
  {q:'Die Teilung t ist der Abstand …',o:[{t:'Lochmitte zu Lochmitte',ok:1},{t:'vom Rand zur Lochmitte'},{t:'quer durch ein Loch'},{t:'vom Lochrand zum Lochrand'}],why:'t misst man zwischen den Mitten benachbarter Löcher.'},
  {q:'Zwischen n Bohrungen liegen …',o:[{t:K('n-1')+' Teilungen',ok:1},{t:K('n')+' Teilungen'},{t:K('n+1')+' Teilungen'},{t:K('2n')+' Teilungen'}],why:'Zwischen 6 Löchern liegen 5 Lücken.'},
  {transfer:1,q:'Ein Regal hat 5 Böden mit 30 cm Abstand. Unten und oben sind je 10 cm Rand. Wie hoch ist es?',o:[{t:'140 cm',ok:1},{t:'170 cm'},{t:'120 cm'},{t:'150 cm'}],why:'10 + 4 · 30 + 10 = 140 cm. Gleiches Verfahren wie bei der Lochreihe.'},
