@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#16233a">
+<title>Mission Stratosphäre 11NP</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#eef2f7; --card:#ffffff; --ink:#132033; --muted:#4d5a6b; --line:#cfd7e2;
+  --acc:#c2410c; --acc-d:#8f2f08; --blue:#17607a; --blue-d:#0f4557;
+  --ok:#1b7a47; --okbg:#e2f4e9; --bad:#b42318; --badbg:#fde7e5;
+  --gold:#f2b705; --nav:#16233a; --hint:#fff4d1; --hintb:#e7c75c;
+  --boss:#7a1d2e; --bossbg:#fbeef1; --purple:#5b3fc4;
+  --j11:#4273bd; --j12:#2f8767; --j13:#a86d1c;
+  --r:16px; --sh:0 2px 10px rgba(20,32,46,.09);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg)}
+body{color:var(--ink);font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{touch-action:manipulation;cursor:pointer}
+.hidden{display:none!important}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+/* Kopf */
+.top{position:sticky;top:0;z-index:20;background:var(--nav);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 0 8px}
+.top .wrap{display:flex;align-items:center;gap:8px}
+.top h1{font-size:16px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{background:rgba(255,255,255,.14);border:0;border-radius:999px;padding:7px 11px;color:#fff;font-weight:700;font-size:15px;min-height:40px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;text-decoration:none}
+.pill.gold{background:var(--gold);color:#241a00}
+/* Hero */
+.hero{background:linear-gradient(160deg,#16233a 0%,#24406a 100%);color:#fff;padding:22px 0 24px}
+.hero h2{margin:0 0 6px;font-size:25px;line-height:1.2}
+.hero p{margin:0;color:#e6edf6}
+.kicker{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
+.hero .kicker{color:#ffb199}
+.stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 12px;font-size:15px;color:#e6edf6}
+.stat b{font-size:20px;display:block;color:#fff}
+.rankladder{display:flex;gap:4px;margin-top:12px}
+.rankladder span{flex:1;min-width:0;overflow-wrap:anywhere;hyphens:auto;font-size:12px;text-align:center;padding:5px 2px;border-radius:8px;background:rgba(255,255,255,.12);color:#cdd8e6;line-height:1.2}
+.rankladder span.on{background:var(--gold);color:#241a00;font-weight:800}
+/* Missionskarte */
+.jahr{margin:20px 0 6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.jahr h3{margin:0;font-size:20px}
+.jahr .sj{font-size:14px;color:var(--muted);font-weight:700}
+.leit{font-size:15px;color:var(--muted);margin:0 0 8px}
+.levels{display:grid;gap:12px;margin:8px 0 10px}
+@media(min-width:700px){.levels{grid-template-columns:1fr 1fr}}
+.lv{display:flex;gap:14px;align-items:center;background:var(--card);border:2px solid transparent;border-radius:var(--r);padding:14px;box-shadow:var(--sh);text-align:left;width:100%;color:inherit;text-decoration:none}
+.lv.next{border-color:var(--acc)}
+.lv.vorschau{opacity:.8;background:#f7f9fc;cursor:default}
+.lv .num{flex:0 0 48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;background:#e3e9f1;color:var(--nav)}
+.lv.done .num{background:var(--ok);color:#fff}
+.lv.next .num{background:var(--acc);color:#fff}
+.lv .tx{flex:1;min-width:0}
+.lv .tag{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);font-weight:800}
+.lv .tt{font-weight:800;font-size:17px}
+.lv .sub{font-size:14px;color:var(--muted)}
+.lv .st{font-size:14px;font-weight:700;color:var(--muted);text-align:center;min-width:48px}
+.lv .st b{display:block;font-size:20px}
+.j11 .num{box-shadow:inset 0 0 0 3px var(--j11)} .j12 .num{box-shadow:inset 0 0 0 3px var(--j12)} .j13 .num{box-shadow:inset 0 0 0 3px var(--j13)}
+/* Inhalt */
+.step{padding-top:16px;padding-bottom:120px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:20px;line-height:1.25}
+.card h4{margin:12px 0 6px;font-size:17px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:6px 0 10px;padding-left:22px}
+.card li{margin:3px 0}
+.zeit{display:inline-block;background:var(--nav);color:#fff;border-radius:6px;padding:1px 8px;font-size:13px;font-weight:800;margin-bottom:6px}
+.task{background:#eaf3f7;border-left:5px solid var(--blue);border-radius:10px;padding:10px 12px;margin:10px 0}
+.merke{background:#fff8e1;border-left:5px solid var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0}
+.warn{background:var(--badbg);border-left:5px solid var(--bad);border-radius:10px;padding:10px 12px;margin:10px 0}
+.produkt{background:#f3f0fd;border-left:5px solid var(--purple);border-radius:10px;padding:8px 12px;margin:10px 0;font-size:15px}
+.formel{font-family:"Cambria Math","STIX Two Math",Georgia,serif;font-size:1.08em;background:#f4f6fa;border-radius:8px;padding:6px 10px;display:inline-block;margin:2px 0}
+.btn{text-decoration:none;border:0;border-radius:12px;padding:11px 16px;min-height:46px;font-weight:800;background:var(--acc);color:#fff;display:inline-flex;align-items:center;gap:6px}
+.btn.sek{background:#e3e9f1;color:var(--nav)}
+.btn.ok{background:var(--ok)}
+.btn.klein{min-height:38px;padding:7px 12px;font-size:15px}
+.reihe{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+label.feld{display:block;font-size:14px;font-weight:700;color:var(--muted);margin:10px 0 4px}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;min-height:44px}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input[type=range]{width:100%}
+.check{display:flex;align-items:center;gap:10px;font-weight:700;margin-top:8px}
+.check input{width:24px;height:24px}
+.erledigt{color:var(--ok);font-weight:800}
+/* Quiz */
+.frage{margin:12px 0 16px}
+.frage .f{font-weight:700;margin-bottom:6px}
+.opt{display:block;width:100%;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;margin:6px 0;min-height:46px}
+.opt.richtig{border-color:var(--ok);background:var(--okbg)}
+.opt.falsch{border-color:var(--bad);background:var(--badbg)}
+.erkl{font-size:15px;background:#f4f6fa;border-radius:10px;padding:8px 12px;margin-top:4px}
+/* Rechner */
+.rgrid{display:grid;gap:8px 12px;grid-template-columns:1fr 1fr}
+@media(max-width:520px){.rgrid{grid-template-columns:1fr}}
+.erg{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-top:12px}
+.erg div{background:#eaf3f7;border-radius:12px;padding:8px 12px;font-size:14px;color:var(--muted)}
+.erg b{display:block;font-size:20px;color:var(--ink)}
+.diagramm{width:100%;height:auto;display:block;margin-top:10px;background:#fbfcfe;border-radius:10px}
+.rkarte{display:block;text-decoration:none;color:inherit}
+.tabelle{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.tabelle th,.tabelle td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:middle}
+.tabelle th{background:#f1f4f8}
+.tabelle input{min-height:36px;padding:5px 7px}
+.balken{height:14px;border-radius:7px;background:#e3e9f1;overflow:hidden;margin-top:6px}
+.balken i{display:block;height:100%;background:var(--ok)}
+.balken i.zuviel{background:var(--bad)}
+/* Fallakte und Risiko */
+.fall{border:2px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.fall.fertig{border-color:var(--ok)}
+.fall .kopf{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.fall .nr{background:var(--nav);color:#fff;border-radius:8px;padding:0 8px;font-weight:800}
+.fall .quelle{font-size:13px;color:var(--muted)}
+.teamtag{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:1px 8px;background:#e3e9f1;color:var(--nav)}
+.matrix{display:grid;grid-template-columns:auto repeat(3,1fr);gap:4px;margin-top:10px;font-size:13px}
+.matrix .zelle{min-height:62px;border-radius:8px;padding:4px;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start}
+.matrix .ach{font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;padding:2px}
+.matrix .chip{background:#fff;border-radius:6px;padding:0 6px;font-weight:800;box-shadow:var(--sh)}
+.r1{background:#e2f4e9}.r2{background:#fff4d1}.r3{background:#fde7e5}
+.filter{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.filter button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px}
+.filter button.on{border-color:var(--nav);background:var(--nav);color:#fff}
+/* Freigabe */
+.gate{border:2px dashed var(--boss);background:var(--bossbg)}
+.gate.offen{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+.gesperrt{text-align:center;color:var(--muted);padding:22px 12px}
+/* Teams */
+.teams{display:grid;gap:10px}
+@media(min-width:700px){.teams{grid-template-columns:1fr 1fr}}
+.teamkarte{border:2px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.teamkarte.wahl1{border-color:var(--acc)} .teamkarte.wahl2{border-color:var(--blue)}
+.teamkarte h4{margin:0 0 4px}
+details{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:8px 0;background:#fff}
+details summary{font-weight:700;cursor:pointer}
+/* Fußleiste */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);padding:6px 0 calc(env(safe-area-inset-bottom) + 6px)}
+.tabbar .wrap{display:flex;gap:4px}
+.tabbar a{flex:1;text-align:center;text-decoration:none;color:var(--muted);font-size:12px;font-weight:700;padding:4px 2px;border-radius:10px}
+.tabbar a span{display:block;font-size:22px;line-height:1.1}
+.tabbar a.on{color:var(--acc);background:#fff1ea}
+.weiter{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--nav);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;z-index:40;box-shadow:var(--sh)}
+pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overflow-x:auto;font:13px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}
+.stationen{display:grid;gap:10px}
+@media(min-width:700px){.stationen{grid-template-columns:1fr 1fr}}
+#druck{display:none}
+@media print{
+  body.drucken > *:not(#druck){display:none!important}
+  body.drucken #druck{display:block;font-size:11pt;color:#000}
+  #druck h1{font-size:16pt;margin:0 0 4mm}
+  #druck h2{font-size:13pt;margin:6mm 0 2mm;border-bottom:1px solid #999}
+  #druck .eintrag{break-inside:avoid;margin-bottom:3mm}
+  #druck .eintrag b{display:block}
+  @page{size:A4;margin:15mm}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><h1 id="kopf">Projekt</h1><a class="pill gold" id="punkte" href="#/team">0 P</a></div></header>
+<main id="app"></main>
+<nav class="tabbar"><div class="wrap" id="tabs"></div></nav>
+<div id="druck"></div>
+<script>
+const CONFIG = {"codeHash": "1c8864d8", "erzeugt": "2026-11-02"};
+</script>
+<script>
+/* Inhalt der Projekt-App „Mission Stratosphäre“ (11NP). Engine: _werkzeuge/projekt/engine.js, Bau: _werkzeuge/projekt_bauen.py */
+const PROJEKT = {
+  id: '11np_wetterballon',
+  klasse: '11NP',
+  fach: 'Physiktechnik',
+  titel: 'Mission Stratosphäre',
+  kurztitel: 'Mission Stratosphäre 11NP',
+  untertitel: 'In drei Jahren baut ihr eine Messsonde, die mit einem Wetterballon auf über 30 km Höhe steigt. Im Herbst 2028 hebt sie ab.',
+  flug: '2028-09-15',
+  masseZiel: 1500,
+
+  raenge: [
+    { ab: 0, name: 'Bodencrew' },
+    { ab: 60, name: 'Messtechniker' },
+    { ab: 150, name: 'Konstrukteur' },
+    { ab: 260, name: 'Missionsingenieur' },
+    { ab: 380, name: 'Flugleitung' }
+  ],
+
+  teams: [
+    { id: 'A', icon: '🌡️', name: 'Atmosphäre und Messtechnik', text: 'Ihr rechnet mit Druck, Temperatur und Auftrieb, wählt Sensoren aus und wertet am Ende die Flugdaten aus.', passt: 'gern rechnest und wissen willst, was die Messwerte bedeuten.' },
+    { id: 'B', icon: '📐', name: 'Konstruktion und Thermik', text: 'Ihr baut die Sondenbox, konstruiert Halter in FreeCAD, druckt sie und achtet auf Masse und Wärmedämmung.', passt: 'gern zeichnest, konstruierst und baust.' },
+    { id: 'C', icon: '🔋', name: 'Elektronik und Energie', text: 'Ihr sorgt für Strom, lötet die Schaltung und prüft, ob die Batterien bei −50 °C noch durchhalten.', passt: 'gern mit Schaltungen, Multimeter und Lötkolben arbeitest.' },
+    { id: 'D', icon: '💻', name: 'Software und Ortung', text: 'Ihr programmiert den Arduino, speichert Messwerte auf der SD-Karte und sorgt dafür, dass wir die Sonde wiederfinden.', passt: 'gern programmierst und Fehler systematisch suchst.' },
+    { id: 'E', icon: '🛰️', name: 'Mission und Sicherheit', text: 'Ihr plant Genehmigung, Startplatz und Flugbahn, führt Checklisten und die Risikomatrix und leitet die Präsentationen.', passt: 'gern organisierst, den Überblick behältst und vor Leuten sprichst.' }
+  ],
+
+  rollen: [
+    { name: 'Teamleitung', text: 'achtet auf die Zeit, spricht sich mit anderen Teams ab und verteilt Aufgaben.' },
+    { name: 'Dokumentation', text: 'macht Fotos, führt das Teamprotokoll und sichert Dateien mit Versionsnummer.' },
+    { name: 'Technik', text: 'kümmert sich um Aufbau, Material und sicheres Arbeiten am Platz.' },
+    { name: 'Präsentation', text: 'plant Pitch und Poster und betreut die Station am Tag der offenen Tür.' }
+  ],
+
+  logFragen: [
+    'Was habe ich heute konkret beigetragen?',
+    'Welche Physik steckt darin? Erkläre in zwei Sätzen mit Fachbegriff.',
+    'Was hat nicht geklappt, und was ändern wir deshalb?',
+    'Mein nächster Schritt im Projekt'
+  ],
+
+  bewertung: [
+    ['Projektlogbuch', '30 %', 'eigener Beitrag konkret beschrieben, Physik mit Fachbegriff erklärt, Fehler und nächster Schritt benannt'],
+    ['Fachlicher Beitrag im Team', '30 %', 'Rechnung oder Messung richtig, Prüfauftrag eindeutig, Produkt funktioniert'],
+    ['Präsentation', '25 %', 'eigener Redeanteil fachlich richtig, Begründung mit Messdaten, Fragen sicher beantwortet'],
+    ['Zusammenarbeit und Rolle', '15 %', 'Rolle zuverlässig ausgefüllt, Absprachen eingehalten, sicher gearbeitet']
+  ],
+
+  masseStart: [
+    ['Sondenbox aus EPS', 250], ['Datenlogger mit Sensoren', 60], ['6 Lithium-Zellen AA', 90], ['GPS-Tracker (gekauft)', 50],
+    ['Actioncam', 120], ['Akku der Kamera', 50], ['Strahlungsschutz', 30], ['Halter aus dem 3D-Drucker', 40],
+    ['Kabel, Klebeband, Kleinteile', 40], ['Trockenmittel', 20]
+  ],
+
+  zellen: [
+    ['Alkali-Mangan AA', 0.3],
+    ['NiMH-Akku AA', 0.6],
+    ['Lithium-Primärzelle AA', 0.9],
+    ['Powerbank mit Lithium-Ionen-Zellen', 0.5]
+  ],
+
+  pitch: {
+    abschnitte: [
+      { titel: 'Mission', min: 0.5, hilfe: 'Ein Satz, der neugierig macht. Was will unser Team erreichen?' },
+      { titel: 'Physik', min: 1, hilfe: 'Eine Rechnung oder ein Modell mit Zahl und Einheit, z. B. Druck in 35 km Höhe.' },
+      { titel: 'Unsere Messung', min: 1, hilfe: 'Was habt ihr gemessen? Zeigt ein Diagramm und nennt eine Kernaussage.' },
+      { titel: 'Konzept für die Sonde', min: 1, hilfe: 'Zwei bis drei Anforderungen mit prüfbarem Kriterium, Massebudget.' },
+      { titel: 'Größtes Risiko', min: 1, hilfe: 'Ein Risiko aus der Fallakte und eure geplante Gegenmaßnahme.' },
+      { titel: 'Unsere Bitte', min: 0.5, hilfe: 'Was braucht ihr für Jahrgang 12? Material, Zeit, Hilfe.' }
+    ],
+    check: [
+      'Jeder im Team hat einen Abschnitt.',
+      'Mindestens eine Zahl mit Einheit und ein Diagramm sind dabei.',
+      'Wir haben einmal mit Stoppuhr geprobt (höchstens 5 Minuten).',
+      'Wir haben zwei mögliche Fragen der Gäste vorbereitet.'
+    ],
+    raster: [
+      ['Fachlich richtig', 'Rechnungen und Fachbegriffe stimmen, Einheiten sind angegeben.'],
+      ['Begründet', 'Jede Entscheidung wird mit Physik oder Messwerten begründet.'],
+      ['Verständlich', 'Gäste ohne Vorwissen können folgen, Diagramme sind beschriftet.'],
+      ['Zeit und Team', 'höchstens 5 Minuten, alle sprechen, Übergänge klappen.'],
+      ['Fragen', 'Antworten sind kurz, ehrlich und sachlich.']
+    ]
+  },
+
+  fallakte: [
+    { id: 'F1', team: 'E', w: 2, a: 3, titel: 'Die Genehmigung dauert Wochen', quelle: 'c’t Teil 1, ab 5:24',
+      text: 'Ein Wetterballon braucht eine Aufstiegserlaubnis der Luftfahrtbehörde. Die c’t-Redaktion warnt: Die Bearbeitung kann mehrere Wochen dauern.',
+      ursache: { o: ['Die Behörde lehnt Schulprojekte grundsätzlich ab.', 'Behörden haben Bearbeitungsrückstände, und der Antrag wird genau geprüft.', 'Der Antrag ist erst nach dem Start nötig.'], r: 1, e: 'Die Behörde prüft Startort, Luftraum und Versicherung. Das braucht Zeit, besonders bei Rückständen.' },
+      massnahme: { o: ['Antrag früh stellen und einen Zeitraum von zwei Wochen anmelden', 'ohne Genehmigung starten, falls sie zu spät kommt', 'den Antrag am Starttag telefonisch stellen'], r: 0, e: 'Wir stellen den Antrag vor den Sommerferien 2028 und melden ein Zeitfenster an. So bleibt Spielraum für das Wetter.' } },
+    { id: 'F2', team: 'E', w: 1, a: 3, titel: 'Startplatz in der Einflugschneise', quelle: 'c’t Teil 1, ab 3:45',
+      text: 'Beim früheren Projekt lag der Startplatz in der Einflugschneise eines Rettungshubschraubers. Vor dem Start musste das Team bei der Leitstelle anrufen.',
+      ursache: { o: ['Der Ballon war zu schwer.', 'Der Luftraum hat Besonderheiten, die man selbst leicht übersieht.', 'Das Wetter war zu windig.'], r: 1, e: 'Die Behörde prüft die Koordinaten und erkennt Flugrouten, Kontrollzonen und Sperrgebiete.' },
+      massnahme: { o: ['den Startplatz nach Gefühl wählen', 'Startplatz mit Koordinaten früh prüfen lassen und Auflagen in die Startcheckliste schreiben', 'nachts starten, weil dann niemand fliegt'], r: 1, e: 'Auflagen der Behörde wie ein Anruf bei der Leitstelle gehören als eigener Punkt in die Startcheckliste.' } },
+    { id: 'F3', team: 'A', w: 2, a: 2, titel: 'Der Ballon fliegt länger als berechnet', quelle: 'c’t Teil 3, ab 6:32',
+      text: 'Berechnet waren 3 Stunden Flugzeit. Nach 3 Stunden war der Ballon noch in der Luft. Insgesamt flog er etwa 3,5 Stunden.',
+      ursache: { o: ['Beim Füllen und Verschließen ist Gas entwichen, der Ballon stieg langsamer.', 'Die Erde hat sich schneller gedreht.', 'Die Kamera war schwerer als gedacht.'], r: 0, e: 'Weniger Gas bedeutet weniger freien Auftrieb. Der Ballon steigt langsamer und braucht länger bis zur Platzhöhe.' },
+      massnahme: { o: ['mehr Gas einfüllen als nötig und nichts messen', 'freien Auftrieb nach dem Verschließen mit einem Gewicht prüfen und den Verschluss vorher üben', 'die Flugzeit einfach doppelt so lang schätzen'], r: 1, e: 'Den freien Auftrieb kann man am Boden wiegen. Hebt der Ballon das Prüfgewicht nicht, wird nachgefüllt.' } },
+    { id: 'F4', team: 'C', w: 2, a: 3, titel: 'Ein Kabel reißt kurz vor dem Start', quelle: 'c’t Teil 3, ab 3:19',
+      text: 'Kurz vor dem Start reißt ein Kabel an der Sonde. Zum Glück hat das Team einen Lötkolben dabei.',
+      ursache: { o: ['Das Kabel war zu dick.', 'An der Durchführung fehlte eine Zugentlastung.', 'Die Kälte hat das Kabel geschmolzen.'], r: 1, e: 'Ohne Zugentlastung wirkt jede Bewegung direkt auf die Lötstelle.' },
+      massnahme: { o: ['Zugentlastung an jeder Durchführung als Abnahmekriterium und eine Starterkiste mit Gaslötkolben', 'Kabel mit Klebeband an die Außenseite kleben', 'auf Kabel ganz verzichten'], r: 0, e: 'Was im Test geprüft wird, fällt am Starttag seltener aus. Für den Notfall liegt Werkzeug bereit.' } },
+    { id: 'F5', team: 'D', w: 2, a: 3, titel: 'Das GPS fällt aus', quelle: 'c’t Teil 4, ab 2:22',
+      text: 'Nach einer Dreiviertelstunde kommen keine Positionen mehr. Temperatur und Druck werden weiter gesendet. Erst kurz vor dem Platzen kehrt das GPS zurück.',
+      ursache: { o: ['Die Satelliten waren abgeschaltet.', 'vermutlich Kondenswasser in der Sonde oder ein GPS-Modul ohne Airborne-Modus', 'Der Ballon war zu schnell für Funk.'], r: 1, e: 'Viele GPS-Module schalten oberhalb von 18 km ab, wenn der Airborne-Modus fehlt. Feuchte kann zusätzlich Kontakte stören.' },
+      massnahme: { o: ['nur ein GPS mitnehmen, aber ein teures', 'Airborne-Modus im Test nachweisen, Trockenmittel einpacken und ein zweites, unabhängiges Ortungssystem mitnehmen', 'das GPS außen auf die Box kleben'], r: 1, e: 'Zwei unabhängige Systeme mit eigener Stromversorgung machen den Ausfall eines Systems verkraftbar.' } },
+    { id: 'F6', team: 'C', w: 3, a: 2, titel: 'Alle Kameras gehen vorzeitig aus', quelle: 'c’t Teil 4, ab 4:18',
+      text: 'Den Moment, in dem der Ballon platzt, hat keine Kamera aufgenommen. Alle Kameras waren schon aus.',
+      ursache: { o: ['Die Speicherkarten waren voll.', 'Die Powerbanks haben in der Kälte deutlich weniger Kapazität geliefert.', 'Die Kameras wurden zu warm.'], r: 1, e: 'Bei −20 °C und kälter liefern viele Akkus nur noch einen Teil ihrer Nennkapazität.' },
+      massnahme: { o: ['Energiebudget mit Kälteabschlag, Lithium-Primärzellen und Kältetest mit echter Last', 'kleinere Kameras kaufen', 'Kameras erst in 30 km Höhe einschalten'], r: 0, e: 'Im Rechner „Energie bei Kälte“ seht ihr, wie stark der Zelltyp die Laufzeit verändert.' } },
+    { id: 'F7', team: 'A', w: 3, a: 2, titel: 'Die Außentemperatur steigt in großer Höhe stark an', quelle: 'c’t Teil 4, ab 3:54',
+      text: 'Erst wird es mit der Höhe kälter. Dann steigt die gemessene Temperatur stark an. Ein Fühler in einem Schutzgehäuse misst deutlich tiefere Werte.',
+      ursache: { o: ['Die Sonne heizt den Fühler, und die dünne Luft kühlt ihn kaum.', 'In der Stratosphäre ist es heißer als am Boden.', 'Der Fühler war defekt.'], r: 0, e: 'Je dünner die Luft, desto schlechter gibt der Fühler Wärme ab. Direktes Sonnenlicht verfälscht dann die Messung.' },
+      massnahme: { o: ['den Fühler in die warme Box legen', 'einen Strahlungsschutz bauen und mit und ohne Schutz vergleichen', 'nur nachts fliegen'], r: 1, e: 'Ein Strahlungsschutz beschattet den Fühler und lässt Luft durch. Ihr baut ihn in Jahrgang 12 selbst.' } },
+    { id: 'F8', team: 'E', w: 2, a: 2, titel: 'Der Backup-Tracker hat einen leeren Akku', quelle: 'c’t Teil 4, ab 8:01',
+      text: 'Als die Hauptortung ausfällt, ruft das Team den Backup-Tracker an. Er meldet sich nicht. Später zeigt sich: Der Akku war leer.',
+      ursache: { o: ['Das Handynetz war überlastet.', 'Das Backup wurde vor dem Start nicht geprüft.', 'Der Tracker war zu kalt.'], r: 1, e: 'Ein Backup hilft nur, wenn es selbst geprüft ist.' },
+      massnahme: { o: ['Checkliste „geladen und getestet“ für jedes Backup mit Test am Vortag', 'kein Backup mitnehmen', 'den Tracker erst nach der Landung einschalten'], r: 0, e: 'Jedes Gerät bekommt eine eigene Zeile in der Startcheckliste: geladen, eingeschaltet, Position empfangen.' } },
+    { id: 'F9', team: 'D', w: 3, a: 1, titel: 'Live-Bilder kommen nie vollständig an', quelle: 'c’t Teil 4, ab 1:49',
+      text: 'Die Sonde zerlegt Fotos in kleine Pakete. Für jedes Paket wartet sie auf ein Okay vom Boden. Dieses Okay kommt fast nie an.',
+      ursache: { o: ['Das Bestätigungssignal vom Boden zur Sonde war unzuverlässig.', 'Die Kamera war kaputt.', 'Bilder sind zu klein für Funk.'], r: 0, e: 'Ein Rückkanal vom Boden zur Sonde ist schwerer als das Senden nach unten. Gut war, dass ein Zeitlimit die Telemetrie weiterlaufen ließ.' },
+      massnahme: { o: ['auf Bilder per Funk verzichten, nur Telemetrie senden und Bilder auf der SD-Karte speichern', 'noch größere Bilder senden', 'ohne Zeitlimit warten'], r: 0, e: 'Unsere Telemetrie in Jahrgang 13 sendet nur Position, Höhe und Messwerte, ohne auf Antwort zu warten.' } },
+    { id: 'F10', team: 'E', w: 2, a: 3, titel: 'Landung nahe einer Großstadt', quelle: 'c’t Teil 3, ab 7:04',
+      text: 'Der Ballon sinkt auf Erfurt zu. Das Team fürchtet eine Landung in der Stadt. Die Prognose war eine Woche vorher ungenau, am Morgen des Starts aber genau.',
+      ursache: { o: ['Die Windvorhersage wird erst kurz vor dem Start genau.', 'Der Fallschirm war zu groß.', 'GPS zeigt immer Städte an.'], r: 0, e: 'Der Wind bestimmt die Flugbahn. Wie beim Wetterbericht wird die Prognose mit kürzerem Abstand genauer.' },
+      massnahme: { o: ['die Prognose mehrmals rechnen und einen Startort wählen, dessen Landegebiet ländlich ist', 'immer bei Windstille starten', 'den Fallschirm weglassen, damit er schneller landet'], r: 0, e: 'Team E rechnet in Jahrgang 12 Prognosen für mehrere Tage und vergleicht sie.' } },
+    { id: 'F11', team: 'B', w: 2, a: 3, titel: 'Lange Schnüre zwischen Ballon, Fallschirm und Sonde', quelle: 'c’t Teil 3, ab 2:23',
+      text: 'Zwischen Ballon und Fallschirm hängen etwa 5 m Schnur, zwischen Fallschirm und Sonde etwa 10 m.',
+      ursache: { o: ['Lange Schnüre sehen auf Fotos besser aus.', 'Nach dem Platzen dürfen die Ballonreste den Fallschirm nicht blockieren.', 'Die Schnur dient als Antenne.'], r: 1, e: 'Fallen die Reste auf den Fallschirm, kann er sich nicht öffnen. Abstand schafft Sicherheit, auch bei Windböen.' },
+      massnahme: { o: ['alles mit einer kurzen Schnur zusammenbinden', 'Abstände und Aufhängung bewusst konstruieren und begründen', 'den Fallschirm unter die Sonde hängen'], r: 1, e: 'Team B plant die Aufhängung als eigenes Bauteil mit Begründung.' } },
+    { id: 'F12', team: 'B', w: 1, a: 2, titel: 'Die Sonde übersteht die Landung', quelle: 'c’t Teil 3, ab 10:55',
+      text: 'Die Sonde landet zwischen Windrädern auf einem Feld. Alle Halterungen haben gehalten, innen ist alles intakt.',
+      ursache: { o: ['Die Styroporbox ist leicht, und die Halter saßen fest.', 'Die Sonde war aus Stahl.', 'Der Ballon hat die Sonde sanft abgesetzt.'], r: 0, e: 'Eine leichte Box, feste Halter und ein passender Fallschirm verhindern Schäden.' },
+      massnahme: { o: ['Halter formschlüssig konstruieren und den Fallschirm für etwa 5 m/s Sinkgeschwindigkeit auslegen', 'die Box mit Steinen beschweren', 'Bauteile lose in die Box legen'], r: 0, e: 'Mit dem Fallschirmrechner bestimmt ihr in Jahrgang 12 die nötige Fläche.' } }
+  ],
+
+  jahre: [
+    { nr: 11, titel: 'Mission verstehen', schuljahr: '2026/27, 2 Projekttage', leitfrage: 'Was muss unsere Sonde aushalten, und wie messen wir das?', etappen: ['j11t1', 'j11t2', 'j11konf', 'j11tdot'] },
+    { nr: 12, titel: 'Bauen und Qualifizieren', schuljahr: '2027/28, 3 Projekttage', leitfrage: 'Wie wird aus Einzelteilen eine Sonde, die Kälte, Feuchte und Stöße übersteht?',
+      vorschau: [
+        { icon: '🔧', tag: 'Tag 1', titel: 'Vom Konzept zum Logger', text: 'Lötführerschein, Datenlogger mit Druck- und Temperatursensor, Fallschirm berechnen' },
+        { icon: '🧪', tag: 'Tag 2', titel: 'Fertigen und Testen', text: 'Logger löten, Strahlungsschutz drucken, Kälte-, Feuchte- und Dauertest' },
+        { icon: '📋', tag: 'Tag 3', titel: 'Qualifizieren und Antrag', text: 'Probelauf der Mission, Antrag auf Aufstiegserlaubnis, Design-Review mit Gästen' }
+      ] },
+    { nr: 13, titel: 'Fliegen und Forschen', schuljahr: 'Herbst 2028, 3 Projekttage', leitfrage: 'Stimmt unser Modell der Atmosphäre mit dem echten Flug überein?',
+      vorschau: [
+        { icon: '📡', tag: 'Tag 1', titel: 'Flugbereit', text: 'eigene Funk-Telemetrie, Bodenstation, Flight Readiness Review' },
+        { icon: '🎈', tag: 'Tag 2', titel: 'Flugtag', text: 'Ballon füllen, Start, Mission Control, Bergung' },
+        { icon: '📈', tag: 'Tag 3', titel: 'Forschen', text: 'Flugdaten auswerten, Modell prüfen, Abschlusskolloquium' }
+      ] }
+  ],
+
+  etappen: [
+    /* ================= Jahrgang 11, Tag 1 ================= */
+    { id: 'j11t1', icon: '🚀', tag: 'Jahrgang 11, Tag 1', titel: 'Mission verstehen', kurz: 'Tag 1', untertitel: 'Atmosphäre, Auftrieb, Fallakte c’t und Bau der Isolierbox',
+      ziele: ['Druck und Temperatur in jeder Höhe mit einem Modell bestimmen', 'berechnen, wie viel Gas ein Ballon braucht und wann er platzt', 'aus Fehlern anderer Anforderungen für die eigene Sonde ableiten'],
+      bloecke: [
+        { typ: 'text', kicker: 'Missionsbriefing', zeit: '08:00', titel: 'Euer Auftrag für drei Jahre',
+          html: '<p>Im Herbst 2028 startet ein Wetterballon mit eurer Sonde. Er steigt in etwa zwei Stunden auf über 30 km Höhe. Dort ist der Luftdruck kleiner als 1 % des Bodendrucks, und es wird kälter als −50 °C. Dann platzt der Ballon, und die Sonde sinkt am Fallschirm zurück.</p>' +
+            '<div class="task"><b>Leitfrage:</b> Wie bringen wir selbst gebaute Messtechnik 35 km hoch und heil zurück?</div>' +
+            '<p>Die Redaktion von heise c’t hat genau das geschafft und dabei einiges erlebt. Ihre Mission ist heute eure Fallstudie.</p>' +
+            '<div class="produkt"><b>Ergebnis:</b> Sammelt im Plenum Fragen, die ihr bis zum Flug klären müsst. Die Lehrkraft schreibt sie in den Fragenspeicher.</div>' },
+        { typ: 'quiz', kicker: 'Schätzen', titel: 'Was meint ihr?', fragen: [
+          { id: 'q11_s1', f: 'Welche Höhe erreichte der Ballon der c’t?', o: ['etwa 10 km', 'etwa 36 km', 'etwa 100 km'], r: 1, e: 'Genau 35 734 m. Verkehrsflugzeuge fliegen in etwa 10 km, der Weltraum beginnt bei etwa 100 km.' },
+          { id: 'q11_s2', f: 'Wie kalt wird es auf dem Weg nach oben ungefähr?', o: ['etwa −5 °C', 'etwa −55 °C', 'etwa −150 °C'], r: 1, e: 'In 11 bis 20 km Höhe sind es in der Normatmosphäre −56,5 °C. Darüber wird es wieder etwas wärmer.' },
+          { id: 'q11_s3', f: 'Wie lange war der Ballon der c’t unterwegs?', o: ['etwa 20 Minuten', 'etwa 3,5 Stunden', 'etwa 2 Tage'], r: 1, e: 'Etwa 3,5 Stunden. Berechnet waren 3 Stunden. Warum es länger dauerte, klärt die Fallakte.' }
+        ] },
+        { typ: 'teamwahl' },
+        { typ: 'auftrag', id: 'a11_team', zeit: '08:30', titel: 'Teamvertrag und Rollen',
+          html: '<p>Die Lehrkraft gibt die Teams bekannt. Trefft euch und klärt:</p><ol><li>Wer übernimmt in diesem Jahr welche Rolle? Tragt sie im Profil ein.</li><li>Auf welche drei Regeln einigt ihr euch? Tragt sie unter „Team“ beim Teamvertrag ein.</li></ol>',
+          produkt: 'Rollen verteilt, Teamvertrag mit drei Regeln' },
+        { typ: 'text', kicker: 'Physikwerkstatt 1', zeit: '09:00', titel: 'Die Atmosphäre in Schichten',
+          html: '<p>Die <b>Troposphäre</b> reicht bis etwa 11 km. Dort findet das Wetter statt, und die Temperatur sinkt um etwa 6,5 K je Kilometer. Die Grenze heißt <b>Tropopause</b>. Darüber liegt die <b>Stratosphäre</b> bis etwa 50 km. In ihr bleibt die Temperatur zunächst gleich und steigt dann wieder an, weil Ozon UV-Strahlung der Sonne absorbiert.</p>' +
+            '<div class="merke"><b>Merke:</b> Der Luftdruck entsteht durch das Gewicht der Luft darüber. Je höher man steigt, desto weniger Luft liegt darüber. In den unteren Kilometern halbiert sich der Druck etwa alle 5,5 km.</div>' +
+            '<p>Die Normatmosphäre ist ein Modell mit festen Werten für Druck, Temperatur und Dichte. Mit ihr rechnen Luftfahrt und Wetterdienst. Ihr nutzt sie im Rechner unten.</p>' },
+        { typ: 'rechner', ids: ['atmosphaere'] },
+        { typ: 'auftrag', id: 'a11_atm', titel: 'Rechenaufträge Atmosphäre',
+          html: '<ol><li>Bestimme Druck und Temperatur in 5,5 km, 11 km und 35,7 km Höhe.</li><li>In welcher Höhe beträgt der Druck nur noch 100 hPa? Gib den Druck unten im Rechner ein.</li><li>Wie viel Prozent der Bodendichte hat die Luft in 11 km Höhe noch?</li><li>Begründe in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>',
+          produkt: 'Ergebnisse im Heft oder im Logbuch notiert' },
+        { typ: 'quiz', titel: 'Atmosphäre geprüft', fragen: [
+          { id: 'q11_a1', f: 'Wie groß ist der Luftdruck in 11 km Höhe (Normatmosphäre)?', o: ['etwa 900 hPa', 'etwa 226 hPa', 'etwa 5 hPa'], r: 1, e: 'Etwa 226 hPa, also knapp ein Viertel des Bodendrucks von 1013 hPa.' },
+          { id: 'q11_a2', f: 'In welcher Höhe sind es nur noch 100 hPa?', o: ['etwa 5,5 km', 'etwa 16 km', 'etwa 40 km'], r: 1, e: 'Etwa 16,2 km. Ab hier liegt nur noch ein Zehntel der Luftmasse über dem Ballon.' },
+          { id: 'q11_a3', f: 'Warum wird es oberhalb von etwa 20 km wieder wärmer?', o: ['Die Sonde kommt der Sonne näher.', 'Ozon absorbiert UV-Strahlung und erwärmt die Luft.', 'Die Luft wird dort dichter.'], r: 1, e: 'Die Ozonschicht nimmt UV-Strahlung auf und gibt die Energie als Wärme an die Luft ab.' },
+          { id: 'q11_a4', f: 'Die Dichte in 11 km Höhe beträgt etwa 0,36 kg/m³. Welcher Anteil der Bodendichte ist das?', o: ['etwa 30 %', 'etwa 60 %', 'etwa 3 %'], r: 0, e: '0,36 / 1,225 ≈ 0,30. Weniger Luft heißt auch weniger Kühlung für Bauteile und weniger Auftrieb.' }
+        ] },
+        { typ: 'text', kicker: 'Physikwerkstatt 2', zeit: '10:00', titel: 'Auftrieb und Ballon',
+          html: '<p>Ein Körper in Luft erfährt eine Auftriebskraft. Sie ist so groß wie die Gewichtskraft der verdrängten Luft (Prinzip des Archimedes). Ist das Gas im Ballon leichter als die verdrängte Luft, steigt er.</p>' +
+            '<p><span class="formel">F<sub>A</sub> = ρ<sub>Luft</sub> · V · g</span> und <span class="formel">F<sub>G,Gas</sub> = ρ<sub>Gas</sub> · V · g</span></p>' +
+            '<div class="merke"><b>Merke:</b> Ein Kubikmeter Helium hebt am Boden bei 15 °C etwa 1,06 kg. Das ist die Differenz aus 1,225 kg/m³ (Luft) und 0,169 kg/m³ (Helium).</div>' +
+            '<p>Beim Aufstieg sinkt der Außendruck. Das Gas im Ballon dehnt sich aus, bis die Hülle reißt. Die Hersteller geben dafür einen Platzdurchmesser an. Der Ballon der c’t platzte bei etwa 12,5 m Durchmesser.</p>' },
+        { typ: 'rechner', ids: ['gas', 'platzen'] },
+        { typ: 'auftrag', id: 'a11_gas', titel: 'Rechenaufträge Ballon',
+          html: '<ol><li>Berechne mit den Beispielwerten im Gasrechner das nötige Gasvolumen. Die Sonde wiegt wie bei der c’t 1,6 kg.</li><li>Berechne das Volumen des Ballons beim Platzen (Durchmesser 12,5 m).</li><li>Probiere im Platzrechner, mit wie viel Gas am Start der Ballon in 35,7 km platzt.</li><li>Die c’t füllte höchstens 5,5 m³ ein. Nenne zwei Gründe, warum unser Modell davon abweicht.</li></ol>',
+          produkt: 'Gasvolumen, Platzvolumen, Startvolumen und zwei Modellgrenzen' },
+        { typ: 'quiz', titel: 'Ballon geprüft', fragen: [
+          { id: 'q11_b1', f: 'Wie groß ist das Volumen eines Ballons mit 12,5 m Durchmesser?', o: ['etwa 100 m³', 'etwa 1000 m³', 'etwa 10 000 m³'], r: 1, e: 'V = 4/3 · π · (6,25 m)³ ≈ 1023 m³.' },
+          { id: 'q11_b2', f: 'Wie viel Gas braucht der Ballon nach unserem Modell am Start, um in 35,7 km zu platzen?', o: ['etwa 1 m³', 'etwa 6 m³', 'etwa 60 m³'], r: 1, e: 'Etwa 6,1 m³. Das Volumen wächst bis zum Platzen etwa um das 170-Fache.' },
+          { id: 'q11_b3', f: 'Beim Füllen entweicht etwas Gas. Was passiert?', o: ['Der Ballon steigt schneller.', 'Der Ballon steigt langsamer und platzt später, aber höher.', 'Der Ballon steigt gar nicht mehr.'], r: 1, e: 'Weniger freier Auftrieb heißt langsamerer Aufstieg. Mit weniger Gas erreicht die Hülle ihren Platzdurchmesser außerdem erst in größerer Höhe.' }
+        ] },
+        { typ: 'fallakte', zeit: '10:45', titel: 'Was ging bei den Profis schief?',
+          html: '<p><b>Expertenpuzzle:</b> Wählt oben euer Team. Bearbeitet eure Karten. Bestimmt Ursache und Gegenmaßnahme und schätzt Wahrscheinlichkeit und Auswirkung ein. Stellt eure Karten danach in zwei Minuten der Klasse vor.</p>' },
+        { typ: 'risiko', titel: 'Risikomatrix v1',
+          html: '<p>Jede gelöste Karte erscheint hier. Ergänzt mindestens ein eigenes Risiko für unsere Sonde.</p>' },
+        { typ: 'freigabe', id: 'f_werkstatt', titel: 'Werkstatt Isolierbox',
+          html: '<p>Bevor ihr schneidet, gibt es eine Sicherheitsunterweisung.</p><ul><li>Cutter nur mit Stahllineal und Schneidmatte, immer vom Körper weg schneiden.</li><li>Den Heißdraht bedient nur, wer dafür eingewiesen ist. Fenster auf.</li><li>Wasser für den Kältetest höchstens 40 °C.</li></ul>' },
+        { typ: 'auftrag', id: 'a11_box', zeit: '12:15', titel: 'Baut eure Isolierbox',
+          html: '<p>Jedes Team baut eine Box mit dem <b>Innenmaß 12 cm × 12 cm × 12 cm</b>. Darin steht morgen eine 250-ml-Flasche mit warmem Wasser als Ersatz für die Elektronik. Jedes Team verändert genau eine Größe:</p>' +
+            '<table class="tabelle"><thead><tr><th>Team</th><th>Variante</th></tr></thead><tbody><tr><td>A</td><td>XPS 20 mm, Fugen mit Gewebeband</td></tr><tr><td>B</td><td>XPS 40 mm, Fugen mit Gewebeband</td></tr><tr><td>C</td><td>EPS 30 mm, Fugen mit Gewebeband</td></tr><tr><td>D</td><td>XPS 20 mm, innen mit Rettungsdecke ausgekleidet</td></tr><tr><td>E</td><td>Wellpappe als Vergleich</td></tr></tbody></table>' +
+            '<ol><li>Zuschnitt planen: Welche Außenmaße haben die Platten? Skizze mit Maßen.</li><li>Schneiden, fügen, Deckel mit Loch für den Fühler.</li><li>Box mit der Küchenwaage wiegen.</li></ol>',
+          produkt: 'Box mit Deckel und Fühlerloch, Masse in g' },
+        { typ: 'notiz', id: 'n11_pa', titel: 'Prüfauftrag für den Kältetest',
+          html: '<p>Formuliert den Prüfauftrag so eindeutig wie in Woche 1 von 11.1.</p>',
+          felder: ['Objekt und Messgröße', 'Messmittel und Messstelle', 'Ablauf (Starttemperatur, Ableseabstand, Dauer)', 'Entscheidungskriterium: Wann ist eine Box gut genug?', 'Hypothese: Welche Box dämmt am besten, und warum?'] },
+        { typ: 'quiz', kicker: 'Exit', titel: 'Was nehmt ihr mit?', fragen: [
+          { id: 'q11_x1', f: 'Welche Aussage über die Isolierbox stimmt?', o: ['Je dicker die Wand, desto besser für die Mission.', 'Gute Dämmung kostet Masse. Wir suchen einen guten Kompromiss.', 'Die Box muss luftdicht sein.'], r: 1, e: 'Jedes Gramm muss der Ballon heben. Luftdicht darf sie übrigens nicht sein, sonst misst der Drucksensor falsch.' },
+          { id: 'q11_x2', f: 'Warum muss die Sonde einen Druckausgleich haben?', o: ['damit der Drucksensor den Außendruck misst und die Box nicht durch Überdruck aufplatzt', 'damit die Kamera klare Bilder macht', 'damit Regen abfließt'], r: 0, e: 'Innen und außen soll derselbe Druck herrschen. Ein kleines seitliches Loch genügt.' }
+        ] },
+        { typ: 'logbuch', titel: 'Logbuch Tag 1' },
+        { typ: 'freigabe', id: 'f_pruefauftrag', titel: 'Prüfauftrag kontrolliert',
+          html: '<p>Zeigt der Lehrkraft euren Prüfauftrag. Ist er eindeutig, startet morgen der Kältetest. Logbuch und Exit-Quiz oben könnt ihr schon vorher ausfüllen.</p>' }
+      ] },
+
+    /* ================= Jahrgang 11, Tag 2 ================= */
+    { id: 'j11t2', icon: '🧊', tag: 'Jahrgang 11, Tag 2', titel: 'Erste Technik', kurz: 'Tag 2', untertitel: 'Kältetest, Halter in FreeCAD, Druckmessung am Arduino',
+      ziele: ['einen Kältetest nach Prüfauftrag durchführen und auswerten', 'einen leichten Halter konstruieren und seine Masse berechnen', 'aus einem Druckunterschied einen Höhenunterschied bestimmen'],
+      bloecke: [
+        { typ: 'text', kicker: 'Kältetest', zeit: '08:00', titel: 'Kältetest starten',
+          html: '<ol><li>Wasser auf 40 °C erwärmen, 250 ml in die Flasche füllen.</li><li>Flasche in die Box stellen, Fühler durch den Deckel, Spitze an die Flasche kleben.</li><li>Starttemperatur ablesen, Box in den Gefrierschrank, Uhrzeit notieren.</li><li>Alle 5 Minuten liest die Messwache ab. Wer gerade nicht an einer Station arbeitet, übernimmt.</li></ol>' +
+            '<div class="warn">Gefrierschrank nur kurz öffnen. Jede Öffnung bringt warme Luft hinein und verfälscht alle Messungen.</div>' },
+        { typ: 'messtabelle', id: 'mt11_kaelte', titel: 'Abkühlkurven', x: 't in min', y: 'Temperatur in °C', spalten: ['unsere Box', 'Vergleichsbox'], zeilen: ['0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75'],
+          html: '<p>Tragt eure Werte ein. In die zweite Spalte kommen die Werte eines anderen Teams.</p>' },
+        { typ: 'text', kicker: 'Stationen', zeit: '08:20', titel: 'Zwei Stationen, zwei Runden',
+          html: '<p>Jedes Team teilt sich in zwei Paare. Ein Paar startet an Station A, das andere an Station B. Um 09:20 Uhr wird gewechselt.</p><div class="stationen"><div class="task"><b>Station A: Halter in FreeCAD</b><br>Messen, konstruieren, Masse berechnen, drucken</div><div class="task"><b>Station B: Arduino am Steckbrett</b><br>Luftdruck messen, Treppenhaus, Feuchte</div></div>' },
+        { typ: 'auftrag', id: 'a11_cad', kicker: 'Station A', titel: 'Ein Halter für die Sensorplatine',
+          html: '<p>Die Sensorplatine BME280 soll später fest in der Sondenwand sitzen. Konstruiert einen Halter, der in eine 20 mm dicke Styroporwand gesteckt wird.</p>' +
+            '<div class="task"><b>Anforderungen</b><ul><li>Masse höchstens 8 g</li><li>Druckzeit höchstens 25 min</li><li>Platine sitzt formschlüssig, Sensor bleibt frei zur Luft</li><li>Halter hält in der Styroporwand, ohne zu wackeln</li></ul></div>' +
+            '<ol><li>Platine mit dem Messschieber vermessen: Länge, Breite, Dicke, Lochabstand. Jedes Maß zweimal messen.</li><li>Maßskizze mit Toleranz zeichnen (Spiel etwa 0,3 mm).</li><li>Halter in FreeCAD konstruieren. Rippen statt Vollmaterial.</li><li>Volumen in FreeCAD ablesen und die Masse berechnen: <span class="formel">m = ρ · V</span> mit ρ<sub>PLA</sub> = 1,24 g/cm³.</li><li>Druckzeit im Slicer prüfen, dann drucken.</li></ol>',
+          produkt: 'STL-Datei, Maßskizze, Masse aus Volumen und Druckzeit' },
+        { typ: 'notiz', id: 'n11_cad', kicker: 'Station A', titel: 'Messwerte und Masse', felder: ['Maße der Platine (je zwei Messungen)', 'Volumen aus FreeCAD und berechnete Masse', 'Druckzeit und tatsächliche Masse nach dem Druck'] },
+        { typ: 'auftrag', id: 'a11_ard', kicker: 'Station B', titel: 'Luftdruck am Arduino messen',
+          html: '<p>Die Platine BME280 misst Luftdruck, Temperatur und Luftfeuchte. Sie hängt am I²C-Bus des Arduino (SDA an A4, SCL an A5, VIN an 5 V, GND an GND).</p>' +
+            '<ol><li>Schaltung nach dem Plan an der Station aufbauen. Erst die Lehrkraft prüfen lassen, dann USB einstecken.</li><li>Den Sketch unten öffnen und hochladen. Im seriellen Monitor erscheinen jede Sekunde neue Werte.</li><li>Erdgeschoss: eine Minute warten, dann den Druck ablesen. Treppenhaus hoch bis ins dritte Obergeschoss, auf jedem Stockwerk ablesen.</li><li>Stufen zählen und eine Stufe messen. So erhaltet ihr die echte Höhe.</li><li>Höhe aus dem Druck berechnen und vergleichen.</li></ol>' +
+            '<pre class="code">#include &lt;Wire.h&gt;\n#include &lt;Adafruit_BME280.h&gt;\n\nAdafruit_BME280 bme;\n\nvoid setup() {\n  Serial.begin(9600);\n  if (!bme.begin(0x76)) {\n    Serial.println("BME280 nicht gefunden. Adresse 0x77 testen.");\n    while (true) {}\n  }\n}\n\nvoid loop() {\n  Serial.print("Druck_hPa:");\n  Serial.print(bme.readPressure() / 100.0, 2);\n  Serial.print(",Temperatur_C:");\n  Serial.print(bme.readTemperature(), 2);\n  Serial.print(",Feuchte_Prozent:");\n  Serial.println(bme.readHumidity(), 1);\n  delay(1000);\n}</pre>',
+          produkt: 'Druckwerte je Stockwerk, Höhe aus Druck und Stufen' },
+        { typ: 'messtabelle', id: 'mt11_treppe', kicker: 'Station B', titel: 'Treppenhaus', x: 'Stockwerk', spalten: ['Druck in hPa', 'Höhe über EG in m (Stufen)'], zeilen: ['EG', '1. OG', '2. OG', '3. OG'], diagramm: false },
+        { typ: 'rechner', ids: ['treppenhaus'] },
+        { typ: 'auftrag', id: 'a11_feuchte', kicker: 'Station B', titel: 'Feuchte und Kondensation',
+          html: '<p>Haucht den Sensor kurz an und beobachtet Feuchte und Temperatur.</p><ol><li>Beschreibt, was passiert.</li><li>Erklärt mit der Fallakte (Karte F5), warum Feuchte in einer kalten Sonde gefährlich ist.</li></ol><div class="merke"><b>Merke:</b> Kühlt feuchte Luft ab, kondensiert Wasser an kalten Flächen. In der Sonde stört dieses Wasser Kontakte und Sensoren.</div>',
+          produkt: 'Beobachtung und Erklärung in zwei Sätzen' },
+        { typ: 'text', kicker: 'Auswertung', zeit: '10:35', titel: 'Was zeigen eure Messungen?',
+          html: '<ol><li>Kältetest: Bestimmt den Temperaturabfall nach 60 min. Sammelt die Werte aller Teams mit der Boxmasse an der Tafel.</li><li>Tragt Temperaturabfall gegen Boxmasse auf. Welche Box ist der beste Kompromiss?</li><li>Treppenhaus: Vergleicht die Höhe aus dem Druck mit der Höhe aus den Stufen. Nennt eine Ursache für die Abweichung.</li></ol>' },
+        { typ: 'notiz', id: 'n11_ausw', titel: 'Kernaussagen', felder: ['Kältetest: Kernaussage mit Zahl', 'Treppenhaus: Kernaussage mit Zahl', 'Was bedeutet das für die Sonde?'] },
+        { typ: 'quiz', titel: 'Auswertung geprüft', fragen: [
+          { id: 'q11_t1', f: 'Im Treppenhaus sinkt der Druck vom EG bis zum 3. OG um 1,10 hPa. Wie groß ist der Höhenunterschied?', o: ['etwa 1 m', 'etwa 9 m', 'etwa 90 m'], r: 1, e: 'Δh = Δp / (ρ · g) = 110 Pa / (1,2 kg/m³ · 9,81 m/s²) ≈ 9,3 m.' },
+          { id: 'q11_t2', f: 'Box A kühlt in 60 min um 8 K ab und wiegt 90 g. Box B kühlt um 6 K ab und wiegt 210 g. Was folgt daraus?', o: ['Box B ist immer besser.', 'Box B dämmt besser, kostet aber 120 g mehr. Ob sich das lohnt, entscheidet das Massebudget.', 'Box A ist kaputt.'], r: 1, e: 'Technik heißt abwägen. Ein Kriterium allein entscheidet nicht.' }
+        ] }
+      ] },
+
+    /* ================= Jahrgang 11, Missionskonferenz ================= */
+    { id: 'j11konf', icon: '🎤', tag: 'Jahrgang 11, Tag 2 nachmittags', titel: 'Missionskonferenz', kurz: 'Konferenz', untertitel: 'Missionskonzept, Pitch vor Gästen, Freigabe für Jahrgang 12',
+      ziele: ['Anforderungen mit prüfbarem Kriterium formulieren', 'ein Massebudget aufstellen', 'das Konzept des Teams vor Gästen begründen'],
+      bloecke: [
+        { typ: 'notiz', id: 'n11_anf', kicker: 'Missionskonzept', zeit: '11:15', titel: 'Anforderungsliste eures Teams',
+          html: '<p>Schreibt Anforderungen so, dass man sie prüfen kann. Schlecht: „Die Box soll gut dämmen.“ Gut: „Die Innentemperatur sinkt im Kältetest in 60 min um höchstens 8 K.“</p>',
+          felder: ['Muss (ohne das scheitert die Mission)', 'Soll (wichtig, aber verhandelbar)', 'Kann (wenn Zeit und Masse reichen)'] },
+        { typ: 'rechner', ids: ['masse'] },
+        { typ: 'risiko', titel: 'Top 5 der Risiken', html: '<p>Prüft eure Matrix. Die fünf Risiken mit der höchsten Zahl kommen ins Konzept.</p>' },
+        { typ: 'pitch', zeit: '12:25', titel: 'Euer Fünf-Minuten-Pitch', html: '<p>Um 13:05 Uhr stellt jedes Team sein Konzept vor Gästen vor. Danach gibt es drei Minuten für Fragen.</p>' },
+        { typ: 'auftrag', id: 'a11_poster', titel: 'Posterentwurf für den Tag der offenen Tür',
+          html: '<p>Skizziert ein Poster im Format A1 zu eurem Teamthema. Es hängt am Tag der offenen Tür am Stand.</p><ul><li>Überschrift als Frage, z. B. „Wie kalt ist es in 30 km Höhe?“</li><li>ein Bild oder Diagramm aus euren Messungen</li><li>höchstens 60 Wörter Text</li><li>eine Zahl, die Besucher überrascht</li></ul>',
+          produkt: 'Posterskizze auf A4' },
+        { typ: 'feedback', titel: 'Zwei Sterne und ein Wunsch' },
+        { typ: 'logbuch', titel: 'Logbuch Tag 2' },
+        { typ: 'freigabe', id: 'f_mission', titel: 'Missionsfreigabe für Jahrgang 12',
+          html: '<p>Die Gäste und die Lehrkraft entscheiden nach den Pitches, ob die Mission weitergeht.</p>' },
+        { typ: 'text', kicker: 'Mission Go', titel: 'Glückwunsch, die Mission geht weiter',
+          html: '<p>Eure Konzeptseiten sammelt die Lehrkraft als Übergabedokument v1.0. In Jahrgang 12 baut ihr darauf auf.</p>' }
+      ] },
+
+    /* ================= Jahrgang 11, Tag der offenen Tür ================= */
+    { id: 'j11tdot', icon: '🏫', tag: 'Jahrgang 11, Tag der offenen Tür', titel: 'Tag der offenen Tür', kurz: 'Tag der offenen Tür', untertitel: 'Fünf Mitmachstationen zur Mission',
+      ziele: ['die Mission in 30 Sekunden verständlich erklären', 'eine Mitmachstation sicher betreuen'],
+      bloecke: [
+        { typ: 'text', kicker: 'Unser Stand', titel: 'Fünf Stationen, ein Ziel',
+          html: '<p>Besucher sollen nach fünf Minuten wissen, was ihr vorhabt, und eine Sache selbst ausprobiert haben. Jede Station betreuen zwei von euch in Schichten zu 45 Minuten.</p>' +
+            '<div class="stationen">' +
+            '<div class="task"><b>1 Mission Stratosphäre (Team E)</b><br>Poster aller Teams, Fotos der Projekttage.<br><i>30-Sekunden-Satz:</i> „Wir bauen in drei Jahren eine Sonde, die 35 km hoch fliegt und dabei Temperatur und Luftdruck misst.“</div>' +
+            '<div class="task"><b>2 Wie hoch bist du? (Team D)</b><br>Besucher tragen den Sensor die Treppe hoch, der Laptop zeigt den Druck.<br><i>30-Sekunden-Satz:</i> „Jeder Meter nach oben senkt den Luftdruck ein kleines Stück. Unser Sensor merkt schon einen Höhenunterschied von einem Stockwerk.“</div>' +
+            '<div class="task"><b>3 Kältebox-Challenge (Team B)</b><br>Besucher tippen, welche Box am besten dämmt. Danach zeigt ihr die Kurven.<br><i>30-Sekunden-Satz:</i> „Unsere Elektronik muss −50 °C überstehen. Hier seht ihr, welche Box sie am besten warm hält und was das an Masse kostet.“</div>' +
+            '<div class="task"><b>4 Ballonrechner (Team A)</b><br>Besucher rechnen aus, wie viel Helium sie selbst heben würde.<br><i>30-Sekunden-Satz:</i> „Ein Kubikmeter Helium hebt etwa ein Kilogramm. Wie groß müsste dein Ballon sein?“</div>' +
+            '<div class="task"><b>5 Konstruktion (Team C)</b><br>Gedruckte Halter zum Anfassen, Messschieber zum Nachmessen, FreeCAD am Laptop.<br><i>30-Sekunden-Satz:</i> „Jedes Gramm zählt. Deshalb konstruieren wir Halter mit Rippen statt aus Vollmaterial.“</div>' +
+            '</div>' },
+        { typ: 'rechner', ids: ['heben'] },
+        { typ: 'faq', kicker: 'Besucherfragen', titel: 'Was Besucher oft fragen', liste: [
+          ['Darf man einfach einen Wetterballon steigen lassen?', 'Nein. Man braucht eine Aufstiegserlaubnis der Luftfahrtbehörde, eine Versicherung und die Zustimmung des Grundstückseigentümers. Wir stellen den Antrag im Sommer 2028.'],
+          ['Wo landet der Ballon?', 'Das hängt vom Wind ab. Mit einer Flugbahnprognose rechnen wir das Landegebiet voraus. Ein GPS-Tracker zeigt uns die Sonde nach der Landung.'],
+          ['Was passiert mit dem Ballon?', 'Er dehnt sich beim Aufstieg aus, bis er in über 30 km Höhe platzt. Die Sonde sinkt dann am Fallschirm mit etwa 5 m/s zu Boden.'],
+          ['Was kostet das?', 'Über drei Jahre etwa 1100 bis 1350 Euro. Ballon, Gas und Versicherung sind die teuersten Posten.'],
+          ['Was lernt man dabei?', 'Messen, Konstruieren, Programmieren, Planen und Präsentieren. Das sind genau die Aufgaben von physikalisch-technischen Assistenten.'],
+          ['Ist das gefährlich?', 'Die Sonde ist leicht, fällt am Fallschirm und wird vorher genau geprüft. Genau dafür gibt es die Genehmigung und unsere Checklisten.']
+        ] },
+        { typ: 'auftrag', id: 'a11_tdot', titel: 'Vorbereitung im Team',
+          html: '<ol><li>Poster nach dem Entwurf fertigstellen.</li><li>Station einmal komplett aufbauen und durchspielen.</li><li>Den 30-Sekunden-Satz auswendig sprechen können.</li><li>Schichtplan mit Namen an der Station aushängen.</li></ol>',
+          produkt: 'Poster, getestete Station, Schichtplan' },
+        { typ: 'logbuch', titel: 'Logbuch Tag der offenen Tür' }
+      ] }
+  ]
+};
+
+</script>
+<script>
+/* Projekt-App: Engine (Missionskarte, Etappen mit Blöcken, Rechner, Fallakte, Risikomatrix, Pitch, Logbuch).
+   Inhalt kommt aus PROJEKT (inhalt.js), CONFIG kommt vom Builder (codeHash, erzeugt). */
+(function () {
+  'use strict';
+  var P = PROJEKT;
+  var KEY = 'projekt_' + P.id;
+  var app = document.getElementById('app');
+
+  /* ---------- Zustand ---------- */
+  function leer() {
+    return { name: '', team: '', rolle: '', wunsch: ['', ''], done: {}, quiz: {}, log: {}, fall: {}, eigen: [], frei: {}, werte: {}, masse: null, pitch: {}, vertrag: {}, feedback: {} };
+  }
+  var S = leer();
+  try {
+    var roh = localStorage.getItem(KEY);
+    if (roh) { var gel = JSON.parse(roh); for (var k in gel) S[k] = gel[k]; }
+  } catch (e) { /* privat oder gesperrt: ohne Speicher weiter */ }
+  function speichern() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ohne Speicher */ }
+    kopfZeile();
+  }
+
+  /* ---------- Hilfen ---------- */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function zahl(v) { var x = parseFloat(String(v).replace(',', '.')); return isFinite(x) ? x : NaN; }
+  function fmt(x, d) {
+    if (!isFinite(x)) return '–';
+    var s = x.toFixed(d == null ? 2 : d).replace('.', ',');
+    if (s.charAt(0) === '-') s = '\u2212' + s.slice(1);
+    var teile = s.split(',');
+    teile[0] = teile[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return teile.join(',');
+  }
+  function $(sel, el) { return (el || document).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+  function toast(t) {
+    var d = document.createElement('div');
+    d.className = 'toast'; d.textContent = t;
+    document.body.appendChild(d);
+    setTimeout(function () { d.remove(); }, 1800);
+  }
+  function hash(s) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('00000000' + h.toString(16)).slice(-8);
+  }
+  function codeOk(eingabe) {
+    eingabe = String(eingabe || '').trim();
+    if (!eingabe) return false;
+    if (!CONFIG.codeHash) return true;
+    return hash(eingabe) === CONFIG.codeHash;
+  }
+
+  /* ---------- Punkte und Ränge ---------- */
+  function punkte() {
+    var p = 0, k;
+    for (k in S.done) if (S.done[k]) p += 10;
+    for (k in S.quiz) if (S.quiz[k] && S.quiz[k].erst) p += 5;
+    for (k in S.log) if (logVoll(k)) p += 10;
+    for (k in S.fall) if (S.fall[k] && S.fall[k].u != null && S.fall[k].m != null) p += 5;
+    return p;
+  }
+  function rang(p) {
+    var r = P.raenge[0];
+    P.raenge.forEach(function (x) { if (p >= x.ab) r = x; });
+    return r;
+  }
+  function kopfZeile() {
+    var p = punkte();
+    $('#punkte').textContent = p + ' P';
+  }
+  function logVoll(eid) {
+    var l = S.log[eid];
+    if (!l) return false;
+    var n = 0;
+    for (var k in l) if (String(l[k]).trim().length > 15) n++;
+    return n >= 3;
+  }
+
+  /* ---------- Normatmosphäre ---------- */
+  var G0 = 9.80665, RL = 287.053;
+  var SCH = [[0, 288.15, -0.0065, 101325], [11000, 216.65, 0, 0], [20000, 216.65, 0.001, 0], [32000, 228.65, 0.0028, 0], [47000, 270.65, 0, 0]];
+  (function () {
+    for (var i = 1; i < SCH.length; i++) {
+      var a = SCH[i - 1], h1 = SCH[i][0];
+      SCH[i][3] = a[2] === 0 ? a[3] * Math.exp(-G0 * (h1 - a[0]) / (RL * a[1])) : a[3] * Math.pow(1 + a[2] * (h1 - a[0]) / a[1], -G0 / (a[2] * RL));
+    }
+  })();
+  function atm(h) {
+    h = Math.max(0, Math.min(h, 50000));
+    var i = SCH.length - 1;
+    while (i > 0 && h < SCH[i][0]) i--;
+    var s = SCH[i], T = s[1] + s[2] * (h - s[0]);
+    var p = s[2] === 0 ? s[3] * Math.exp(-G0 * (h - s[0]) / (RL * s[1])) : s[3] * Math.pow(1 + s[2] * (h - s[0]) / s[1], -G0 / (s[2] * RL));
+    return { p: p, T: T, rho: p / (RL * T) };
+  }
+  function hoeheAusDruck(p) {
+    var lo = 0, hi = 50000;
+    for (var i = 0; i < 60; i++) { var m = (lo + hi) / 2; if (atm(m).p > p) lo = m; else hi = m; }
+    return lo;
+  }
+  var RHO_L = 101325 / (RL * 288.15);
+  var RHO_HE = 101325 * 0.0040026 / (8.314462 * 288.15);
+
+  /* ---------- Diagramm ---------- */
+  function diagramm(reihen, o) {
+    var W = 640, H = 300, L = 58, R = 14, T = 14, B = 44;
+    var xs = [], ys = [];
+    reihen.forEach(function (r) { r.punkte.forEach(function (q) { if (isFinite(q[0]) && isFinite(q[1])) { xs.push(q[0]); ys.push(q[1]); } }); });
+    if (!xs.length) return '<p class="leit">Noch keine Messwerte.</p>';
+    var x0 = o.x0 != null ? o.x0 : Math.min.apply(null, xs), x1 = o.x1 != null ? o.x1 : Math.max.apply(null, xs);
+    var y0 = o.y0 != null ? o.y0 : Math.min.apply(null, ys), y1 = o.y1 != null ? o.y1 : Math.max.apply(null, ys);
+    if (x1 === x0) x1 = x0 + 1;
+    if (y1 === y0) { y1 = y0 + 1; y0 = y0 - 1; }
+    function X(v) { return L + (v - x0) / (x1 - x0) * (W - L - R); }
+    function Y(v) { return H - B - (v - y0) / (y1 - y0) * (H - T - B); }
+    var g = '';
+    for (var i = 0; i <= 5; i++) {
+      var vx = x0 + (x1 - x0) * i / 5, vy = y0 + (y1 - y0) * i / 5;
+      g += '<line x1="' + X(vx) + '" y1="' + T + '" x2="' + X(vx) + '" y2="' + (H - B) + '" stroke="#e3e9f1"/>';
+      g += '<line x1="' + L + '" y1="' + Y(vy) + '" x2="' + (W - R) + '" y2="' + Y(vy) + '" stroke="#e3e9f1"/>';
+      g += '<text x="' + X(vx) + '" y="' + (H - B + 18) + '" font-size="13" text-anchor="middle" fill="#4d5a6b">' + fmt(vx, o.dx || 0) + '</text>';
+      g += '<text x="' + (L - 6) + '" y="' + (Y(vy) + 4) + '" font-size="13" text-anchor="end" fill="#4d5a6b">' + fmt(vy, o.dy || 0) + '</text>';
+    }
+    g += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 6) + '" font-size="14" text-anchor="middle" fill="#132033">' + esc(o.xl) + '</text>';
+    g += '<text x="14" y="' + ((T + H - B) / 2) + '" font-size="14" text-anchor="middle" fill="#132033" transform="rotate(-90 14 ' + ((T + H - B) / 2) + ')">' + esc(o.yl) + '</text>';
+    var farben = ['#c2410c', '#17607a', '#1b7a47', '#5b3fc4', '#a86d1c', '#7a1d2e'];
+    reihen.forEach(function (r, j) {
+      var f = r.farbe || farben[j % farben.length];
+      var pts = r.punkte.filter(function (q) { return isFinite(q[0]) && isFinite(q[1]); });
+      if (pts.length > 1 && !r.nurPunkte) g += '<polyline fill="none" stroke="' + f + '" stroke-width="3" points="' + pts.map(function (q) { return X(q[0]).toFixed(1) + ',' + Y(q[1]).toFixed(1); }).join(' ') + '"/>';
+      if (r.marken || r.nurPunkte) pts.forEach(function (q) { g += '<circle cx="' + X(q[0]) + '" cy="' + Y(q[1]) + '" r="5" fill="' + f + '"/>'; });
+    });
+    if (o.legende) g += reihen.map(function (r, j) { return '<text x="' + (L + 10) + '" y="' + (T + 16 + 18 * j) + '" font-size="13" font-weight="700" fill="' + (r.farbe || farben[j % farben.length]) + '">' + esc(r.name) + '</text>'; }).join('');
+    return '<svg class="diagramm" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.yl + ' gegen ' + o.xl) + '">' + g + '</svg>';
+  }
+
+  /* ---------- Eingabefelder für Rechner ---------- */
+  function feld(id, label, wert, einheit, schritt) {
+    return '<div><label class="feld" for="' + id + '">' + esc(label) + (einheit ? ' in ' + esc(einheit) : '') + '</label><input type="number" inputmode="decimal" id="' + id + '" value="' + wert + '" step="' + (schritt || 'any') + '"></div>';
+  }
+  function werteMerken(rid, el) {
+    var w = S.werte['r_' + rid] || {};
+    $$('input,select', el).forEach(function (i) { if (i.id && w[i.id] != null) i.value = w[i.id]; });
+    el.addEventListener('input', function () {
+      var neu = {};
+      $$('input,select', el).forEach(function (i) { if (i.id) neu[i.id] = i.value; });
+      S.werte['r_' + rid] = neu;
+      speichern();
+    });
+  }
+  function v(el, id) { return zahl($('#' + id, el).value); }
+
+  /* ---------- Rechner ---------- */
+  var RECHNER = {
+    atmosphaere: {
+      titel: 'Atmosphäre', icon: '🌡️', kurz: 'Druck, Temperatur und Dichte in jeder Höhe (Normatmosphäre)',
+      html: function () {
+        return '<label class="feld" for="a_hr">Schieberegler für die Höhe (0 bis 45 km)</label><input type="range" id="a_hr" min="0" max="45" step="0.1" value="11">' +
+          '<div class="rgrid">' + feld('a_h', 'Höhe', '11', 'km') + feld('a_p', 'oder Druck eingeben', '', 'hPa') + '</div>' +
+          '<div class="erg" id="a_erg"></div><div id="a_dia"></div>' +
+          '<p class="leit">Modell: internationale Normatmosphäre. Echte Werte schwanken mit Wetter, Jahreszeit und Ort.</p>';
+      },
+      init: function (el) {
+        function rechne(h) {
+          var a = atm(h * 1000);
+          $('#a_erg', el).innerHTML = '<div>Luftdruck<b>' + fmt(a.p / 100, a.p < 1000 ? 2 : 0) + ' hPa</b></div><div>Temperatur<b>' + fmt(a.T - 273.15, 1) + ' °C</b></div><div>Luftdichte<b>' + fmt(a.rho, 3) + ' kg/m³</b></div><div>Anteil vom Bodendruck<b>' + fmt(a.p / 1013.25, 1) + ' %</b></div>';
+          var pT = [], pp = [];
+          for (var x = 0; x <= 45; x += 0.5) { var b = atm(x * 1000); pT.push([b.T - 273.15, x]); pp.push([b.p / 100, x]); }
+          $('#a_dia', el).innerHTML = diagramm([{ name: 'Temperatur', punkte: pT }, { name: 'Ballon', punkte: [[a.T - 273.15, h]], nurPunkte: true, farbe: '#c2410c' }], { xl: 'Temperatur in °C', yl: 'Höhe in km', x0: -70, x1: 20, y0: 0, y1: 45 });
+        }
+        var hr = $('#a_hr', el), hf = $('#a_h', el), pf = $('#a_p', el);
+        hr.addEventListener('input', function () { hf.value = hr.value; pf.value = ''; rechne(zahl(hr.value)); });
+        hf.addEventListener('input', function () { var h = zahl(hf.value); if (isFinite(h)) { hr.value = h; pf.value = ''; rechne(h); } });
+        pf.addEventListener('input', function () { var p = zahl(pf.value); if (isFinite(p) && p > 0) { var h = hoeheAusDruck(p * 100) / 1000; hf.value = h.toFixed(2); hr.value = h; rechne(h); } });
+        rechne(zahl(hf.value) || 0);
+      }
+    },
+    gas: {
+      titel: 'Ballongas', icon: '🎈', kurz: 'Wie viel Gas muss in den Ballon?',
+      html: function () {
+        return '<div class="rgrid">' + feld('g_mb', 'Masse Ballonhülle', 1200, 'g') + feld('g_ms', 'Masse Sonde', 1600, 'g') + feld('g_mf', 'Fallschirm und Schnur', 200, 'g') + feld('g_fl', 'freier Auftrieb', 1500, 'g') + feld('g_x', 'Heliumanteil im Ballongas', 100, '%') + '</div>' +
+          '<div class="erg" id="g_erg"></div>' +
+          '<div class="merke"><b>So rechnet die App:</b> Jeder Kubikmeter Gas hebt die Differenz der Dichten. <span class="formel">V = m<sub>gesamt</sub> / (ρ<sub>Luft</sub> − ρ<sub>Gas</sub>)</span>. Am Boden bei 15 °C ist ρ<sub>Luft</sub> = 1,225 kg/m³ und ρ<sub>He</sub> = 0,169 kg/m³. Der freie Auftrieb ist der Überschuss, der den Ballon nach oben zieht.</div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var m = (v(el, 'g_mb') + v(el, 'g_ms') + v(el, 'g_mf') + v(el, 'g_fl')) / 1000;
+          var x = v(el, 'g_x') / 100;
+          var d = x * (RHO_L - RHO_HE);
+          var V = m / d, D = Math.cbrt(6 * V / Math.PI);
+          $('#g_erg', el).innerHTML = '<div>zu hebende Masse<b>' + fmt(m, 2) + ' kg</b></div><div>Auftrieb je m³<b>' + fmt(d, 3) + ' kg</b></div><div>Gasvolumen<b>' + fmt(V, 2) + ' m³</b></div><div>Ballondurchmesser am Start<b>' + fmt(D, 2) + ' m</b></div>';
+        }
+        el.addEventListener('input', rechne); rechne();
+      }
+    },
+    platzen: {
+      titel: 'Platzhöhe', icon: '💥', kurz: 'In welcher Höhe platzt der Ballon?',
+      html: function () {
+        return '<div class="rgrid">' + feld('p_v', 'Gasvolumen am Start', '4.3', 'm³') + feld('p_d', 'Platzdurchmesser (Hersteller)', '12.5', 'm') + '</div>' +
+          '<div class="erg" id="p_erg"></div><div id="p_dia"></div>' +
+          '<div class="merke"><b>Modell:</b> ideales Gas mit Umgebungstemperatur, Hülle ohne Spannung. <span class="formel">V(h) = V<sub>0</sub> · (p<sub>0</sub>/p) · (T/T<sub>0</sub>)</span>. Der Ballon platzt, sobald V(h) das Volumen der Kugel mit Platzdurchmesser erreicht.</div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var V0 = v(el, 'p_v'), D = v(el, 'p_d');
+          var Vp = Math.PI / 6 * D * D * D;
+          function V(h) { var a = atm(h); return V0 * 101325 / a.p * a.T / 288.15; }
+          var lo = 0, hi = 50000;
+          if (!(V0 > 0 && D > 0)) { $('#p_erg', el).innerHTML = ''; return; }
+          for (var i = 0; i < 60; i++) { var m = (lo + hi) / 2; if (V(m) < Vp) lo = m; else hi = m; }
+          var pts = [];
+          for (var h = 0; h <= lo; h += 500) pts.push([h / 1000, Math.cbrt(6 * V(h) / Math.PI)]);
+          pts.push([lo / 1000, D]);
+          $('#p_erg', el).innerHTML = '<div>Volumen beim Platzen<b>' + fmt(Vp, 0) + ' m³</b></div><div>Platzhöhe<b>' + fmt(lo / 1000, 1) + ' km</b></div><div>Druck dort<b>' + fmt(atm(lo).p / 100, 1) + ' hPa</b></div><div>Volumen wächst um Faktor<b>' + fmt(Vp / V0, 0) + '</b></div>';
+          $('#p_dia', el).innerHTML = diagramm([{ name: 'Ballondurchmesser', punkte: pts }], { xl: 'Höhe in km', yl: 'Durchmesser in m', x0: 0, y0: 0, dy: 1 });
+        }
+        el.addEventListener('input', rechne); rechne();
+      }
+    },
+    treppenhaus: {
+      titel: 'Treppenhaus', icon: '🏢', kurz: 'Höhenunterschied aus dem Druckunterschied',
+      html: function () {
+        return '<div class="rgrid">' + feld('t_pu', 'Druck unten', '1013.20', 'hPa') + feld('t_po', 'Druck oben', '1012.05', 'hPa') + feld('t_hm', 'gemessene Höhe (Stufen × Stufenhöhe)', '10', 'm') + feld('t_rho', 'Luftdichte', '1.2', 'kg/m³') + '</div>' +
+          '<div class="erg" id="t_erg"></div>' +
+          '<div class="merke"><b>Hydrostatischer Druck:</b> <span class="formel">Δp = ρ · g · Δh</span>, also <span class="formel">Δh = Δp / (ρ · g)</span>. In Bodennähe entspricht 1 hPa etwa 8,5 m.</div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var dp = (v(el, 't_pu') - v(el, 't_po')) * 100, rho = v(el, 't_rho'), hm = v(el, 't_hm');
+          var dh = dp / (rho * 9.81);
+          $('#t_erg', el).innerHTML = '<div>Druckunterschied<b>' + fmt(dp / 100, 2) + ' hPa</b></div><div>Höhe aus dem Druck<b>' + fmt(dh, 1) + ' m</b></div><div>Abweichung zur Messung<b>' + fmt((dh - hm) / hm * 100, 0) + ' %</b></div><div>erwartetes Δp<b>' + fmt(rho * 9.81 * hm / 100, 2) + ' hPa</b></div>';
+        }
+        el.addEventListener('input', rechne); rechne();
+      }
+    },
+    masse: {
+      titel: 'Massebudget', icon: '⚖️', kurz: 'Alle Bauteile der Sonde zusammenrechnen',
+      html: function () {
+        return '<p>Trage geschätzte oder gewogene Massen ein. Ziel für die Sonde: höchstens <b>' + P.masseZiel + ' g</b> mit 10 % Reserve. Für einen leichten Ballon muss die gesamte Nutzlast unter 4 kg bleiben.</p>' +
+          '<div style="overflow-x:auto"><table class="tabelle"><thead><tr><th>Bauteil</th><th>Masse in g</th><th></th></tr></thead><tbody id="m_body"></tbody></table></div>' +
+          '<div class="reihe"><button class="btn klein sek" id="m_neu">+ Zeile</button><button class="btn klein sek" id="m_std">Beispielwerte</button></div><div class="erg" id="m_erg"></div><div class="balken"><i id="m_bal"></i></div>';
+      },
+      init: function (el) {
+        if (!S.masse) S.masse = P.masseStart.map(function (r) { return [r[0], r[1]]; });
+        function zeichne() {
+          $('#m_body', el).innerHTML = S.masse.map(function (r, i) {
+            return '<tr><td><input type="text" data-i="' + i + '" data-k="0" value="' + esc(r[0]) + '" aria-label="Bauteil"></td><td><input type="number" inputmode="decimal" data-i="' + i + '" data-k="1" value="' + esc(r[1]) + '" aria-label="Masse in g"></td><td><button class="btn klein sek" data-weg="' + i + '" aria-label="Zeile löschen">✕</button></td></tr>';
+          }).join('');
+          summe();
+        }
+        function summe() {
+          var s = 0;
+          S.masse.forEach(function (r) { var x = zahl(r[1]); if (isFinite(x)) s += x; });
+          var mitR = s * 1.1;
+          $('#m_erg', el).innerHTML = '<div>Summe<b>' + fmt(s, 0) + ' g</b></div><div>mit 10 % Reserve<b>' + fmt(mitR, 0) + ' g</b></div><div>Spielraum zum Ziel<b>' + fmt(P.masseZiel - mitR, 0) + ' g</b></div>';
+          var b = $('#m_bal', el);
+          b.style.width = Math.min(100, mitR / P.masseZiel * 100) + '%';
+          b.className = mitR > P.masseZiel ? 'zuviel' : '';
+        }
+        el.addEventListener('input', function (ev) {
+          var t = ev.target;
+          if (t.dataset.i != null) { S.masse[+t.dataset.i][+t.dataset.k] = t.value; speichern(); summe(); }
+        });
+        el.addEventListener('click', function (ev) {
+          var t = ev.target;
+          if (t.dataset.weg != null) { S.masse.splice(+t.dataset.weg, 1); speichern(); zeichne(); }
+          if (t.id === 'm_neu') { S.masse.push(['', '']); speichern(); zeichne(); }
+          if (t.id === 'm_std') { S.masse = P.masseStart.map(function (r) { return [r[0], r[1]]; }); speichern(); zeichne(); }
+        });
+        zeichne();
+      }
+    },
+    energie: {
+      titel: 'Energie bei Kälte', icon: '🔋', kurz: 'Reicht die Batterie bis zur Bergung?',
+      html: function () {
+        return '<div class="rgrid">' + feld('e_c', 'Kapazität laut Datenblatt', 3000, 'mAh') + feld('e_i', 'mittlerer Strom', 80, 'mA') +
+          '<div><label class="feld" for="e_z">Zelltyp</label><select id="e_z">' + P.zellen.map(function (z, i) { return '<option value="' + i + '">' + esc(z[0]) + '</option>'; }).join('') + '</select></div>' +
+          feld('e_b', 'benötigte Laufzeit (Vorlauf, Flug, Bergung)', 7, 'h') + '</div><div class="erg" id="e_erg"></div><div class="balken"><i id="e_bal"></i></div>' +
+          '<div class="merke"><b>Kälteabschlag:</b> Bei −20 °C liefert eine Zelle nur einen Teil ihrer Nennkapazität. Die Faktoren sind grobe Richtwerte. Im Kältetest prüft ihr sie selbst. <span class="formel">t = C · f / I</span></div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var z = P.zellen[+$('#e_z', el).value];
+          var t = v(el, 'e_c') * z[1] / v(el, 'e_i'), b = v(el, 'e_b');
+          $('#e_erg', el).innerHTML = '<div>Kältefaktor<b>' + fmt(z[1] * 100, 0) + ' %</b></div><div>Laufzeit in der Kälte<b>' + fmt(t, 1) + ' h</b></div><div>Reserve<b>' + fmt(t - b, 1) + ' h</b></div>';
+          var bal = $('#e_bal', el);
+          bal.style.width = Math.min(100, t / (2 * b) * 100) + '%';
+          bal.className = t < b ? 'zuviel' : '';
+        }
+        el.addEventListener('input', rechne); el.addEventListener('change', rechne); rechne();
+      }
+    },
+    fallschirm: {
+      titel: 'Fallschirm', icon: '🪂', kurz: 'Wie groß muss der Fallschirm sein?',
+      html: function () {
+        return '<div class="rgrid">' + feld('f_m', 'Masse am Fallschirm', '1.5', 'kg') + feld('f_cw', 'Widerstandsbeiwert c_w', '1.5', '') + feld('f_v', 'gewünschte Sinkgeschwindigkeit am Boden', 5, 'm/s') + feld('f_rho', 'Luftdichte am Boden', '1.225', 'kg/m³') + '</div><div class="erg" id="f_erg"></div>' +
+          '<div class="merke"><b>Kräftegleichgewicht:</b> Bei konstanter Sinkgeschwindigkeit gilt <span class="formel">m · g = ½ · ρ · c<sub>w</sub> · A · v²</span>, also <span class="formel">A = 2 · m · g / (ρ · c<sub>w</sub> · v²)</span>.</div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var A = 2 * v(el, 'f_m') * 9.81 / (v(el, 'f_rho') * v(el, 'f_cw') * Math.pow(v(el, 'f_v'), 2));
+          var hoch = atm(10000).rho;
+          var v10 = Math.sqrt(2 * v(el, 'f_m') * 9.81 / (hoch * v(el, 'f_cw') * A));
+          $('#f_erg', el).innerHTML = '<div>Fläche<b>' + fmt(A, 2) + ' m²</b></div><div>Durchmesser<b>' + fmt(2 * Math.sqrt(A / Math.PI), 2) + ' m</b></div><div>Sinkgeschwindigkeit in 10 km<b>' + fmt(v10, 1) + ' m/s</b></div>';
+        }
+        el.addEventListener('input', rechne); rechne();
+      }
+    },
+    heben: {
+      titel: 'Heb dich selbst', icon: '🧍', kurz: 'Wie viel Helium bräuchtest du?',
+      html: function () {
+        return '<div class="rgrid">' + feld('h_m', 'deine Masse', 70, 'kg') + '</div><div class="erg" id="h_erg"></div><p class="leit">Reines Helium am Boden bei 15 °C, Ballonhülle nicht mitgerechnet.</p>';
+      },
+      init: function (el) {
+        function rechne() {
+          var V = v(el, 'h_m') / (RHO_L - RHO_HE);
+          $('#h_erg', el).innerHTML = '<div>Heliumvolumen<b>' + fmt(V, 0) + ' m³</b></div><div>Kugeldurchmesser<b>' + fmt(Math.cbrt(6 * V / Math.PI), 1) + ' m</b></div><div>Partyballons (10 g Auftrieb)<b>' + fmt(v(el, 'h_m') * 100, 0) + '</b></div>';
+        }
+        el.addEventListener('input', rechne); rechne();
+      }
+    }
+  };
+
+  function rechnerKarte(id, eingebettet) {
+    var r = RECHNER[id];
+    var html = '<div class="card" data-rechner="' + id + '"><div class="kicker">Rechner</div><h3>' + r.icon + ' ' + esc(r.titel) + '</h3><p class="leit">' + esc(r.kurz) + '</p>' + r.html() + '</div>';
+    return html;
+  }
+  function rechnerStarten(root) {
+    $$('[data-rechner]', root).forEach(function (el) {
+      var id = el.dataset.rechner;
+      if (id !== 'masse') werteMerken(id, el);
+      RECHNER[id].init(el);
+    });
+  }
+
+  /* ---------- Blöcke ---------- */
+  function blockQuiz(b) {
+    return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Check') + '</div><h3>' + esc(b.titel || 'Kurz geprüft') + '</h3>' + b.fragen.map(function (q) {
+      var st = S.quiz[q.id];
+      var html = '<div class="frage" data-q="' + q.id + '"><div class="f">' + q.f + '</div>';
+      html += q.o.map(function (t, i) {
+        var kl = '';
+        if (st) { if (i === q.r) kl = ' richtig'; else if (i === st.w) kl = ' falsch'; }
+        return '<button class="opt' + kl + '" data-o="' + i + '"' + (st && st.fertig ? ' disabled' : '') + '>' + t + '</button>';
+      }).join('');
+      if (st && st.fertig) html += '<div class="erkl">' + (st.erst ? '✅ ' : '💡 ') + q.e + '</div>';
+      else if (st) html += '<div class="erkl">Noch nicht. Versuch es noch einmal.</div>';
+      return html + '</div>';
+    }).join('') + '</div>';
+  }
+  function quizKlick(ev) {
+    var b = ev.target.closest('[data-o]');
+    if (!b) return false;
+    var box = b.closest('[data-q]'), qid = box.dataset.q, w = +b.dataset.o;
+    var q = alleFragen[qid];
+    var st = S.quiz[qid] || { versuche: 0 };
+    if (st.fertig) return true;
+    st.versuche++;
+    st.w = w;
+    if (w === q.r) { st.fertig = true; st.erst = st.versuche === 1; if (st.erst) toast('+5 Punkte'); }
+    S.quiz[qid] = st;
+    speichern();
+    neuZeichnen();
+    return true;
+  }
+
+  function blockAuftrag(b) {
+    var fertig = !!S.done[b.id];
+    return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Auftrag') + '</div>' + (b.zeit ? '<span class="zeit">' + esc(b.zeit) + '</span>' : '') + '<h3>' + esc(b.titel) + '</h3>' + (b.html || '') +
+      (b.produkt ? '<div class="produkt"><b>Ergebnis:</b> ' + b.produkt + '</div>' : '') +
+      '<label class="check"><input type="checkbox" data-done="' + b.id + '"' + (fertig ? ' checked' : '') + '> ' + (fertig ? '<span class="erledigt">Erledigt</span>' : 'Als erledigt markieren') + '</label></div>';
+  }
+
+  function blockFreigabe(b) {
+    var offen = !!S.frei[b.id];
+    return '<div class="card gate' + (offen ? ' offen' : '') + '"><div class="kicker">Freigabe durch die Lehrkraft</div><h3>' + (offen ? '✅ ' : '🔒 ') + esc(b.titel) + '</h3>' + (b.html || '') +
+      (offen ? '<p class="erledigt">Freigegeben. Weiter geht es unten.</p>' :
+        '<label class="feld" for="code_' + b.id + '">Lehrkraft-Code</label><input type="password" id="code_' + b.id + '" autocomplete="off"><div class="reihe"><button class="btn" data-frei="' + b.id + '">Freigeben</button></div>') + '</div>';
+  }
+
+  function blockMesstabelle(b) {
+    var w = S.werte['t_' + b.id] || {};
+    var spalten = b.spalten;
+    var html = '<div class="card" data-mt="' + b.id + '"><div class="kicker">Messtabelle</div><h3>' + esc(b.titel) + '</h3>' + (b.html || '') +
+      '<div style="overflow-x:auto"><table class="tabelle"><thead><tr><th>' + esc(b.x) + '</th>' + spalten.map(function (s) { return '<th>' + esc(s) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    b.zeilen.forEach(function (x, i) {
+      html += '<tr><td>' + esc(x) + '</td>' + spalten.map(function (s, j) {
+        var k = i + '_' + j;
+        return '<td><input type="text" inputmode="decimal" data-mk="' + k + '" value="' + esc(w[k] || '') + '" aria-label="' + esc(s + ' bei ' + x) + '"></td>';
+      }).join('') + '</tr>';
+    });
+    html += '</tbody></table></div><div class="mt-dia"></div></div>';
+    return html;
+  }
+  function messDia(karte) {
+    var b = blockIndex[karte.dataset.bid];
+    var w = S.werte['t_' + b.id] || {};
+    var reihen = b.spalten.map(function (s, j) {
+      return { name: s, marken: true, punkte: b.zeilen.map(function (x, i) { return [zahl(x), zahl(w[i + '_' + j])]; }) };
+    });
+    $('.mt-dia', karte).innerHTML = b.diagramm === false ? '' : diagramm(reihen, { xl: b.x, yl: b.y || 'Messwert', legende: b.spalten.length > 1, dy: b.dy == null ? 1 : b.dy });
+  }
+
+  function blockLogbuch(b, eid) {
+    var l = S.log[eid] || {};
+    return '<div class="card"><div class="kicker">Projektlogbuch</div><h3>📓 ' + esc(b.titel || 'Logbuch für heute') + '</h3><p class="leit">Fülle alle Felder aus. Dein Logbuch ist Teil deiner Note. Schreibe konkret und mit Fachbegriffen.</p>' +
+      P.logFragen.map(function (f, i) {
+        return '<label class="feld" for="log_' + eid + '_' + i + '">' + esc(f) + '</label><textarea id="log_' + eid + '_' + i + '" data-log="' + eid + '" data-li="' + i + '">' + esc(l[i] || '') + '</textarea>';
+      }).join('') + '<div class="reihe"><a class="btn sek" href="#/logbuch">Ganzes Logbuch ansehen</a></div></div>';
+  }
+
+  function blockFallakte(b) {
+    var filter = S.werte.fallfilter || 'alle';
+    var html = '<div class="card"><div class="kicker">Fallakte c’t</div><h3>🔎 ' + esc(b.titel || 'Was ging bei den Profis schief?') + '</h3>' + (b.html || '') +
+      '<div class="filter" data-ffilter>' + ['alle'].concat(P.teams.map(function (t) { return t.id; })).map(function (t) {
+        return '<button class="' + (filter === t ? 'on' : '') + '" data-fi="' + t + '">' + (t === 'alle' ? 'Alle Karten' : 'Team ' + t) + '</button>';
+      }).join('') + '</div>';
+    P.fallakte.forEach(function (c) {
+      if (filter !== 'alle' && c.team !== filter) return;
+      var st = S.fall[c.id] || {};
+      var fertig = st.u != null && st.m != null;
+      html += '<div class="fall' + (fertig ? ' fertig' : '') + '" data-fall="' + c.id + '"><div class="kopf"><span class="nr">' + c.id + '</span><b>' + esc(c.titel) + '</b><span class="teamtag">Team ' + c.team + '</span></div>' +
+        '<div class="quelle">' + esc(c.quelle) + '</div><p>' + c.text + '</p>' +
+        fallFrage(c, 'u', 'Wahrscheinliche Ursache', c.ursache, st) + fallFrage(c, 'm', 'Beste Gegenmaßnahme für unsere Sonde', c.massnahme, st) +
+        (fertig ? '<div class="reihe"><label class="feld" style="margin:0">Wahrscheinlichkeit</label>' + wahl(c.id, 'w', st.w || c.w, ['selten', 'möglich', 'wahrscheinlich']) +
+          '<label class="feld" style="margin:0">Auswirkung</label>' + wahl(c.id, 'a', st.a || c.a, ['gering', 'mittel', 'kritisch']) + '</div>' : '') + '</div>';
+    });
+    return html + '</div>';
+  }
+  function fallFrage(c, k, titel, f, st) {
+    var w = st[k];
+    var html = '<div class="frage"><div class="f">' + titel + '</div>';
+    html += f.o.map(function (t, i) {
+      var kl = w == null ? '' : (i === f.r ? ' richtig' : (i === w ? ' falsch' : ''));
+      return '<button class="opt' + kl + '" data-fk="' + k + '" data-fo="' + i + '"' + (w != null ? ' disabled' : '') + '>' + t + '</button>';
+    }).join('');
+    if (w != null) html += '<div class="erkl">' + (w === f.r ? '✅ ' : '💡 ') + f.e + '</div>';
+    return html + '</div>';
+  }
+  function wahl(cid, k, wert, namen) {
+    return '<select data-fw="' + cid + '" data-k="' + k + '" style="width:auto">' + namen.map(function (n, i) { return '<option value="' + (i + 1) + '"' + (+wert === i + 1 ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select>';
+  }
+
+  function blockRisiko(b) {
+    var html = '<div class="card" data-risiko><div class="kicker">Risikomatrix</div><h3>⚠️ ' + esc(b.titel || 'Unsere Risikomatrix') + '</h3>' + (b.html || '') + '<div class="matrix">';
+    var stufen = ['gering', 'mittel', 'kritisch'], w3 = ['wahrscheinlich', 'möglich', 'selten'];
+    var eintraege = riskEintraege();
+    html += '<div></div>' + stufen.map(function (s) { return '<div class="ach">' + s + '</div>'; }).join('');
+    [3, 2, 1].forEach(function (w, zi) {
+      html += '<div class="ach">' + w3[zi] + '</div>';
+      [1, 2, 3].forEach(function (a) {
+        var s = w * a, kl = s >= 6 ? 'r3' : (s >= 3 ? 'r2' : 'r1');
+        html += '<div class="zelle ' + kl + '">' + eintraege.filter(function (e) { return e.w === w && e.a === a; }).map(function (e) { return '<span class="chip" title="' + esc(e.t) + '">' + esc(e.k) + '</span>'; }).join('') + '</div>';
+      });
+    });
+    html += '</div><p class="leit" style="margin-top:6px">Zeilen: Wahrscheinlichkeit. Spalten: Auswirkung. Rot heißt: vor dem Flug unbedingt eine Gegenmaßnahme testen.</p>';
+    html += '<h4>Rangfolge</h4><ol>' + eintraege.slice().sort(function (x, y) { return y.w * y.a - x.w * x.a; }).map(function (e) { return '<li><b>' + esc(e.k) + '</b> ' + esc(e.t) + ' (' + e.w * e.a + ')</li>'; }).join('') + '</ol>';
+    html += '<h4>Eigenes Risiko ergänzen</h4><div class="rgrid"><div><label class="feld" for="ri_t">Risiko</label><input type="text" id="ri_t" placeholder="z. B. SD-Karte nicht eingesteckt"></div><div class="reihe">' +
+      wahl('neu', 'w', 2, ['selten', 'möglich', 'wahrscheinlich']) + wahl('neu', 'a', 2, ['gering', 'mittel', 'kritisch']) + '<button class="btn klein" data-ri="neu">Hinzufügen</button></div></div>';
+    if (S.eigen.length) html += '<div class="reihe">' + S.eigen.map(function (e, i) { return '<button class="btn klein sek" data-riweg="' + i + '">✕ E' + (i + 1) + '</button>'; }).join('') + '</div>';
+    return html + '</div>';
+  }
+  function riskEintraege() {
+    var l = [];
+    P.fallakte.forEach(function (c) {
+      var st = S.fall[c.id];
+      if (st && st.u != null && st.m != null) l.push({ k: c.id, t: c.titel, w: +(st.w || c.w), a: +(st.a || c.a) });
+    });
+    S.eigen.forEach(function (e, i) { l.push({ k: 'E' + (i + 1), t: e.t, w: +e.w, a: +e.a }); });
+    return l;
+  }
+
+  function blockTeamwahl() {
+    var html = '<div class="card"><div class="kicker">Teams</div><h3>👥 Welches Team passt zu dir?</h3><p>Wähle einen Erstwunsch und einen Zweitwunsch. Die Lehrkraft bildet daraus die Teams. Danach trägst du dein Team und deine Rolle ein.</p><div class="teams">';
+    P.teams.forEach(function (t) {
+      var kl = S.wunsch[0] === t.id ? ' wahl1' : (S.wunsch[1] === t.id ? ' wahl2' : '');
+      html += '<div class="teamkarte' + kl + '"><h4>' + t.icon + ' Team ' + t.id + ': ' + esc(t.name) + '</h4><p style="font-size:15px">' + esc(t.text) + '</p><p style="font-size:14px;color:#4d5a6b"><b>Passt, wenn du</b> ' + esc(t.passt) + '</p>' +
+        '<div class="reihe"><button class="btn klein' + (S.wunsch[0] === t.id ? '' : ' sek') + '" data-wunsch="0" data-t="' + t.id + '">Erstwunsch</button><button class="btn klein' + (S.wunsch[1] === t.id ? '' : ' sek') + '" data-wunsch="1" data-t="' + t.id + '">Zweitwunsch</button></div></div>';
+    });
+    html += '</div>' + profilFelder() + '</div>';
+    return html;
+  }
+  function profilFelder() {
+    return '<div class="rgrid"><div><label class="feld" for="pf_name">Dein Name (für den Ausdruck)</label><input type="text" id="pf_name" data-pf="name" value="' + esc(S.name) + '"></div>' +
+      '<div><label class="feld" for="pf_team">Dein Team</label><select id="pf_team" data-pf="team"><option value="">noch offen</option>' + P.teams.map(function (t) { return '<option value="' + t.id + '"' + (S.team === t.id ? ' selected' : '') + '>Team ' + t.id + ': ' + esc(t.name) + '</option>'; }).join('') + '</select></div>' +
+      '<div><label class="feld" for="pf_rolle">Deine Rolle in diesem Jahr</label><select id="pf_rolle" data-pf="rolle"><option value="">noch offen</option>' + P.rollen.map(function (r) { return '<option' + (S.rolle === r.name ? ' selected' : '') + '>' + esc(r.name) + '</option>'; }).join('') + '</select></div></div>';
+  }
+
+  function blockPitch(b) {
+    var pt = S.pitch || {};
+    var html = '<div class="card"><div class="kicker">Pitch-Planer</div><h3>🎤 ' + esc(b.titel || 'Euer Fünf-Minuten-Pitch') + '</h3>' + (b.html || '');
+    var summe = 0;
+    P.pitch.abschnitte.forEach(function (a, i) {
+      summe += a.min;
+      html += '<label class="feld" for="pi_' + i + '">' + (i + 1) + '. ' + esc(a.titel) + ' (' + fmt(a.min, 1).replace(',0', '') + ' min)</label><p class="leit" style="margin:0 0 4px;font-size:14px">' + esc(a.hilfe) + '</p><textarea id="pi_' + i + '" data-pitch="' + i + '">' + esc(pt[i] || '') + '</textarea>';
+    });
+    html += '<p class="leit">Gesamt: ' + summe + ' min. Jeder im Team spricht mindestens einen Abschnitt.</p>';
+    html += '<h4>Checkliste vor dem Auftritt</h4>' + P.pitch.check.map(function (c, i) {
+      var k = 'pc_' + i;
+      return '<label class="check"><input type="checkbox" data-pc="' + k + '"' + (S.werte[k] ? ' checked' : '') + '> ' + esc(c) + '</label>';
+    }).join('');
+    html += '<details><summary>Bewertungsraster für den Pitch</summary><table class="tabelle"><thead><tr><th>Kriterium</th><th>stark, wenn</th></tr></thead><tbody>' + P.pitch.raster.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</tbody></table></details>';
+    return html + '</div>';
+  }
+
+  function blockFeedback(b) {
+    var fb = S.feedback || {};
+    var html = '<div class="card"><div class="kicker">Rückmeldung</div><h3>⭐ ' + esc(b.titel || 'Zwei Sterne und ein Wunsch') + '</h3><p>Notiere zu jedem anderen Team zwei Stärken und einen Wunsch. Sag sie nach dem Pitch kurz an.</p>';
+    P.teams.forEach(function (t) {
+      if (t.id === S.team) return;
+      html += '<label class="feld" for="fb_' + t.id + '">Team ' + t.id + ': ' + esc(t.name) + '</label><textarea id="fb_' + t.id + '" data-fb="' + t.id + '" placeholder="⭐ … ⭐ … 🙏 …">' + esc(fb[t.id] || '') + '</textarea>';
+    });
+    return html + '</div>';
+  }
+
+  function blockText(b) {
+    return '<div class="card' + (b.stil ? ' ' + b.stil : '') + '">' + (b.kicker ? '<div class="kicker">' + esc(b.kicker) + '</div>' : '') + (b.zeit ? '<span class="zeit">' + esc(b.zeit) + '</span>' : '') + (b.titel ? '<h3>' + esc(b.titel) + '</h3>' : '') + b.html + '</div>';
+  }
+
+  function blockNotiz(b) {
+    var w = S.werte['n_' + b.id] || {};
+    return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Notizen') + '</div>' + (b.zeit ? '<span class="zeit">' + esc(b.zeit) + '</span>' : '') + '<h3>' + esc(b.titel) + '</h3>' + (b.html || '') +
+      b.felder.map(function (f, i) {
+        return '<label class="feld" for="n_' + b.id + '_' + i + '">' + esc(f) + '</label><textarea id="n_' + b.id + '_' + i + '" data-notiz="' + b.id + '" data-ni="' + i + '">' + esc(w[i] || '') + '</textarea>';
+      }).join('') + '</div>';
+  }
+
+  function blockFaq(b) {
+    return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Fragen') + '</div><h3>' + esc(b.titel) + '</h3>' + (b.html || '') + b.liste.map(function (f) { return '<details><summary>' + esc(f[0]) + '</summary><p style="margin-top:6px">' + f[1] + '</p></details>'; }).join('') + '</div>';
+  }
+
+  function blockHtml(b, eid) {
+    switch (b.typ) {
+      case 'text': return blockText(b);
+      case 'auftrag': return blockAuftrag(b);
+      case 'quiz': return blockQuiz(b);
+      case 'rechner': return b.ids.map(function (id) { return rechnerKarte(id, true); }).join('');
+      case 'fallakte': return blockFallakte(b);
+      case 'risiko': return blockRisiko(b);
+      case 'freigabe': return blockFreigabe(b);
+      case 'messtabelle': return blockMesstabelle(b);
+      case 'logbuch': return blockLogbuch(b, eid);
+      case 'teamwahl': return blockTeamwahl(b);
+      case 'pitch': return blockPitch(b);
+      case 'feedback': return blockFeedback(b);
+      case 'faq': return blockFaq(b);
+      case 'notiz': return blockNotiz(b);
+      default: return '';
+    }
+  }
+
+  /* ---------- Indizes ---------- */
+  var etappen = {}, blockIndex = {}, alleFragen = {};
+  P.etappen.forEach(function (e) {
+    etappen[e.id] = e;
+    e.bloecke.forEach(function (b, i) {
+      b._bid = e.id + '_' + i;
+      blockIndex[b._bid] = b;
+      if (b.typ === 'quiz') b.fragen.forEach(function (q) { alleFragen[q.id] = q; });
+    });
+  });
+  function etappenFortschritt(e) {
+    var ges = 0, fertig = 0;
+    e.bloecke.forEach(function (b) {
+      if (b.typ === 'auftrag') { ges++; if (S.done[b.id]) fertig++; }
+      if (b.typ === 'quiz') b.fragen.forEach(function (q) { ges++; if (S.quiz[q.id] && S.quiz[q.id].fertig) fertig++; });
+      if (b.typ === 'logbuch') { ges++; if (logVoll(e.id)) fertig++; }
+      if (b.typ === 'freigabe') { ges++; if (S.frei[b.id]) fertig++; }
+    });
+    return [fertig, ges];
+  }
+
+  /* ---------- Ansichten ---------- */
+  function tage(bis) {
+    var d = (new Date(bis + 'T08:00:00') - new Date()) / 86400000;
+    return Math.max(0, Math.ceil(d));
+  }
+  function startSeite() {
+    var p = punkte(), r = rang(p);
+    var html = '<section class="hero"><div class="wrap"><div class="kicker">' + esc(P.klasse) + ' · ' + esc(P.fach) + '</div><h2>' + esc(P.titel) + '</h2><p>' + esc(P.untertitel) + '</p>' +
+      '<div class="stats"><div class="stat"><b>' + tage(P.flug) + '</b>Tage bis zum Flugfenster</div><div class="stat"><b>' + p + '</b>Missionspunkte</div><div class="stat"><b>' + esc(r.name) + '</b>dein Rang</div>' + (S.team ? '<div class="stat"><b>Team ' + esc(S.team) + '</b>' + esc(S.rolle || 'Rolle offen') + '</div>' : '') + '</div>' +
+      '<div class="rankladder">' + P.raenge.map(function (x) { return '<span class="' + (x === r ? 'on' : '') + '">' + esc(x.name) + '</span>'; }).join('') + '</div></div></section><div class="wrap step">';
+    if (!S.team) html += '<div class="card" style="border-left:6px solid var(--acc)"><h3>Willkommen an Bord</h3><p>Trage zuerst deinen Namen ein und wähle dein Team, sobald es feststeht.</p><a class="btn" href="#/team">Zum Profil</a></div>';
+    P.jahre.forEach(function (j) {
+      html += '<div class="jahr"><h3>Jahrgang ' + j.nr + ': ' + esc(j.titel) + '</h3><span class="sj">' + esc(j.schuljahr) + '</span></div><p class="leit">' + esc(j.leitfrage) + '</p><div class="levels">';
+      if (j.etappen) {
+        var naechste = null;
+        j.etappen.forEach(function (eid, i) {
+          var e = etappen[eid], f = etappenFortschritt(e);
+          var done = f[1] && f[0] === f[1];
+          if (!done && !naechste) naechste = eid;
+          html += '<a class="lv j' + j.nr + (done ? ' done' : '') + (naechste === eid ? ' next' : '') + '" href="#/e/' + eid + '"><span class="num">' + (done ? '✓' : e.icon) + '</span><span class="tx"><span class="tag">' + esc(e.tag) + '</span><span class="tt" style="display:block">' + esc(e.titel) + '</span><span class="sub">' + esc(e.untertitel) + '</span></span><span class="st"><b>' + f[0] + '/' + f[1] + '</b>erledigt</span></a>';
+        });
+      } else {
+        j.vorschau.forEach(function (vv, i) {
+          html += '<div class="lv vorschau j' + j.nr + '"><span class="num">' + vv.icon + '</span><span class="tx"><span class="tag">' + esc(vv.tag) + '</span><span class="tt" style="display:block">' + esc(vv.titel) + '</span><span class="sub">' + esc(vv.text) + '</span></span><span class="st">🔒</span></div>';
+        });
+      }
+      html += '</div>';
+    });
+    html += '<div class="card"><div class="kicker">Werkzeuge</div><h3>Alles für die Mission</h3><div class="reihe"><a class="btn sek" href="#/rechner">🧮 Rechner</a><a class="btn sek" href="#/fallakte">🔎 Fallakte</a><a class="btn sek" href="#/risiko">⚠️ Risikomatrix</a><a class="btn sek" href="#/pitch">🎤 Pitch</a><a class="btn sek" href="#/logbuch">📓 Logbuch</a></div></div>';
+    return html + '</div>';
+  }
+
+  function etappenSeite(eid) {
+    var e = etappen[eid];
+    if (!e) return startSeite();
+    var html = '<section class="hero"><div class="wrap"><div class="kicker">' + esc(e.tag) + '</div><h2>' + e.icon + ' ' + esc(e.titel) + '</h2><p>' + esc(e.untertitel) + '</p>' + (e.ziele ? '<div class="stat" style="margin-top:12px"><b style="font-size:16px">Am Ende kannst du</b><ul style="margin:4px 0 0;padding-left:20px">' + e.ziele.map(function (z) { return '<li>' + esc(z) + '</li>'; }).join('') + '</ul></div>' : '') + '</div></section><div class="wrap step">';
+    var gesperrt = false;
+    e.bloecke.forEach(function (b) {
+      if (gesperrt) return;
+      var h = blockHtml(b, eid);
+      html += h.replace(/^<div class="card/, '<div data-bid="' + b._bid + '" class="card');
+      if (b.typ === 'freigabe' && !S.frei[b.id]) {
+        gesperrt = true;
+        html += '<div class="card gesperrt">🔒 Die nächsten Abschnitte erscheinen nach der Freigabe.</div>';
+      }
+    });
+    var liste = [];
+    P.jahre.forEach(function (j) { (j.etappen || []).forEach(function (x) { liste.push(x); }); });
+    var i = liste.indexOf(eid);
+    html += '<div class="weiter">' + (i > 0 ? '<a class="btn sek" href="#/e/' + liste[i - 1] + '">← ' + esc(etappen[liste[i - 1]].kurz || etappen[liste[i - 1]].titel) + '</a>' : '<a class="btn sek" href="#/">← Missionskarte</a>') +
+      (i < liste.length - 1 ? '<a class="btn" href="#/e/' + liste[i + 1] + '">' + esc(etappen[liste[i + 1]].kurz || etappen[liste[i + 1]].titel) + ' →</a>' : '<a class="btn" href="#/">Missionskarte</a>') + '</div>';
+    return html + '</div>';
+  }
+
+  function rechnerSeite(id) {
+    var html = '<div class="wrap step"><h2 style="margin:4px 0 10px">🧮 Rechner</h2>';
+    if (id && RECHNER[id]) {
+      html += '<p><a href="#/rechner">← alle Rechner</a></p>' + rechnerKarte(id);
+    } else {
+      html += '<div class="levels">' + Object.keys(RECHNER).map(function (k) {
+        var r = RECHNER[k];
+        return '<a class="lv" href="#/rechner/' + k + '"><span class="num">' + r.icon + '</span><span class="tx"><span class="tt" style="display:block">' + esc(r.titel) + '</span><span class="sub">' + esc(r.kurz) + '</span></span></a>';
+      }).join('') + '</div>';
+    }
+    return html + '</div>';
+  }
+
+  function logbuchSeite() {
+    var html = '<div class="wrap step"><h2 style="margin:4px 0 6px">📓 Projektlogbuch</h2><p class="leit">' + esc(S.name || 'Name fehlt') + (S.team ? ', Team ' + esc(S.team) : '') + (S.rolle ? ', ' + esc(S.rolle) : '') + '</p>' +
+      '<div class="reihe" style="margin-bottom:12px"><button class="btn" id="drucken">🖨️ Als PDF drucken</button><a class="btn sek" href="#/team">Profil</a></div>';
+    P.jahre.forEach(function (j) {
+      (j.etappen || []).forEach(function (eid) {
+        var e = etappen[eid];
+        if (!e.bloecke.some(function (b) { return b.typ === 'logbuch'; })) return;
+        html += '<div data-bid="lb_' + eid + '">' + blockLogbuch({ titel: e.titel }, eid).replace('<div class="card">', '<div class="card">') + '</div>';
+      });
+    });
+    return html + '</div>';
+  }
+  function drucken() {
+    var d = document.getElementById('druck');
+    var h = '<h1>Projektlogbuch ' + esc(P.titel) + '</h1><p>' + esc(S.name || '') + (S.team ? ', Team ' + esc(S.team) : '') + (S.rolle ? ', Rolle: ' + esc(S.rolle) : '') + ', gedruckt am ' + new Date().toLocaleDateString('de-DE') + '</p>';
+    P.jahre.forEach(function (j) {
+      (j.etappen || []).forEach(function (eid) {
+        var e = etappen[eid], l = S.log[eid];
+        if (!l) return;
+        h += '<h2>' + esc(e.tag + ': ' + e.titel) + '</h2>' + P.logFragen.map(function (f, i) { return '<div class="eintrag"><b>' + esc(f) + '</b>' + esc(l[i] || '').replace(/\n/g, '<br>') + '</div>'; }).join('');
+      });
+    });
+    var ris = riskEintraege();
+    if (ris.length) h += '<h2>Risikomatrix (Rangfolge)</h2><ol>' + ris.sort(function (x, y) { return y.w * y.a - x.w * x.a; }).map(function (e) { return '<li>' + esc(e.k + ' ' + e.t) + ' (' + e.w * e.a + ')</li>'; }).join('') + '</ol>';
+    d.innerHTML = h;
+    document.body.classList.add('drucken');
+    setTimeout(function () { window.print(); document.body.classList.remove('drucken'); }, 50);
+  }
+
+  function teamSeite() {
+    var p = punkte();
+    var html = '<div class="wrap step"><h2 style="margin:4px 0 10px">👥 Team und Profil</h2><div class="card"><h3>Dein Profil</h3>' + profilFelder() + '<p class="leit" style="margin-top:10px">Missionspunkte: ' + p + '. Punkte gibt es für erledigte Aufträge (10), Quizfragen im ersten Versuch (5), vollständige Logbucheinträge (10) und gelöste Fallakten (5).</p></div>';
+    html += blockTeamwahl().replace(profilFelder(), '');
+    html += '<div class="card"><h3>Rollen im Team</h3><p>Die Rollen wechseln jedes Jahr. So lernt jeder alle Seiten des Projekts kennen.</p><ul>' + P.rollen.map(function (r) { return '<li><b>' + esc(r.name) + ':</b> ' + esc(r.text) + '</li>'; }).join('') + '</ul></div>';
+    html += '<div class="card"><h3>Teamvertrag</h3><p>Drei Regeln, auf die sich euer Team einigt.</p>' + [0, 1, 2].map(function (i) { return '<label class="feld" for="tv_' + i + '">Regel ' + (i + 1) + '</label><input type="text" id="tv_' + i + '" data-tv="' + i + '" value="' + esc(S.vertrag[i] || '') + '">'; }).join('') + '</div>';
+    html += '<div class="card"><h3>So wird bewertet</h3><table class="tabelle"><thead><tr><th>Kriterium</th><th>Anteil</th><th>gut erfüllt, wenn</th></tr></thead><tbody>' + P.bewertung.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    html += '<div class="card"><h3>Speicher</h3><p class="leit">Dein Fortschritt liegt nur auf diesem Gerät. Wechselst du das Gerät, beginnst du neu. Drucke dein Logbuch deshalb nach jedem Projekttag.</p><button class="btn sek" id="reset">Alles zurücksetzen</button></div>';
+    return html + '</div>';
+  }
+
+  function einzelSeite(typ) {
+    var b = { typ: typ };
+    var titel = { fallakte: '🔎 Fallakte', risiko: '⚠️ Risikomatrix', pitch: '🎤 Pitch' }[typ];
+    return '<div class="wrap step"><h2 style="margin:4px 0 10px">' + titel + '</h2>' + blockHtml(b, 'x').replace(/^<div class="card/, '<div data-bid="x_' + typ + '" class="card') + '</div>';
+  }
+
+  /* ---------- Router ---------- */
+  var TABS = [['#/', '🗺️', 'Mission'], ['#/rechner', '🧮', 'Rechner'], ['#/fallakte', '🔎', 'Fallakte'], ['#/logbuch', '📓', 'Logbuch'], ['#/team', '👥', 'Team']];
+  function render() {
+    var h = location.hash || '#/';
+    var teile = h.replace(/^#\//, '').split('/');
+    var html;
+    if (teile[0] === 'e') html = etappenSeite(teile[1]);
+    else if (teile[0] === 'rechner') html = rechnerSeite(teile[1]);
+    else if (teile[0] === 'logbuch') html = logbuchSeite();
+    else if (teile[0] === 'team') html = teamSeite();
+    else if (teile[0] === 'fallakte' || teile[0] === 'risiko' || teile[0] === 'pitch') html = einzelSeite(teile[0]);
+    else html = startSeite();
+    app.innerHTML = html;
+    rechnerStarten(app);
+    $$('[data-mt]', app).forEach(function (k) { if (!k.dataset.bid) k.dataset.bid = k.closest('[data-bid]') ? k.closest('[data-bid]').dataset.bid : ''; messDia(k); });
+    $('#kopf').textContent = P.kurztitel;
+    $('#tabs').innerHTML = TABS.map(function (t) {
+      var on = (t[0] === '#/' ? (h === '#/' || h === '' || h.indexOf('#/e/') === 0) : h.indexOf(t[0]) === 0);
+      return '<a href="' + t[0] + '" class="' + (on ? 'on' : '') + '"><span>' + t[1] + '</span>' + t[2] + '</a>';
+    }).join('');
+    kopfZeile();
+  }
+  window.addEventListener('hashchange', function () { render(); window.scrollTo(0, 0); });
+
+  /* ---------- Ereignisse ---------- */
+  app.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (quizKlick(ev)) return;
+    var fo = t.closest('[data-fo]');
+    if (fo) {
+      var karte = fo.closest('[data-fall]'), cid = karte.dataset.fall;
+      var st = S.fall[cid] || {};
+      st[fo.dataset.fk] = +fo.dataset.fo;
+      S.fall[cid] = st;
+      if (st.u != null && st.m != null) toast('+5 Punkte, Karte in der Risikomatrix');
+      speichern(); neuZeichnen(); return;
+    }
+    var fi = t.closest('[data-fi]');
+    if (fi) { S.werte.fallfilter = fi.dataset.fi; speichern(); neuZeichnen(); return; }
+    if (t.dataset.frei) {
+      var inp = $('#code_' + t.dataset.frei);
+      if (codeOk(inp.value)) { S.frei[t.dataset.frei] = true; speichern(); toast('Freigegeben'); neuZeichnen(); }
+      else { inp.value = ''; toast('Code stimmt nicht'); }
+      return;
+    }
+    if (t.dataset.wunsch != null) {
+      var idx = +t.dataset.wunsch, andere = 1 - idx;
+      S.wunsch[idx] = t.dataset.t;
+      if (S.wunsch[andere] === t.dataset.t) S.wunsch[andere] = '';
+      speichern(); neuZeichnen(); return;
+    }
+    if (t.dataset.ri === 'neu') {
+      var tx = $('#ri_t').value.trim();
+      if (!tx) { toast('Erst ein Risiko eintragen'); return; }
+      S.eigen.push({ t: tx, w: +$('[data-fw="neu"][data-k="w"]').value, a: +$('[data-fw="neu"][data-k="a"]').value });
+      speichern(); neuZeichnen(); return;
+    }
+    if (t.dataset.riweg != null) { S.eigen.splice(+t.dataset.riweg, 1); speichern(); neuZeichnen(); return; }
+    if (t.id === 'drucken') { drucken(); return; }
+    if (t.id === 'reset') {
+      if (confirm('Wirklich alles löschen? Logbuch, Punkte und Freigaben gehen verloren.')) { S = leer(); speichern(); render(); }
+    }
+  });
+  app.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t.dataset.done) {
+      S.done[t.dataset.done] = t.checked;
+      if (t.checked) toast('+10 Punkte');
+      speichern(); neuZeichnen(); return;
+    }
+    if (t.dataset.fw && t.dataset.fw !== 'neu') {
+      var st = S.fall[t.dataset.fw] || {};
+      st[t.dataset.k] = +t.value;
+      S.fall[t.dataset.fw] = st;
+      speichern(); neuZeichnen(); return;
+    }
+    if (t.dataset.pf) { S[t.dataset.pf] = t.value; speichern(); return; }
+    if (t.dataset.pc) { S.werte[t.dataset.pc] = t.checked; speichern(); return; }
+  });
+  app.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t.dataset.log) {
+      var l = S.log[t.dataset.log] || {};
+      l[t.dataset.li] = t.value;
+      S.log[t.dataset.log] = l;
+      speichern(); return;
+    }
+    if (t.dataset.pf) { S[t.dataset.pf] = t.value; speichern(); return; }
+    if (t.dataset.pitch != null) { S.pitch[t.dataset.pitch] = t.value; speichern(); return; }
+    if (t.dataset.notiz) {
+      var nw = S.werte['n_' + t.dataset.notiz] || {};
+      nw[t.dataset.ni] = t.value;
+      S.werte['n_' + t.dataset.notiz] = nw;
+      speichern(); return;
+    }
+    if (t.dataset.fb) { S.feedback[t.dataset.fb] = t.value; speichern(); return; }
+    if (t.dataset.tv != null) { S.vertrag[t.dataset.tv] = t.value; speichern(); return; }
+    if (t.dataset.mk) {
+      var karte = t.closest('[data-mt]');
+      var bid = karte.dataset.mt;
+      var w = S.werte['t_' + bid] || {};
+      w[t.dataset.mk] = t.value;
+      S.werte['t_' + bid] = w;
+      speichern(); messDia(karte); return;
+    }
+  });
+  function neuZeichnen() {
+    var y = window.scrollY;
+    render();
+    window.scrollTo(0, y);
+  }
+
+  render();
+})();
+
+</script>
+</body>
+</html>

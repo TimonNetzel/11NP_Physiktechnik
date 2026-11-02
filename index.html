@@ -241,6 +241,14 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
       <div class="lerncoach-knoepfe" id="lerncoach-knoepfe"></div>
     </section>
 
+    <section class="lerncoach-box" id="projekte" aria-labelledby="projekte-titel" hidden>
+      <div>
+        <h2 id="projekte-titel">Projekt</h2>
+        <p>Unser Projekt über mehrere Jahre mit Aufträgen, Rechnern und Logbuch.</p>
+      </div>
+      <div class="lerncoach-knoepfe" id="projekte-knoepfe"></div>
+    </section>
+
     <section id="wochen" aria-labelledby="wochen-titel">
       <div class="abschnitt-kopf">
         <div>
@@ -300,7 +308,7 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
  "klasse": "11NP",
  "fach": "Physiktechnik",
  "schuljahr": "2026/27",
- "erzeugt": "2026-10-21",
+ "erzeugt": "2026-11-02",
  "wochen": [
   {
    "nr": 1,
@@ -455,6 +463,12 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
  "klausuren": [],
  "simulationen": [],
  "praktikum": [],
+ "projekte": [
+  {
+   "titel": "Mission Stratosphäre 11NP",
+   "html": "projekt/wetterballon/index.html"
+  }
+ ],
  "planung": [
   {
    "pdf": "planung/woche-03.pdf",
@@ -565,6 +579,8 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
     var sprung = [];
     if (aktuell) sprung.push('<a href="#aktuell">Diese Etappe</a>');
     if (d.lerncoach) sprung.push('<a href="#lerncoach">Lerncoach</a>');
+    var projekte = d.projekte || [];
+    if (projekte.length) sprung.push('<a href="#projekte">Projekt</a>');
     sprung.push('<a href="#wochen">Alle Etappen</a>');
     if (d.materialien.length) sprung.push('<a href="#skripte">Skripte</a>');
     if (klausuren) sprung.push('<a href="#klausuren">Probeklausuren</a>');
@@ -580,6 +596,13 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
         '<a class="haupt" href="' + esc(d.lerncoach.html) + '">Lerncoach öffnen</a>' +
         (d.lerncoach.hintergrund ? '<a href="' + esc(d.lerncoach.hintergrund) + '">Warum so?</a>' : "");
       document.getElementById("lerncoach").hidden = false;
+    }
+
+    if (projekte.length) {
+      document.getElementById("projekte-knoepfe").innerHTML = projekte.map(function (p) {
+        return '<a class="haupt" href="' + esc(p.html) + '">' + esc(p.titel) + " öffnen</a>";
+      }).join("");
+      document.getElementById("projekte").hidden = false;
     }
 
     var liste = document.getElementById("wochenliste");
