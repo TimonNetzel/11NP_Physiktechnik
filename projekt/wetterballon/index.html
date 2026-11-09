@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#16233a">
-<title>Mission Stratosphäre 11NP</title>
+<title>Treppenhaus: Druck, Höhe und GPS 11NP</title>
 <style>
 :root{
   color-scheme:light;
@@ -88,7 +88,7 @@ textarea{min-height:84px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
 input[type=range]{width:100%}
 .check{display:flex;align-items:center;gap:10px;font-weight:700;margin-top:8px}
-.check input{width:24px;height:24px}
+.check input{width:24px;height:24px;flex:0 0 24px}
 .erledigt{color:var(--ok);font-weight:800}
 /* Quiz */
 .frage{margin:12px 0 16px}
@@ -150,6 +150,29 @@ details summary{font-weight:700;cursor:pointer}
 pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overflow-x:auto;font:13px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}
 .stationen{display:grid;gap:10px}
 @media(min-width:700px){.stationen{grid-template-columns:1fr 1fr}}
+.phase{border-top:5px solid var(--blue)}
+.phkopf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.phnr{font-size:13px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em}
+.phkopf .zeit{margin:0}
+.chip{display:inline-block;background:#e3e9f1;color:var(--nav);border-radius:999px;padding:1px 10px;font-size:13px;font-weight:700}
+.pausekarte{border-top:0;background:#f4f6fa;color:var(--muted);padding:10px 16px}
+.clips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.clip{display:inline-flex;align-items:center;gap:4px;background:#b42318;color:#fff;border-radius:10px;padding:8px 12px;font-weight:800;font-size:15px;text-decoration:none;min-height:42px}
+.foto{background:#eef7ff;border-left:5px solid var(--blue);border-radius:10px;padding:8px 12px;margin:10px 0;font-size:15px}
+.stopp{background:var(--bossbg);border:2px solid var(--boss)}
+.stopp .kicker{color:var(--boss)}
+.weiche{border:2px solid var(--purple)}
+.rundenkopf{background:var(--nav);color:#fff}
+.rundenkopf .kicker{color:#ffb199}
+.rundenkopf h3{margin:0}
+.fahrplan ol.fp{list-style:none;padding:0;margin:6px 0}
+.fahrplan li{margin:4px 0}
+.fahrplan li button{width:100%;display:grid;grid-template-columns:56px 1fr;gap:2px 8px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 10px}
+.fahrplan .fpz{font-weight:800;color:var(--blue);grid-row:span 2}
+.fahrplan .fps{font-size:13px;color:var(--muted)}
+.fahrplan li.fppause button{background:#f4f6fa;color:var(--muted)}
+.fahrplan li.jetzt button{border:2px solid var(--acc);background:#fff1ea}
+.jetztmarke{background:var(--acc);color:#fff;border-radius:6px;padding:0 6px;font-size:12px}
 #druck{display:none}
 @media print{
   body.drucken > *:not(#druck){display:none!important}
@@ -168,10 +191,33 @@ pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overfl
 <nav class="tabbar"><div class="wrap" id="tabs"></div></nav>
 <div id="druck"></div>
 <script>
-const CONFIG = {"codeHash": "1c8864d8", "erzeugt": "2026-11-02"};
+const CONFIG = {"codeHash": "1c8864d8", "erzeugt": "2026-11-09"};
 </script>
 <script>
 /* Inhalt der Projekt-App „Mission Stratosphäre“ (11NP). Engine: _werkzeuge/projekt/engine.js, Bau: _werkzeuge/projekt_bauen.py */
+/* Station B wird in beiden Runden gleich bearbeitet. */
+const STATION_B = [
+  { typ: 'auftrag', id: 'a11_treppe', kicker: 'Station B', titel: 'Treppenhaus: Druck, Höhe und GPS',
+    html: '<div class="merke"><b>Sensor-Check (2 min):</b> phyphox öffnen, Kategorie „Sensoren“, Experiment „Luftdruck“. Erscheint ein Wert, hat das Handy ein Barometer. Sonst nehmt das Handy eures Partners.</div>' +
+      '<ol><li>Im Erdgeschoss startet Handy 1 in phyphox „Luftdruck“. Handy 2 startet „Ortung (GPS)“ am Fenster und wartet, bis eine Höhe erscheint.</li><li>Auf jedem Stockwerk bis ins dritte Obergeschoss 30 Sekunden ruhig stehen, dann Druck und GPS-Höhe ablesen und eintragen (15 min).</li><li>Stufen zählen und eine Stufe messen. So erhaltet ihr die echte Höhe.</li><li>Höhe aus dem Druck mit dem Rechner bestimmen und mit Stufen und GPS vergleichen (5 min).</li></ol>' +
+      '<div class="merke"><b>Für Schnelle:</b> Startet in phyphox das Experiment „Aufzug“ (Kategorie „Alltag“) und lauft die Treppe hoch. Wie schnell steigt ihr in m/s? Ein Wetterballon steigt mit etwa 5 m/s.</div>',
+    produkt: 'Druck, Stufenhöhe und GPS-Höhe je Stockwerk, Höhen im Vergleich' },
+  { typ: 'messtabelle', id: 'mt11_treppe', kicker: 'Station B', titel: 'Treppenhaus', x: 'Stockwerk', spalten: ['Druck in hPa', 'Höhe aus Stufen in m', 'GPS-Höhe in m'], zeilen: ['EG', '1. OG', '2. OG', '3. OG'], diagramm: false },
+  { typ: 'rechner', ids: ['treppenhaus'] },
+  { typ: 'auftrag', id: 'a11_fallschirm', kicker: 'Station B', titel: 'Fallschirm-Modell im Treppenauge',
+    html: '<p>Material an der Station: Quadrat aus einem Müllbeutel (40 cm × 40 cm), vier Schnüre zu je 40 cm, Klebeband, 20 g Knete als Last.</p>' +
+      '<ol><li>Ecken mit Klebeband verstärken, an jede Ecke eine Schnur, unten alle Schnüre in der Knete zusammenführen. Den fertigen Fallschirm wiegen (8 min).</li><li>Akustische Stoppuhr vorbereiten: phyphox, Kategorie „Zeitmessung“, „Akustische Stoppuhr“. Das Handy liegt unten. Die Schwelle so einstellen, dass Gespräche nicht auslösen.</li><li>Drei Würfe aus dem dritten Obergeschoss: Oben klatscht eine Person laut beim Loslassen, unten klatscht eine Person bei der Landung. Die Fallhöhe kennt ihr aus eurer Druckmessung (12 min).</li><li>Mittlere Sinkgeschwindigkeit <span class="formel">v = h / t</span> berechnen und mit dem Fallschirmrechner vergleichen: eure Masse, c<sub>w</sub> ≈ 1,3, vorhandene Fläche 0,16 m² (8 min).</li></ol>' +
+      '<div class="warn">Bereich unten absperren. Ein Posten unten ruft „frei“, erst dann wird losgelassen. Nichts aus Fenstern werfen.</div>' +
+      '<div class="merke"><b>Für Schnelle:</b> Verdoppelt die Last und messt erneut. Passt das Ergebnis zur Formel?</div>',
+    produkt: 'drei Fallzeiten, mittlere Sinkgeschwindigkeit, Vergleich mit der Rechnung' },
+  { typ: 'messtabelle', id: 'mt11_fall', kicker: 'Station B', titel: 'Fallschirm-Würfe', x: 'Wurf', spalten: ['Fallzeit in s', 'Fallhöhe in m'], zeilen: ['1', '2', '3'], diagramm: false },
+  { typ: 'rechner', ids: ['fallschirm'] },
+  { typ: 'quiz', kicker: 'Station B', titel: 'Druck, GPS und Fallschirm', fragen: [
+    { id: 'q11_g1', f: 'Im Treppenhaus springt die GPS-Höhe um mehrere Meter, der Druck kaum. Was folgt daraus für die Sonde?', o: ['Die Höhe kommt besser aus dem Luftdruck als aus dem GPS.', 'Das GPS muss außen an die Box geklebt werden.', 'Das Barometer zeigt nur im Gebäude richtig an.'], r: 0, e: 'Die GPS-Höhe ist deutlich ungenauer als die Position, im Gebäude erst recht. Der Luftdruck ändert sich dagegen schon über ein Stockwerk messbar. In der Sonde nutzen wir beides.' },
+    { id: 'q11_f1', f: 'Ihr verdoppelt die Last am Fallschirm. Wie ändert sich die Sinkgeschwindigkeit?', o: ['Sie wird genau doppelt so groß.', 'Sie wird etwa 1,4-mal so groß.', 'Sie bleibt ungefähr gleich groß.'], r: 1, e: 'Aus m · g = ½ · ρ · c_w · A · v² folgt v ~ √m. Doppelte Masse ergibt √2 ≈ 1,4-fache Geschwindigkeit.' }
+  ] }
+];
+
 const PROJEKT = {
   id: '11np_wetterballon',
   klasse: '11NP',
@@ -181,6 +227,7 @@ const PROJEKT = {
   untertitel: 'In drei Jahren baut ihr eine Messsonde, die mit einem Wetterballon auf über 30 km Höhe steigt. Im Herbst 2028 hebt sie ab.',
   flug: '2028-09-15',
   masseZiel: 1500,
+  videos: { 1: 'lHEsjZ88FAg', 2: 'lF4-p0QrDwY', 3: 'dv8b84IWqP0', 4: 'OU7TCSbJmUg' },
 
   raenge: [
     { ab: 0, name: 'Bodencrew' },
@@ -234,77 +281,76 @@ const PROJEKT = {
 
   pitch: {
     abschnitte: [
-      { titel: 'Mission', min: 0.5, hilfe: 'Ein Satz, der neugierig macht. Was will unser Team erreichen?' },
-      { titel: 'Physik', min: 1, hilfe: 'Eine Rechnung oder ein Modell mit Zahl und Einheit, z. B. Druck in 35 km Höhe.' },
-      { titel: 'Unsere Messung', min: 1, hilfe: 'Was habt ihr gemessen? Zeigt ein Diagramm und nennt eine Kernaussage.' },
-      { titel: 'Konzept für die Sonde', min: 1, hilfe: 'Zwei bis drei Anforderungen mit prüfbarem Kriterium, Massebudget.' },
-      { titel: 'Größtes Risiko', min: 1, hilfe: 'Ein Risiko aus der Fallakte und eure geplante Gegenmaßnahme.' },
-      { titel: 'Unsere Bitte', min: 0.5, hilfe: 'Was braucht ihr für Jahrgang 12? Material, Zeit, Hilfe.' }
+      { titel: 'Eure Frage', min: 0.5, hilfe: 'Die Überschrift von Folie 1 als Frage, z. B. „Wie kalt ist es in 30 km Höhe?“' },
+      { titel: 'Was wir gemacht haben', min: 1, hilfe: 'Kurz zum Foto auf Folie 1: Was habt ihr gebaut oder gemessen?' },
+      { titel: 'Unser Ergebnis', min: 1, hilfe: 'Diagramm auf Folie 2 erklären, eine Zahl mit Einheit nennen.' },
+      { titel: 'Was das für die Sonde bedeutet', min: 1, hilfe: 'Eine Anforderung oder ein Risiko, das daraus folgt.' },
+      { titel: 'Ausblick', min: 0.5, hilfe: 'Was baut ihr in Jahrgang 12? Was braucht ihr dafür?' }
     ],
     check: [
-      'Jeder im Team hat einen Abschnitt.',
-      'Mindestens eine Zahl mit Einheit und ein Diagramm sind dabei.',
-      'Wir haben einmal mit Stoppuhr geprobt (höchstens 5 Minuten).',
-      'Wir haben zwei mögliche Fragen der Gäste vorbereitet.'
+      'Unsere zwei Folien liegen im Klassenordner.',
+      'Jeder Vortragende hat einen Abschnitt.',
+      'Wir haben einmal mit Stoppuhr geprobt (höchstens 4 Minuten).',
+      'Auf unseren Fotos sind keine Gesichter ohne Einwilligung zu sehen.'
     ],
     raster: [
       ['Fachlich richtig', 'Rechnungen und Fachbegriffe stimmen, Einheiten sind angegeben.'],
       ['Begründet', 'Jede Entscheidung wird mit Physik oder Messwerten begründet.'],
       ['Verständlich', 'Gäste ohne Vorwissen können folgen, Diagramme sind beschriftet.'],
-      ['Zeit und Team', 'höchstens 5 Minuten, alle sprechen, Übergänge klappen.'],
+      ['Zeit und Team', 'höchstens 4 Minuten, Übergänge klappen.'],
       ['Fragen', 'Antworten sind kurz, ehrlich und sachlich.']
     ]
   },
 
   fallakte: [
-    { id: 'F1', team: 'E', w: 2, a: 3, titel: 'Die Genehmigung dauert Wochen', quelle: 'c’t Teil 1, ab 5:24',
+    { id: 'F1', team: 'E', w: 2, a: 3, titel: 'Die Genehmigung dauert Wochen', quelle: '', clips: [[1, 278, 348]],
       text: 'Ein Wetterballon braucht eine Aufstiegserlaubnis der Luftfahrtbehörde. Die c’t-Redaktion warnt: Die Bearbeitung kann mehrere Wochen dauern.',
-      ursache: { o: ['Die Behörde lehnt Schulprojekte grundsätzlich ab.', 'Behörden haben Bearbeitungsrückstände, und der Antrag wird genau geprüft.', 'Der Antrag ist erst nach dem Start nötig.'], r: 1, e: 'Die Behörde prüft Startort, Luftraum und Versicherung. Das braucht Zeit, besonders bei Rückständen.' },
-      massnahme: { o: ['Antrag früh stellen und einen Zeitraum von zwei Wochen anmelden', 'ohne Genehmigung starten, falls sie zu spät kommt', 'den Antrag am Starttag telefonisch stellen'], r: 0, e: 'Wir stellen den Antrag vor den Sommerferien 2028 und melden ein Zeitfenster an. So bleibt Spielraum für das Wetter.' } },
-    { id: 'F2', team: 'E', w: 1, a: 3, titel: 'Startplatz in der Einflugschneise', quelle: 'c’t Teil 1, ab 3:45',
+      ursache: { o: ['Die Behörde lehnt Schulprojekte grundsätzlich ab.', 'Der Antrag wird genau geprüft, oft mit Rückstau.', 'Ein Antrag ist erst nach dem Start nötig.'], r: 1, e: 'Die Behörde prüft Startort, Luftraum und Versicherung. Das braucht Zeit, besonders bei Rückständen.' },
+      massnahme: { o: ['ohne Erlaubnis starten, falls sie zu spät kommt', 'den Antrag am Starttag telefonisch stellen', 'früh beantragen und ein Zeitfenster von zwei Wochen anmelden'], r: 2, e: 'Wir stellen den Antrag vor den Sommerferien 2028 und melden ein Zeitfenster an. So bleibt Spielraum für das Wetter.' } },
+    { id: 'F2', team: 'E', w: 1, a: 3, titel: 'Startplatz in der Einflugschneise', quelle: '', clips: [[1, 189, 247]],
       text: 'Beim früheren Projekt lag der Startplatz in der Einflugschneise eines Rettungshubschraubers. Vor dem Start musste das Team bei der Leitstelle anrufen.',
-      ursache: { o: ['Der Ballon war zu schwer.', 'Der Luftraum hat Besonderheiten, die man selbst leicht übersieht.', 'Das Wetter war zu windig.'], r: 1, e: 'Die Behörde prüft die Koordinaten und erkennt Flugrouten, Kontrollzonen und Sperrgebiete.' },
-      massnahme: { o: ['den Startplatz nach Gefühl wählen', 'Startplatz mit Koordinaten früh prüfen lassen und Auflagen in die Startcheckliste schreiben', 'nachts starten, weil dann niemand fliegt'], r: 1, e: 'Auflagen der Behörde wie ein Anruf bei der Leitstelle gehören als eigener Punkt in die Startcheckliste.' } },
-    { id: 'F3', team: 'A', w: 2, a: 2, titel: 'Der Ballon fliegt länger als berechnet', quelle: 'c’t Teil 3, ab 6:32',
+      ursache: { o: ['Der Luftraum hat Besonderheiten, die man übersieht.', 'Der Ballon war für den Ort zu schwer.', 'Der Wind war am Starttag zu stark.'], r: 0, e: 'Die Behörde prüft die Koordinaten und erkennt Flugrouten, Kontrollzonen und Sperrgebiete, die man selbst leicht übersieht.' },
+      massnahme: { o: ['Startplatz nach freier Sicht auswählen', 'nachts starten, weil dann niemand fliegt', 'Ort prüfen lassen, Auflagen notieren'], r: 2, e: 'Auflagen der Behörde wie ein Anruf bei der Leitstelle gehören als eigener Punkt in die Startcheckliste.' } },
+    { id: 'F3', team: 'A', w: 2, a: 2, titel: 'Der Ballon fliegt länger als berechnet', quelle: '', clips: [[3, 283, 300], [3, 392, 417]],
       text: 'Berechnet waren 3 Stunden Flugzeit. Nach 3 Stunden war der Ballon noch in der Luft. Insgesamt flog er etwa 3,5 Stunden.',
-      ursache: { o: ['Beim Füllen und Verschließen ist Gas entwichen, der Ballon stieg langsamer.', 'Die Erde hat sich schneller gedreht.', 'Die Kamera war schwerer als gedacht.'], r: 0, e: 'Weniger Gas bedeutet weniger freien Auftrieb. Der Ballon steigt langsamer und braucht länger bis zur Platzhöhe.' },
-      massnahme: { o: ['mehr Gas einfüllen als nötig und nichts messen', 'freien Auftrieb nach dem Verschließen mit einem Gewicht prüfen und den Verschluss vorher üben', 'die Flugzeit einfach doppelt so lang schätzen'], r: 1, e: 'Den freien Auftrieb kann man am Boden wiegen. Hebt der Ballon das Prüfgewicht nicht, wird nachgefüllt.' } },
-    { id: 'F4', team: 'C', w: 2, a: 3, titel: 'Ein Kabel reißt kurz vor dem Start', quelle: 'c’t Teil 3, ab 3:19',
+      ursache: { o: ['Oben war der Wind stärker als erwartet.', 'Die Erde dreht sich unter dem Ballon weg.', 'Beim Füllen und Verschließen ist Gas entwichen.'], r: 2, e: 'Weniger Gas bedeutet weniger freien Auftrieb. Der Ballon steigt langsamer und braucht länger bis zur Platzhöhe. Der Wind verschiebt nur die Flugbahn, nicht die Flugdauer.' },
+      massnahme: { o: ['mehr Gas einfüllen, ohne nachzumessen', 'freien Auftrieb mit Gewicht prüfen', 'Flugzeit vorsichtshalber verdoppeln'], r: 1, e: 'Den freien Auftrieb kann man am Boden prüfen. Hebt der verschlossene Ballon das Prüfgewicht nicht, wird nachgefüllt.' } },
+    { id: 'F4', team: 'C', w: 2, a: 3, titel: 'Ein Kabel reißt kurz vor dem Start', quelle: '', clips: [[3, 192, 210]],
       text: 'Kurz vor dem Start reißt ein Kabel an der Sonde. Zum Glück hat das Team einen Lötkolben dabei.',
-      ursache: { o: ['Das Kabel war zu dick.', 'An der Durchführung fehlte eine Zugentlastung.', 'Die Kälte hat das Kabel geschmolzen.'], r: 1, e: 'Ohne Zugentlastung wirkt jede Bewegung direkt auf die Lötstelle.' },
-      massnahme: { o: ['Zugentlastung an jeder Durchführung als Abnahmekriterium und eine Starterkiste mit Gaslötkolben', 'Kabel mit Klebeband an die Außenseite kleben', 'auf Kabel ganz verzichten'], r: 0, e: 'Was im Test geprüft wird, fällt am Starttag seltener aus. Für den Notfall liegt Werkzeug bereit.' } },
-    { id: 'F5', team: 'D', w: 2, a: 3, titel: 'Das GPS fällt aus', quelle: 'c’t Teil 4, ab 2:22',
+      ursache: { o: ['Es fehlte eine Zugentlastung.', 'Das Kabel war für den Strom zu dünn.', 'Die Kälte machte die Isolierung spröde.'], r: 0, e: 'Ohne Zugentlastung wirkt jede Bewegung direkt auf die Lötstelle. Kalt war es am Boden noch nicht.' },
+      massnahme: { o: ['Zugentlastung und Lötkolben einplanen', 'Kabel außen an der Box festkleben', 'dickere Kabel ohne Steckverbinder nehmen'], r: 0, e: 'Jede Durchführung bekommt eine Zugentlastung als Abnahmekriterium. Für den Notfall liegt eine Starterkiste mit Gaslötkolben bereit.' } },
+    { id: 'F5', team: 'D', w: 2, a: 3, titel: 'Das GPS fällt aus', quelle: '', clips: [[3, 331, 357], [4, 138, 192]],
       text: 'Nach einer Dreiviertelstunde kommen keine Positionen mehr. Temperatur und Druck werden weiter gesendet. Erst kurz vor dem Platzen kehrt das GPS zurück.',
-      ursache: { o: ['Die Satelliten waren abgeschaltet.', 'vermutlich Kondenswasser in der Sonde oder ein GPS-Modul ohne Airborne-Modus', 'Der Ballon war zu schnell für Funk.'], r: 1, e: 'Viele GPS-Module schalten oberhalb von 18 km ab, wenn der Airborne-Modus fehlt. Feuchte kann zusätzlich Kontakte stören.' },
-      massnahme: { o: ['nur ein GPS mitnehmen, aber ein teures', 'Airborne-Modus im Test nachweisen, Trockenmittel einpacken und ein zweites, unabhängiges Ortungssystem mitnehmen', 'das GPS außen auf die Box kleben'], r: 1, e: 'Zwei unabhängige Systeme mit eigener Stromversorgung machen den Ausfall eines Systems verkraftbar.' } },
-    { id: 'F6', team: 'C', w: 3, a: 2, titel: 'Alle Kameras gehen vorzeitig aus', quelle: 'c’t Teil 4, ab 4:18',
+      ursache: { o: ['Die GPS-Satelliten waren gerade abgeschaltet.', 'Feuchte oder fehlender Airborne-Modus', 'Der Ballon war für das Funksignal zu schnell.'], r: 1, e: 'Viele GPS-Module schalten oberhalb von 18 km ab, wenn der Airborne-Modus fehlt. Feuchte kann zusätzlich Kontakte stören.' },
+      massnahme: { o: ['ein teureres GPS statt zwei Systemen', 'GPS-Antenne außen auf die Box kleben', 'Airborne-Modus testen, zweite Ortung'], r: 2, e: 'Zwei unabhängige Systeme mit eigener Stromversorgung machen den Ausfall eines Systems verkraftbar. Den Airborne-Modus prüfen wir im Test.' } },
+    { id: 'F6', team: 'C', w: 3, a: 2, titel: 'Alle Kameras gehen vorzeitig aus', quelle: '', clips: [[4, 258, 284]],
       text: 'Den Moment, in dem der Ballon platzt, hat keine Kamera aufgenommen. Alle Kameras waren schon aus.',
-      ursache: { o: ['Die Speicherkarten waren voll.', 'Die Powerbanks haben in der Kälte deutlich weniger Kapazität geliefert.', 'Die Kameras wurden zu warm.'], r: 1, e: 'Bei −20 °C und kälter liefern viele Akkus nur noch einen Teil ihrer Nennkapazität.' },
-      massnahme: { o: ['Energiebudget mit Kälteabschlag, Lithium-Primärzellen und Kältetest mit echter Last', 'kleinere Kameras kaufen', 'Kameras erst in 30 km Höhe einschalten'], r: 0, e: 'Im Rechner „Energie bei Kälte“ seht ihr, wie stark der Zelltyp die Laufzeit verändert.' } },
-    { id: 'F7', team: 'A', w: 3, a: 2, titel: 'Die Außentemperatur steigt in großer Höhe stark an', quelle: 'c’t Teil 4, ab 3:54',
+      ursache: { o: ['Die Akkus lieferten in der Kälte viel weniger Energie als am Boden.', 'Die Speicherkarten waren schon vor dem Platzen voll.', 'Die Kameras haben sich in der Sonne überhitzt.'], r: 0, e: 'Bei −20 °C und kälter liefern viele Akkus nur noch einen Teil ihrer Nennkapazität.' },
+      massnahme: { o: ['Kälteabschlag rechnen, Lithiumzellen', 'kleinere und leichtere Kameras kaufen', 'Kameras erst in 30 km Höhe einschalten'], r: 0, e: 'Im Rechner „Energie bei Kälte“ seht ihr, wie stark der Zelltyp die Laufzeit verändert. Ein Kältetest mit echter Last zeigt es am Gerät.' } },
+    { id: 'F7', team: 'A', w: 3, a: 2, titel: 'Die Außentemperatur steigt in großer Höhe stark an', quelle: '', clips: [[4, 214, 258], [4, 437, 463]],
       text: 'Erst wird es mit der Höhe kälter. Dann steigt die gemessene Temperatur stark an. Ein Fühler in einem Schutzgehäuse misst deutlich tiefere Werte.',
-      ursache: { o: ['Die Sonne heizt den Fühler, und die dünne Luft kühlt ihn kaum.', 'In der Stratosphäre ist es heißer als am Boden.', 'Der Fühler war defekt.'], r: 0, e: 'Je dünner die Luft, desto schlechter gibt der Fühler Wärme ab. Direktes Sonnenlicht verfälscht dann die Messung.' },
-      massnahme: { o: ['den Fühler in die warme Box legen', 'einen Strahlungsschutz bauen und mit und ohne Schutz vergleichen', 'nur nachts fliegen'], r: 1, e: 'Ein Strahlungsschutz beschattet den Fühler und lässt Luft durch. Ihr baut ihn in Jahrgang 12 selbst.' } },
-    { id: 'F8', team: 'E', w: 2, a: 2, titel: 'Der Backup-Tracker hat einen leeren Akku', quelle: 'c’t Teil 4, ab 8:01',
+      ursache: { o: ['Oben ist es wärmer als am Boden.', 'Sonne heizt den Fühler, dünne Luft kühlt kaum.', 'Der Fühler ist durch die Kälte kaputtgegangen.'], r: 1, e: 'Je dünner die Luft, desto schlechter gibt der Fühler Wärme ab. Direktes Sonnenlicht verfälscht dann die Messung.' },
+      massnahme: { o: ['Fühler geschützt in die warme Box legen', 'Strahlungsschutz bauen und vergleichen', 'nur bei Nacht und Bewölkung fliegen'], r: 1, e: 'Ein Strahlungsschutz beschattet den Fühler und lässt Luft durch. Ihr baut ihn in Jahrgang 12 selbst.' } },
+    { id: 'F8', team: 'C', w: 2, a: 2, titel: 'Der Backup-Tracker hat einen leeren Akku', quelle: '', clips: [[3, 494, 505], [4, 481, 497]],
       text: 'Als die Hauptortung ausfällt, ruft das Team den Backup-Tracker an. Er meldet sich nicht. Später zeigt sich: Der Akku war leer.',
-      ursache: { o: ['Das Handynetz war überlastet.', 'Das Backup wurde vor dem Start nicht geprüft.', 'Der Tracker war zu kalt.'], r: 1, e: 'Ein Backup hilft nur, wenn es selbst geprüft ist.' },
-      massnahme: { o: ['Checkliste „geladen und getestet“ für jedes Backup mit Test am Vortag', 'kein Backup mitnehmen', 'den Tracker erst nach der Landung einschalten'], r: 0, e: 'Jedes Gerät bekommt eine eigene Zeile in der Startcheckliste: geladen, eingeschaltet, Position empfangen.' } },
-    { id: 'F9', team: 'D', w: 3, a: 1, titel: 'Live-Bilder kommen nie vollständig an', quelle: 'c’t Teil 4, ab 1:49',
+      ursache: { o: ['Das Handynetz war am Landeort überlastet.', 'Der Tracker war für die Kälte nicht gebaut.', 'Das Backup wurde vorher nicht geprüft.'], r: 2, e: 'Ein Backup hilft nur, wenn es selbst geprüft ist.' },
+      massnahme: { o: ['am Vortag laden, testen, abhaken', 'Tracker erst nach der Landung einschalten', 'auf das Backup ganz verzichten'], r: 0, e: 'Jedes Gerät bekommt eine eigene Zeile in der Startcheckliste: geladen, eingeschaltet, Position empfangen.' } },
+    { id: 'F9', team: 'D', w: 3, a: 1, titel: 'Live-Bilder kommen nie vollständig an', quelle: '', clips: [[2, 208, 247], [4, 109, 138]],
       text: 'Die Sonde zerlegt Fotos in kleine Pakete. Für jedes Paket wartet sie auf ein Okay vom Boden. Dieses Okay kommt fast nie an.',
-      ursache: { o: ['Das Bestätigungssignal vom Boden zur Sonde war unzuverlässig.', 'Die Kamera war kaputt.', 'Bilder sind zu klein für Funk.'], r: 0, e: 'Ein Rückkanal vom Boden zur Sonde ist schwerer als das Senden nach unten. Gut war, dass ein Zeitlimit die Telemetrie weiterlaufen ließ.' },
-      massnahme: { o: ['auf Bilder per Funk verzichten, nur Telemetrie senden und Bilder auf der SD-Karte speichern', 'noch größere Bilder senden', 'ohne Zeitlimit warten'], r: 0, e: 'Unsere Telemetrie in Jahrgang 13 sendet nur Position, Höhe und Messwerte, ohne auf Antwort zu warten.' } },
-    { id: 'F10', team: 'E', w: 2, a: 3, titel: 'Landung nahe einer Großstadt', quelle: 'c’t Teil 3, ab 7:04',
+      ursache: { o: ['Die Kamera lieferte nur unscharfe Bilder.', 'Die Bestätigung vom Boden kam kaum an.', 'Bilder sind für Funk grundsätzlich zu klein.'], r: 1, e: 'Ein Rückkanal vom Boden zur Sonde ist schwerer als das Senden nach unten. Gut war, dass ein Zeitlimit die Telemetrie weiterlaufen ließ.' },
+      massnahme: { o: ['nur Telemetrie, Bilder auf SD-Karte', 'größere Bildpakete seltener senden', 'ohne Zeitlimit auf jede Antwort warten'], r: 0, e: 'Unsere Telemetrie in Jahrgang 13 sendet nur Position, Höhe und Messwerte, ohne auf Antwort zu warten.' } },
+    { id: 'F10', team: 'E', w: 2, a: 3, titel: 'Landung nahe einer Großstadt', quelle: '', clips: [[1, 301, 324], [3, 424, 462]],
       text: 'Der Ballon sinkt auf Erfurt zu. Das Team fürchtet eine Landung in der Stadt. Die Prognose war eine Woche vorher ungenau, am Morgen des Starts aber genau.',
-      ursache: { o: ['Die Windvorhersage wird erst kurz vor dem Start genau.', 'Der Fallschirm war zu groß.', 'GPS zeigt immer Städte an.'], r: 0, e: 'Der Wind bestimmt die Flugbahn. Wie beim Wetterbericht wird die Prognose mit kürzerem Abstand genauer.' },
-      massnahme: { o: ['die Prognose mehrmals rechnen und einen Startort wählen, dessen Landegebiet ländlich ist', 'immer bei Windstille starten', 'den Fallschirm weglassen, damit er schneller landet'], r: 0, e: 'Team E rechnet in Jahrgang 12 Prognosen für mehrere Tage und vergleicht sie.' } },
-    { id: 'F11', team: 'B', w: 2, a: 3, titel: 'Lange Schnüre zwischen Ballon, Fallschirm und Sonde', quelle: 'c’t Teil 3, ab 2:23',
+      ursache: { o: ['Die Windprognose wird erst kurz vorher genau.', 'Der Fallschirm war für diese Sonde viel zu groß.', 'GPS-Karten zeigen Städte immer zu nah an.'], r: 0, e: 'Der Wind bestimmt die Flugbahn. Wie beim Wetterbericht wird die Prognose mit kürzerem Abstand genauer.' },
+      massnahme: { o: ['nur bei völliger Windstille starten', 'Prognose mehrfach rechnen, Ort wählen', 'den Fallschirm für schnelleres Landen weglassen'], r: 1, e: 'Team E rechnet in Jahrgang 12 Prognosen für mehrere Tage und wählt einen Startort mit ländlichem Landegebiet.' } },
+    { id: 'F11', team: 'B', w: 2, a: 3, titel: 'Lange Schnüre zwischen Ballon, Fallschirm und Sonde', quelle: '', clips: [[3, 139, 186]],
       text: 'Zwischen Ballon und Fallschirm hängen etwa 5 m Schnur, zwischen Fallschirm und Sonde etwa 10 m.',
-      ursache: { o: ['Lange Schnüre sehen auf Fotos besser aus.', 'Nach dem Platzen dürfen die Ballonreste den Fallschirm nicht blockieren.', 'Die Schnur dient als Antenne.'], r: 1, e: 'Fallen die Reste auf den Fallschirm, kann er sich nicht öffnen. Abstand schafft Sicherheit, auch bei Windböen.' },
-      massnahme: { o: ['alles mit einer kurzen Schnur zusammenbinden', 'Abstände und Aufhängung bewusst konstruieren und begründen', 'den Fallschirm unter die Sonde hängen'], r: 1, e: 'Team B plant die Aufhängung als eigenes Bauteil mit Begründung.' } },
-    { id: 'F12', team: 'B', w: 1, a: 2, titel: 'Die Sonde übersteht die Landung', quelle: 'c’t Teil 3, ab 10:55',
+      ursache: { o: ['Lange Schnüre dienen als Antenne für den Funk.', 'Lange Schnüre sehen auf Fotos besser aus.', 'Ballonreste sollen den Schirm nicht treffen.'], r: 2, e: 'Fallen die Reste auf den Fallschirm, kann er sich nicht öffnen. Abstand schafft Sicherheit, auch bei Windböen.' },
+      massnahme: { o: ['Abstände und Aufhängung konstruieren und begründen', 'alles an einer kurzen Schnur bündeln', 'den Fallschirm unter die Sonde hängen'], r: 0, e: 'Team B plant die Aufhängung als eigenes Bauteil mit Begründung.' } },
+    { id: 'F12', team: 'B', w: 1, a: 2, titel: 'Die Sonde übersteht die Landung', quelle: '', clips: [[3, 624, 684]],
       text: 'Die Sonde landet zwischen Windrädern auf einem Feld. Alle Halterungen haben gehalten, innen ist alles intakt.',
-      ursache: { o: ['Die Styroporbox ist leicht, und die Halter saßen fest.', 'Die Sonde war aus Stahl.', 'Der Ballon hat die Sonde sanft abgesetzt.'], r: 0, e: 'Eine leichte Box, feste Halter und ein passender Fallschirm verhindern Schäden.' },
-      massnahme: { o: ['Halter formschlüssig konstruieren und den Fallschirm für etwa 5 m/s Sinkgeschwindigkeit auslegen', 'die Box mit Steinen beschweren', 'Bauteile lose in die Box legen'], r: 0, e: 'Mit dem Fallschirmrechner bestimmt ihr in Jahrgang 12 die nötige Fläche.' } }
+      ursache: { o: ['Die Sonde bestand aus stabilem Stahlblech.', 'Die Box war leicht, und die Halter saßen fest.', 'Der Ballon setzte die Sonde sanft ab.'], r: 1, e: 'Eine leichte Box, feste Halter und ein passender Fallschirm verhindern Schäden. Der Ballon ist bei der Landung längst geplatzt.' },
+      massnahme: { o: ['die Box zusätzlich mit Sand beschweren', 'Halter formschlüssig, Fallschirm für 5 m/s', 'Bauteile lose zwischen Zeitungspapier legen'], r: 1, e: 'Mit dem Fallschirmrechner bestimmt ihr in Jahrgang 12 die nötige Fläche.' } }
   ],
 
   jahre: [
@@ -324,145 +370,239 @@ const PROJEKT = {
   ],
 
   etappen: [
-    /* ================= Jahrgang 11, Tag 1 ================= */
-    { id: 'j11t1', icon: '🚀', tag: 'Jahrgang 11, Tag 1', titel: 'Mission verstehen', kurz: 'Tag 1', untertitel: 'Atmosphäre, Auftrieb, Fallakte c’t und Bau der Isolierbox',
+    /* ================= Jahrgang 11, Tag 1 (Donnerstag) ================= */
+    { id: 'j11t1', icon: '🚀', tag: 'Jahrgang 11, Tag 1', titel: 'Mission verstehen', kurz: 'Tag 1', untertitel: 'Atmosphäre, Auftrieb, Fallakte mit Videos und Bau der Isolierbox',
       ziele: ['Druck und Temperatur in jeder Höhe mit einem Modell bestimmen', 'berechnen, wie viel Gas ein Ballon braucht und wann er platzt', 'aus Fehlern anderer Anforderungen für die eigene Sonde ableiten'],
       bloecke: [
-        { typ: 'text', kicker: 'Missionsbriefing', zeit: '08:00', titel: 'Euer Auftrag für drei Jahre',
+        { typ: 'phase', art: 'plenum', sozial: 'plenum', von: '08:00', bis: '08:30', titel: 'Missionsbriefing',
           html: '<p>Im Herbst 2028 startet ein Wetterballon mit eurer Sonde. Er steigt in etwa zwei Stunden auf über 30 km Höhe. Dort ist der Luftdruck kleiner als 1 % des Bodendrucks, und es wird kälter als −50 °C. Dann platzt der Ballon, und die Sonde sinkt am Fallschirm zurück.</p>' +
             '<div class="task"><b>Leitfrage:</b> Wie bringen wir selbst gebaute Messtechnik 35 km hoch und heil zurück?</div>' +
-            '<p>Die Redaktion von heise c’t hat genau das geschafft und dabei einiges erlebt. Ihre Mission ist heute eure Fallstudie.</p>' +
-            '<div class="produkt"><b>Ergebnis:</b> Sammelt im Plenum Fragen, die ihr bis zum Flug klären müsst. Die Lehrkraft schreibt sie in den Fragenspeicher.</div>' },
+            '<p>Die Redaktion von heise c’t hat genau das geschafft und dabei einiges erlebt. Die Lehrkraft zeigt zum Einstieg den Start (1 min). Danach schätzt ihr drei Zahlen.</p>',
+          clips: [[3, 225, 280]],
+          ergebnis: 'Fragen, die wir bis zum Flug klären müssen (Fragenspeicher an der Tafel)' },
         { typ: 'quiz', kicker: 'Schätzen', titel: 'Was meint ihr?', fragen: [
-          { id: 'q11_s1', f: 'Welche Höhe erreichte der Ballon der c’t?', o: ['etwa 10 km', 'etwa 36 km', 'etwa 100 km'], r: 1, e: 'Genau 35 734 m. Verkehrsflugzeuge fliegen in etwa 10 km, der Weltraum beginnt bei etwa 100 km.' },
-          { id: 'q11_s2', f: 'Wie kalt wird es auf dem Weg nach oben ungefähr?', o: ['etwa −5 °C', 'etwa −55 °C', 'etwa −150 °C'], r: 1, e: 'In 11 bis 20 km Höhe sind es in der Normatmosphäre −56,5 °C. Darüber wird es wieder etwas wärmer.' },
-          { id: 'q11_s3', f: 'Wie lange war der Ballon der c’t unterwegs?', o: ['etwa 20 Minuten', 'etwa 3,5 Stunden', 'etwa 2 Tage'], r: 1, e: 'Etwa 3,5 Stunden. Berechnet waren 3 Stunden. Warum es länger dauerte, klärt die Fallakte.' }
+          { id: 'q11_s1', f: 'Welche Höhe erreichte der Ballon der c’t?', o: ['etwa 10 km', 'etwa 100 km', 'etwa 36 km'], r: 2, e: 'Genau 35 734 m. Verkehrsflugzeuge fliegen in etwa 10 km, der Weltraum beginnt bei etwa 100 km.' },
+          { id: 'q11_s2', f: 'Wie kalt wird es auf dem Weg nach oben ungefähr?', o: ['etwa −55 °C', 'etwa −5 °C', 'etwa −150 °C'], r: 0, e: 'In 11 bis 20 km Höhe sind es in der Normatmosphäre −56,5 °C. Darüber wird es wieder etwas wärmer.' },
+          { id: 'q11_s3', f: 'Wie lange war der Ballon der c’t unterwegs?', o: ['etwa 3,5 h', 'etwa 20 min', 'etwa 12 h'], r: 0, e: 'Etwa 3,5 Stunden. Berechnet waren 3 Stunden. Warum es länger dauerte, klärt die Fallakte.' }
         ] },
+
+        { typ: 'phase', art: 'team', sozial: 'team', von: '08:30', bis: '09:00', titel: 'Teams, Rollen und Sensor-Check',
+          html: '<p>Wählt Erst- und Zweitwunsch. Die Lehrkraft gibt danach die Teams bekannt. Dann klärt ihr im Team Rollen, Regeln und eure Handys.</p>',
+          ergebnis: 'Teams stehen, Rollen verteilt, jedes Team weiß, wer ein Handy mit Barometer hat' },
         { typ: 'teamwahl' },
-        { typ: 'auftrag', id: 'a11_team', zeit: '08:30', titel: 'Teamvertrag und Rollen',
-          html: '<p>Die Lehrkraft gibt die Teams bekannt. Trefft euch und klärt:</p><ol><li>Wer übernimmt in diesem Jahr welche Rolle? Tragt sie im Profil ein.</li><li>Auf welche drei Regeln einigt ihr euch? Tragt sie unter „Team“ beim Teamvertrag ein.</li></ol>',
-          produkt: 'Rollen verteilt, Teamvertrag mit drei Regeln' },
-        { typ: 'text', kicker: 'Physikwerkstatt 1', zeit: '09:00', titel: 'Die Atmosphäre in Schichten',
+        { typ: 'auftrag', id: 'a11_team', titel: 'Teamvertrag, Rollen und Sensor-Check',
+          html: '<ol><li>Wer übernimmt in diesem Jahr welche Rolle? Tragt sie im Profil ein.</li><li>Auf welche drei Regeln einigt ihr euch? Tragt sie unter „Team“ beim Teamvertrag ein.</li><li>Installiert die kostenlose App phyphox. Öffnet die Kategorie „Sensoren“ und das Experiment „Luftdruck“. Erscheint ein Wert, hat das Handy ein Barometer. Jedes Team braucht mindestens ein solches Handy.</li></ol>' +
+            '<div class="merke"><b>Fotoregeln:</b> Fotografiert vor allem Hände, Technik und Messkurven. Erkennbare Gesichter nur, wenn die Person einverstanden ist und eine Einwilligung vorliegt. Alle Fotos und Videos kommen in den Klassenordner, nicht in private Chats. Die Lehrkraft prüft alles, bevor es gezeigt wird.</div>',
+          produkt: 'Rollen, Teamvertrag, Barometer-Handys im Team bekannt' },
+        { typ: 'ideen', html: '<p>Am Samstag zeigen wir das Projekt am Tag der offenen Tür. Was soll dort passieren? Notiert eure Ideen hier und an der Ideenwand im Raum. Morgen um 12:00 Uhr stimmen wir ab. Die App speichert nur auf deinem Gerät, deshalb zählt die Ideenwand im Raum.</p>' },
+
+        { typ: 'phase', art: 'rechnen', sozial: 'partner', von: '09:00', bis: '09:45', titel: 'Physikwerkstatt Atmosphäre',
+          html: '<p>Lest den Text, rechnet mit dem Atmosphärenrechner und bearbeitet die Aufträge. Am Ende prüft das Quiz euer Wissen.</p>',
+          ergebnis: 'Druck und Temperatur in drei Höhen, Quiz gelöst' },
+        { typ: 'text', kicker: 'Wissen', titel: 'Die Atmosphäre in Schichten',
           html: '<p>Die <b>Troposphäre</b> reicht bis etwa 11 km. Dort findet das Wetter statt, und die Temperatur sinkt um etwa 6,5 K je Kilometer. Die Grenze heißt <b>Tropopause</b>. Darüber liegt die <b>Stratosphäre</b> bis etwa 50 km. In ihr bleibt die Temperatur zunächst gleich und steigt dann wieder an, weil Ozon UV-Strahlung der Sonne absorbiert.</p>' +
             '<div class="merke"><b>Merke:</b> Der Luftdruck entsteht durch das Gewicht der Luft darüber. Je höher man steigt, desto weniger Luft liegt darüber. In den unteren Kilometern halbiert sich der Druck etwa alle 5,5 km.</div>' +
             '<p>Die Normatmosphäre ist ein Modell mit festen Werten für Druck, Temperatur und Dichte. Mit ihr rechnen Luftfahrt und Wetterdienst. Ihr nutzt sie im Rechner unten.</p>' },
         { typ: 'rechner', ids: ['atmosphaere'] },
         { typ: 'auftrag', id: 'a11_atm', titel: 'Rechenaufträge Atmosphäre',
-          html: '<ol><li>Bestimme Druck und Temperatur in 5,5 km, 11 km und 35,7 km Höhe.</li><li>In welcher Höhe beträgt der Druck nur noch 100 hPa? Gib den Druck unten im Rechner ein.</li><li>Wie viel Prozent der Bodendichte hat die Luft in 11 km Höhe noch?</li><li>Begründe in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>',
+          html: '<ol><li>Bestimme Druck und Temperatur in 5,5 km, 11 km und 35,7 km Höhe.</li><li>In welcher Höhe beträgt der Druck nur noch 100 hPa? Gib den Druck unten im Rechner ein.</li><li>Wie viel Prozent der Bodendichte hat die Luft in 11 km Höhe noch?</li><li>Begründe in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>' +
+            '<div class="merke"><b>Für Schnelle: Wie hoch liegt unsere Schule?</b><br>Lest in phyphox („Luftdruck“) den Druck im Raum ab. Der Wetterbericht nennt den Druck umgerechnet auf Meereshöhe (die Lehrkraft schreibt den aktuellen Wert an). In Bodennähe gilt: 1 hPa Unterschied entspricht etwa 8,5 m. Schätzt die Höhe des Raums über dem Meer und vergleicht mit einer Karte.</div>',
           produkt: 'Ergebnisse im Heft oder im Logbuch notiert' },
         { typ: 'quiz', titel: 'Atmosphäre geprüft', fragen: [
-          { id: 'q11_a1', f: 'Wie groß ist der Luftdruck in 11 km Höhe (Normatmosphäre)?', o: ['etwa 900 hPa', 'etwa 226 hPa', 'etwa 5 hPa'], r: 1, e: 'Etwa 226 hPa, also knapp ein Viertel des Bodendrucks von 1013 hPa.' },
-          { id: 'q11_a2', f: 'In welcher Höhe sind es nur noch 100 hPa?', o: ['etwa 5,5 km', 'etwa 16 km', 'etwa 40 km'], r: 1, e: 'Etwa 16,2 km. Ab hier liegt nur noch ein Zehntel der Luftmasse über dem Ballon.' },
-          { id: 'q11_a3', f: 'Warum wird es oberhalb von etwa 20 km wieder wärmer?', o: ['Die Sonde kommt der Sonne näher.', 'Ozon absorbiert UV-Strahlung und erwärmt die Luft.', 'Die Luft wird dort dichter.'], r: 1, e: 'Die Ozonschicht nimmt UV-Strahlung auf und gibt die Energie als Wärme an die Luft ab.' },
-          { id: 'q11_a4', f: 'Die Dichte in 11 km Höhe beträgt etwa 0,36 kg/m³. Welcher Anteil der Bodendichte ist das?', o: ['etwa 30 %', 'etwa 60 %', 'etwa 3 %'], r: 0, e: '0,36 / 1,225 ≈ 0,30. Weniger Luft heißt auch weniger Kühlung für Bauteile und weniger Auftrieb.' }
+          { id: 'q11_a1', f: 'Wie groß ist der Luftdruck in 11 km Höhe (Normatmosphäre)?', o: ['etwa 226 hPa', 'etwa 500 hPa', 'etwa 5 hPa'], r: 0, e: 'Etwa 226 hPa, also knapp ein Viertel des Bodendrucks von 1013 hPa. 500 hPa herrschen in etwa 5,5 km Höhe.' },
+          { id: 'q11_a2', f: 'In welcher Höhe sind es nur noch 100 hPa?', o: ['etwa 5,5 km', 'etwa 40 km', 'etwa 16 km'], r: 2, e: 'Etwa 16,2 km. Ab hier liegt nur noch ein Zehntel der Luftmasse über dem Ballon.' },
+          { id: 'q11_a3', f: 'Warum wird es oberhalb von etwa 20 km wieder wärmer?', o: ['Die Sonde ist dort näher an der Sonne.', 'Ozon nimmt UV-Strahlung auf und heizt die Luft.', 'Warme Luft vom Boden steigt auf und sammelt sich oben.'], r: 1, e: 'Die Ozonschicht nimmt UV-Strahlung auf und gibt die Energie als Wärme an die Luft ab. 30 km näher an der Sonne ändern bei 150 Millionen km Abstand nichts.' },
+          { id: 'q11_a4', f: 'Die Dichte in 11 km Höhe beträgt etwa 0,36 kg/m³. Welcher Anteil der Bodendichte ist das?', o: ['etwa 60 %', 'etwa 30 %', 'etwa 3 %'], r: 1, e: '0,36 / 1,225 ≈ 0,30. Weniger Luft heißt auch weniger Kühlung für Bauteile und weniger Auftrieb.' }
         ] },
-        { typ: 'text', kicker: 'Physikwerkstatt 2', zeit: '10:00', titel: 'Auftrieb und Ballon',
+
+        { typ: 'phase', art: 'pause', von: '09:45', bis: '10:00', titel: 'Pause' },
+
+        { typ: 'phase', art: 'rechnen', sozial: 'partner', von: '10:00', bis: '10:45', titel: 'Physikwerkstatt Auftrieb und Ballon',
+          html: '<p>Lest den Text, rechnet mit Gas- und Platzrechner und bearbeitet die Aufträge.</p>',
+          ergebnis: 'Gasvolumen, Platzvolumen, Startvolumen und zwei Modellgrenzen' },
+        { typ: 'text', kicker: 'Wissen', titel: 'Auftrieb und Ballon',
           html: '<p>Ein Körper in Luft erfährt eine Auftriebskraft. Sie ist so groß wie die Gewichtskraft der verdrängten Luft (Prinzip des Archimedes). Ist das Gas im Ballon leichter als die verdrängte Luft, steigt er.</p>' +
             '<p><span class="formel">F<sub>A</sub> = ρ<sub>Luft</sub> · V · g</span> und <span class="formel">F<sub>G,Gas</sub> = ρ<sub>Gas</sub> · V · g</span></p>' +
             '<div class="merke"><b>Merke:</b> Ein Kubikmeter Helium hebt am Boden bei 15 °C etwa 1,06 kg. Das ist die Differenz aus 1,225 kg/m³ (Luft) und 0,169 kg/m³ (Helium).</div>' +
             '<p>Beim Aufstieg sinkt der Außendruck. Das Gas im Ballon dehnt sich aus, bis die Hülle reißt. Die Hersteller geben dafür einen Platzdurchmesser an. Der Ballon der c’t platzte bei etwa 12,5 m Durchmesser.</p>' },
         { typ: 'rechner', ids: ['gas', 'platzen'] },
         { typ: 'auftrag', id: 'a11_gas', titel: 'Rechenaufträge Ballon',
-          html: '<ol><li>Berechne mit den Beispielwerten im Gasrechner das nötige Gasvolumen. Die Sonde wiegt wie bei der c’t 1,6 kg.</li><li>Berechne das Volumen des Ballons beim Platzen (Durchmesser 12,5 m).</li><li>Probiere im Platzrechner, mit wie viel Gas am Start der Ballon in 35,7 km platzt.</li><li>Die c’t füllte höchstens 5,5 m³ ein. Nenne zwei Gründe, warum unser Modell davon abweicht.</li></ol>',
-          produkt: 'Gasvolumen, Platzvolumen, Startvolumen und zwei Modellgrenzen' },
+          html: '<ol><li>Berechne mit den Beispielwerten im Gasrechner das nötige Gasvolumen. Die Sonde wiegt wie bei der c’t 1,6 kg.</li><li>Berechne das Volumen des Ballons beim Platzen (Durchmesser 12,5 m).</li><li>Probiere im Platzrechner, mit wie viel Gas am Start der Ballon in 35,7 km platzt.</li><li>Die c’t füllte höchstens 5,5 m³ ein. Nenne zwei Gründe, warum unser Modell davon abweicht.</li></ol>' +
+            '<div class="merke"><b>Für Schnelle:</b> Was passiert mit Gasvolumen und Platzhöhe, wenn ihr den freien Auftrieb von 1500 g auf 2500 g erhöht? Begründet mit den beiden Rechnern.</div>',
+          produkt: 'Ergebnisse im Heft oder im Logbuch notiert' },
         { typ: 'quiz', titel: 'Ballon geprüft', fragen: [
-          { id: 'q11_b1', f: 'Wie groß ist das Volumen eines Ballons mit 12,5 m Durchmesser?', o: ['etwa 100 m³', 'etwa 1000 m³', 'etwa 10 000 m³'], r: 1, e: 'V = 4/3 · π · (6,25 m)³ ≈ 1023 m³.' },
-          { id: 'q11_b2', f: 'Wie viel Gas braucht der Ballon nach unserem Modell am Start, um in 35,7 km zu platzen?', o: ['etwa 1 m³', 'etwa 6 m³', 'etwa 60 m³'], r: 1, e: 'Etwa 6,1 m³. Das Volumen wächst bis zum Platzen etwa um das 170-Fache.' },
-          { id: 'q11_b3', f: 'Beim Füllen entweicht etwas Gas. Was passiert?', o: ['Der Ballon steigt schneller.', 'Der Ballon steigt langsamer und platzt später, aber höher.', 'Der Ballon steigt gar nicht mehr.'], r: 1, e: 'Weniger freier Auftrieb heißt langsamerer Aufstieg. Mit weniger Gas erreicht die Hülle ihren Platzdurchmesser außerdem erst in größerer Höhe.' }
+          { id: 'q11_b1', f: 'Wie groß ist das Volumen eines Ballons mit 12,5 m Durchmesser?', o: ['etwa 100 m³', 'etwa 10 000 m³', 'etwa 1000 m³'], r: 2, e: 'V = 4/3 · π · (6,25 m)³ ≈ 1023 m³.' },
+          { id: 'q11_b2', f: 'Wie viel Gas braucht der Ballon nach unserem Modell am Start, um in 35,7 km zu platzen?', o: ['etwa 6 m³', 'etwa 1 m³', 'etwa 60 m³'], r: 0, e: 'Etwa 6,1 m³. Das Volumen wächst bis zum Platzen etwa um das 170-Fache.' },
+          { id: 'q11_b3', f: 'Beim Füllen entweicht etwas Gas. Was passiert?', o: ['Er steigt schneller, weil er leichter ist.', 'Er steigt nicht mehr, weil der Auftrieb fehlt.', 'Er steigt langsamer und platzt höher.'], r: 2, e: 'Weniger freier Auftrieb heißt langsamerer Aufstieg. Mit weniger Gas erreicht die Hülle ihren Platzdurchmesser außerdem erst in größerer Höhe. Solange noch freier Auftrieb übrig ist, steigt er weiter.' }
         ] },
-        { typ: 'fallakte', zeit: '10:45', titel: 'Was ging bei den Profis schief?',
-          html: '<p><b>Expertenpuzzle:</b> Wählt oben euer Team. Bearbeitet eure Karten. Bestimmt Ursache und Gegenmaßnahme und schätzt Wahrscheinlichkeit und Auswirkung ein. Stellt eure Karten danach in zwei Minuten der Klasse vor.</p>' },
+
+        { typ: 'phase', art: 'video', sozial: 'team', von: '10:45', bis: '11:35', titel: 'Fallakte c’t mit Videoausschnitten',
+          html: '<ol><li><b>10:45–10:55 Video:</b> Wählt unten euer Team. Schaut auf einem Handy oder iPad die Ausschnitte zu euren Karten, mit Kopfhörern oder leise. Die roten Knöpfe springen direkt an die richtige Stelle.</li><li><b>10:55–11:10 Karten:</b> Bestimmt Ursache und Gegenmaßnahme und schätzt Wahrscheinlichkeit und Auswirkung ein.</li><li><b>11:10–11:35 Plenum:</b> Jedes Team zeigt einen Ausschnitt von 30 Sekunden und stellt seine Karten in zwei Minuten vor. Danach entsteht die gemeinsame Risikomatrix.</li></ol>',
+          ergebnis: 'Risikomatrix v1 mit allen Karten und mindestens einem eigenen Risiko',
+          foto: 'Bildschirmfoto der fertigen Risikomatrix' },
+        { typ: 'fallakte', titel: 'Was ging bei den Profis schief?',
+          html: '<div class="merke"><b>Für Schnelle:</b> Bearbeitet eine Karte eines anderen Teams und vergleicht eure Einschätzung.</div>' },
+        { typ: 'stopp', titel: '11:10 Uhr: Teams stellen ihre Karten vor', html: '<p>Handys weg, alle schauen nach vorn. Jedes Team zeigt einen Ausschnitt von 30 Sekunden und nennt Ursache, Gegenmaßnahme und Risiko seiner Karten.</p>' },
         { typ: 'risiko', titel: 'Risikomatrix v1',
           html: '<p>Jede gelöste Karte erscheint hier. Ergänzt mindestens ein eigenes Risiko für unsere Sonde.</p>' },
+
+        { typ: 'phase', art: 'pause', von: '11:35', bis: '12:05', titel: 'Mittagspause' },
+
+        { typ: 'phase', art: 'bauen', sozial: 'team', von: '12:05', bis: '13:25', titel: 'Werkstatt Isolierbox',
+          html: '<p>Zum Start zeigt die Lehrkraft zwei kurze Ausschnitte (2 min): warum die c’t eine Styroporbox nimmt und was die Kälte mit den Kameras gemacht hat. Danach folgen Sicherheitsunterweisung und Bau.</p>',
+          clips: [[2, 41, 66], [4, 258, 284]],
+          ergebnis: 'Box mit Deckel und Fühlerloch, Masse in g',
+          foto: 'Zuschnitt (Hände und Cutter) und die fertigen Boxen auf der Waage' },
         { typ: 'freigabe', id: 'f_werkstatt', titel: 'Werkstatt Isolierbox',
           html: '<p>Bevor ihr schneidet, gibt es eine Sicherheitsunterweisung.</p><ul><li>Cutter nur mit Stahllineal und Schneidmatte, immer vom Körper weg schneiden.</li><li>Den Heißdraht bedient nur, wer dafür eingewiesen ist. Fenster auf.</li><li>Wasser für den Kältetest höchstens 40 °C.</li></ul>' },
-        { typ: 'auftrag', id: 'a11_box', zeit: '12:15', titel: 'Baut eure Isolierbox',
-          html: '<p>Jedes Team baut eine Box mit dem <b>Innenmaß 12 cm × 12 cm × 12 cm</b>. Darin steht morgen eine 250-ml-Flasche mit warmem Wasser als Ersatz für die Elektronik. Jedes Team verändert genau eine Größe:</p>' +
-            '<table class="tabelle"><thead><tr><th>Team</th><th>Variante</th></tr></thead><tbody><tr><td>A</td><td>XPS 20 mm, Fugen mit Gewebeband</td></tr><tr><td>B</td><td>XPS 40 mm, Fugen mit Gewebeband</td></tr><tr><td>C</td><td>EPS 30 mm, Fugen mit Gewebeband</td></tr><tr><td>D</td><td>XPS 20 mm, innen mit Rettungsdecke ausgekleidet</td></tr><tr><td>E</td><td>Wellpappe als Vergleich</td></tr></tbody></table>' +
-            '<ol><li>Zuschnitt planen: Welche Außenmaße haben die Platten? Skizze mit Maßen.</li><li>Schneiden, fügen, Deckel mit Loch für den Fühler.</li><li>Box mit der Küchenwaage wiegen.</li></ol>',
+        { typ: 'auftrag', id: 'a11_box', titel: 'Baut eure Isolierbox',
+          html: '<p>Jedes Team baut eine Box mit dem <b>Innenmaß 12 cm × 12 cm × 12 cm</b>. Darin steht morgen draußen eine 250-ml-Flasche mit warmem Wasser als Ersatz für die Elektronik. Jedes Team verändert genau eine Größe:</p>' +
+            '<table class="tabelle"><thead><tr><th>Team</th><th>Variante</th></tr></thead><tbody><tr><td>A</td><td>XPS 20 mm, zwei gleiche Boxen. Eine steht morgen im Fahrtwind eines Ventilators.</td></tr><tr><td>B</td><td>XPS 30 mm</td></tr><tr><td>C</td><td>EPS 30 mm</td></tr><tr><td>D</td><td>XPS 20 mm, innen mit Rettungsdecke ausgekleidet</td></tr><tr><td>E</td><td>Wellpappe als Vergleich. Danach hilft Team E bei der zweiten Box von Team A.</td></tr></tbody></table>' +
+            '<p><b>Zuschnittplan</b> (Plattenmaße in cm, je Teil zweimal). Alle Fugen außer bei Team E mit Gewebeband schließen.</p>' +
+            '<table class="tabelle"><thead><tr><th>Wand</th><th>Boden und Deckel</th><th>vorne und hinten</th><th>links und rechts</th></tr></thead><tbody><tr><td>20 mm</td><td>16 × 16</td><td>16 × 12</td><td>12 × 12</td></tr><tr><td>30 mm</td><td>18 × 18</td><td>18 × 12</td><td>12 × 12</td></tr><tr><td>Pappe</td><td>13 × 13</td><td>13 × 12</td><td>12 × 12</td></tr></tbody></table>' +
+            '<ol><li>Teile anzeichnen und schneiden (30 min).</li><li>Fügen, Fugen schließen, Deckel mit Loch für den Fühler (30 min).</li><li>Box mit der Küchenwaage wiegen, Masse und Team auf die Box schreiben (10 min).</li></ol>' +
+            '<div class="merke"><b>Für Schnelle:</b> Berechnet das Volumen des Dämmstoffs und daraus mit der Dichte (XPS etwa 33 kg/m³, EPS etwa 20 kg/m³) die erwartete Masse. Vergleicht mit der Waage.</div>',
           produkt: 'Box mit Deckel und Fühlerloch, Masse in g' },
+
+        { typ: 'phase', art: 'schreiben', sozial: 'gemischt', von: '13:25', bis: '14:00', titel: 'Prüfauftrag, Logbuch und Messung über Nacht',
+          html: '<ol><li>Prüfauftrag im Team (12 min)</li><li>Messung über Nacht vergeben (5 min)</li><li>Exit-Quiz (3 min)</li><li>Logbuch, jeder für sich (15 min)</li></ol>',
+          ergebnis: 'Prüfauftrag, Logbucheintrag, Druckmessung läuft' },
         { typ: 'notiz', id: 'n11_pa', titel: 'Prüfauftrag für den Kältetest',
-          html: '<p>Formuliert den Prüfauftrag so eindeutig wie in Woche 1 von 11.1.</p>',
-          felder: ['Objekt und Messgröße', 'Messmittel und Messstelle', 'Ablauf (Starttemperatur, Ableseabstand, Dauer)', 'Entscheidungskriterium: Wann ist eine Box gut genug?', 'Hypothese: Welche Box dämmt am besten, und warum?'] },
+          html: '<p>Der Kältetest läuft morgen draußen unter dem Vordach. Alle Boxen stehen nebeneinander, dazu eine Flasche ohne Box und ein Thermometer für die Außenluft. Formuliert den Prüfauftrag so eindeutig wie in Woche 1 von 11.1.</p>',
+          felder: ['Objekt und Messgröße', 'Messmittel und Messstelle', 'Ablauf (Starttemperatur, Ableseabstand, Dauer)', 'Entscheidungskriterium: Wann ist eine Box gut genug?', 'Hypothese: Welche Box dämmt am besten, und was macht der Fahrtwind?'] },
+        { typ: 'auftrag', id: 'a11_druck24', titel: 'Luftdruck über Nacht messen',
+          html: '<p>Je Team nimmt ein Schüler mit Barometer-Handy die Messung mit nach Hause.</p><ol><li>Zu Hause phyphox öffnen, Kategorie „Sensoren“, Experiment „Luftdruck“, Start drücken.</li><li>Handy flach hinlegen und bis morgen früh nicht bewegen. Nicht in ein anderes Stockwerk tragen.</li><li>Ladekabel anschließen, die automatische Bildschirmsperre ausschalten, phyphox im Vordergrund lassen.</li><li>Morgens stoppen, die Kurve als Bildschirmfoto sichern oder die Daten als CSV exportieren und in den Klassenordner legen.</li></ol><p class="leit">phyphox speichert dabei nur den Luftdruck, keinen Standort.</p>',
+          produkt: 'Druckkurve von Donnerstag bis Freitag im Klassenordner' },
         { typ: 'quiz', kicker: 'Exit', titel: 'Was nehmt ihr mit?', fragen: [
-          { id: 'q11_x1', f: 'Welche Aussage über die Isolierbox stimmt?', o: ['Je dicker die Wand, desto besser für die Mission.', 'Gute Dämmung kostet Masse. Wir suchen einen guten Kompromiss.', 'Die Box muss luftdicht sein.'], r: 1, e: 'Jedes Gramm muss der Ballon heben. Luftdicht darf sie übrigens nicht sein, sonst misst der Drucksensor falsch.' },
-          { id: 'q11_x2', f: 'Warum muss die Sonde einen Druckausgleich haben?', o: ['damit der Drucksensor den Außendruck misst und die Box nicht durch Überdruck aufplatzt', 'damit die Kamera klare Bilder macht', 'damit Regen abfließt'], r: 0, e: 'Innen und außen soll derselbe Druck herrschen. Ein kleines seitliches Loch genügt.' }
+          { id: 'q11_x1', f: 'Welche Aussage über die Isolierbox stimmt?', o: ['Die dickste Wand ist für die Mission immer am besten.', 'Dämmung kostet Masse, gesucht ist ein Kompromiss.', 'Die Box muss luftdicht verschlossen sein.'], r: 1, e: 'Jedes Gramm muss der Ballon heben. Luftdicht darf die Box übrigens nicht sein, sonst misst der Drucksensor falsch.' },
+          { id: 'q11_x2', f: 'Warum braucht die Sonde ein kleines Loch für den Druckausgleich?', o: ['damit die Kamera durch das Loch filmen kann', 'damit Regenwasser aus der Box ablaufen kann', 'damit der Drucksensor den echten Außendruck misst'], r: 2, e: 'Innen und außen soll derselbe Druck herrschen. Sonst misst der Sensor falsch, und die Box könnte durch Überdruck aufplatzen.' }
         ] },
         { typ: 'logbuch', titel: 'Logbuch Tag 1' },
+        { typ: 'checkliste', id: 'cl11_t1', titel: 'Bevor du gehst (Tag 1)', punkte: ['Box ist gewogen und mit Team und Masse beschriftet.', 'Prüfauftrag ist ausgefüllt.', 'Die Messung über Nacht läuft bei einem Schüler unseres Teams.', 'Fotos von heute liegen im Klassenordner.', 'Meine Idee für Samstag steht an der Ideenwand.', 'Mein Logbuch für Tag 1 ist vollständig.'] },
         { typ: 'freigabe', id: 'f_pruefauftrag', titel: 'Prüfauftrag kontrolliert',
-          html: '<p>Zeigt der Lehrkraft euren Prüfauftrag. Ist er eindeutig, startet morgen der Kältetest. Logbuch und Exit-Quiz oben könnt ihr schon vorher ausfüllen.</p>' }
+          html: '<p>Zeigt der Lehrkraft euren Prüfauftrag. Ist er eindeutig, startet morgen der Kältetest.</p>' }
       ] },
 
-    /* ================= Jahrgang 11, Tag 2 ================= */
-    { id: 'j11t2', icon: '🧊', tag: 'Jahrgang 11, Tag 2', titel: 'Erste Technik', kurz: 'Tag 2', untertitel: 'Kältetest, Halter in FreeCAD, Druckmessung am Arduino',
-      ziele: ['einen Kältetest nach Prüfauftrag durchführen und auswerten', 'einen leichten Halter konstruieren und seine Masse berechnen', 'aus einem Druckunterschied einen Höhenunterschied bestimmen'],
+    /* ================= Jahrgang 11, Tag 2 (Freitag) Vormittag ================= */
+    { id: 'j11t2', icon: '🧊', tag: 'Jahrgang 11, Tag 2 bis 10:50 Uhr', titel: 'Messen und Konstruieren', kurz: 'Tag 2 Vormittag', untertitel: 'Kältetest draußen, Halter von Hand, Treppenhaus und Fallschirm mit phyphox',
+      ziele: ['einen Kältetest nach Prüfauftrag durchführen und auswerten', 'einen Halter normgerecht zeichnen, danach fertigen und prüfen', 'aus einem Druckunterschied einen Höhenunterschied bestimmen'],
       bloecke: [
-        { typ: 'text', kicker: 'Kältetest', zeit: '08:00', titel: 'Kältetest starten',
-          html: '<ol><li>Wasser auf 40 °C erwärmen, 250 ml in die Flasche füllen.</li><li>Flasche in die Box stellen, Fühler durch den Deckel, Spitze an die Flasche kleben.</li><li>Starttemperatur ablesen, Box in den Gefrierschrank, Uhrzeit notieren.</li><li>Alle 5 Minuten liest die Messwache ab. Wer gerade nicht an einer Station arbeitet, übernimmt.</li></ol>' +
-            '<div class="warn">Gefrierschrank nur kurz öffnen. Jede Öffnung bringt warme Luft hinein und verfälscht alle Messungen.</div>' },
-        { typ: 'messtabelle', id: 'mt11_kaelte', titel: 'Abkühlkurven', x: 't in min', y: 'Temperatur in °C', spalten: ['unsere Box', 'Vergleichsbox'], zeilen: ['0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75'],
-          html: '<p>Tragt eure Werte ein. In die zweite Spalte kommen die Werte eines anderen Teams.</p>' },
-        { typ: 'text', kicker: 'Stationen', zeit: '08:20', titel: 'Zwei Stationen, zwei Runden',
-          html: '<p>Jedes Team teilt sich in zwei Paare. Ein Paar startet an Station A, das andere an Station B. Um 09:20 Uhr wird gewechselt.</p><div class="stationen"><div class="task"><b>Station A: Halter in FreeCAD</b><br>Messen, konstruieren, Masse berechnen, drucken</div><div class="task"><b>Station B: Arduino am Steckbrett</b><br>Luftdruck messen, Treppenhaus, Feuchte</div></div>' },
-        { typ: 'auftrag', id: 'a11_cad', kicker: 'Station A', titel: 'Ein Halter für die Sensorplatine',
-          html: '<p>Die Sensorplatine BME280 soll später fest in der Sondenwand sitzen. Konstruiert einen Halter, der in eine 20 mm dicke Styroporwand gesteckt wird.</p>' +
-            '<div class="task"><b>Anforderungen</b><ul><li>Masse höchstens 8 g</li><li>Druckzeit höchstens 25 min</li><li>Platine sitzt formschlüssig, Sensor bleibt frei zur Luft</li><li>Halter hält in der Styroporwand, ohne zu wackeln</li></ul></div>' +
-            '<ol><li>Platine mit dem Messschieber vermessen: Länge, Breite, Dicke, Lochabstand. Jedes Maß zweimal messen.</li><li>Maßskizze mit Toleranz zeichnen (Spiel etwa 0,3 mm).</li><li>Halter in FreeCAD konstruieren. Rippen statt Vollmaterial.</li><li>Volumen in FreeCAD ablesen und die Masse berechnen: <span class="formel">m = ρ · V</span> mit ρ<sub>PLA</sub> = 1,24 g/cm³.</li><li>Druckzeit im Slicer prüfen, dann drucken.</li></ol>',
-          produkt: 'STL-Datei, Maßskizze, Masse aus Volumen und Druckzeit' },
-        { typ: 'notiz', id: 'n11_cad', kicker: 'Station A', titel: 'Messwerte und Masse', felder: ['Maße der Platine (je zwei Messungen)', 'Volumen aus FreeCAD und berechnete Masse', 'Druckzeit und tatsächliche Masse nach dem Druck'] },
-        { typ: 'auftrag', id: 'a11_ard', kicker: 'Station B', titel: 'Luftdruck am Arduino messen',
-          html: '<p>Die Platine BME280 misst Luftdruck, Temperatur und Luftfeuchte. Sie hängt am I²C-Bus des Arduino (SDA an A4, SCL an A5, VIN an 5 V, GND an GND).</p>' +
-            '<ol><li>Schaltung nach dem Plan an der Station aufbauen. Erst die Lehrkraft prüfen lassen, dann USB einstecken.</li><li>Den Sketch unten öffnen und hochladen. Im seriellen Monitor erscheinen jede Sekunde neue Werte.</li><li>Erdgeschoss: eine Minute warten, dann den Druck ablesen. Treppenhaus hoch bis ins dritte Obergeschoss, auf jedem Stockwerk ablesen.</li><li>Stufen zählen und eine Stufe messen. So erhaltet ihr die echte Höhe.</li><li>Höhe aus dem Druck berechnen und vergleichen.</li></ol>' +
-            '<pre class="code">#include &lt;Wire.h&gt;\n#include &lt;Adafruit_BME280.h&gt;\n\nAdafruit_BME280 bme;\n\nvoid setup() {\n  Serial.begin(9600);\n  if (!bme.begin(0x76)) {\n    Serial.println("BME280 nicht gefunden. Adresse 0x77 testen.");\n    while (true) {}\n  }\n}\n\nvoid loop() {\n  Serial.print("Druck_hPa:");\n  Serial.print(bme.readPressure() / 100.0, 2);\n  Serial.print(",Temperatur_C:");\n  Serial.print(bme.readTemperature(), 2);\n  Serial.print(",Feuchte_Prozent:");\n  Serial.println(bme.readHumidity(), 1);\n  delay(1000);\n}</pre>',
-          produkt: 'Druckwerte je Stockwerk, Höhe aus Druck und Stufen' },
-        { typ: 'messtabelle', id: 'mt11_treppe', kicker: 'Station B', titel: 'Treppenhaus', x: 'Stockwerk', spalten: ['Druck in hPa', 'Höhe über EG in m (Stufen)'], zeilen: ['EG', '1. OG', '2. OG', '3. OG'], diagramm: false },
-        { typ: 'rechner', ids: ['treppenhaus'] },
-        { typ: 'auftrag', id: 'a11_feuchte', kicker: 'Station B', titel: 'Feuchte und Kondensation',
-          html: '<p>Haucht den Sensor kurz an und beobachtet Feuchte und Temperatur.</p><ol><li>Beschreibt, was passiert.</li><li>Erklärt mit der Fallakte (Karte F5), warum Feuchte in einer kalten Sonde gefährlich ist.</li></ol><div class="merke"><b>Merke:</b> Kühlt feuchte Luft ab, kondensiert Wasser an kalten Flächen. In der Sonde stört dieses Wasser Kontakte und Sensoren.</div>',
-          produkt: 'Beobachtung und Erklärung in zwei Sätzen' },
-        { typ: 'text', kicker: 'Auswertung', zeit: '10:35', titel: 'Was zeigen eure Messungen?',
-          html: '<ol><li>Kältetest: Bestimmt den Temperaturabfall nach 60 min. Sammelt die Werte aller Teams mit der Boxmasse an der Tafel.</li><li>Tragt Temperaturabfall gegen Boxmasse auf. Welche Box ist der beste Kompromiss?</li><li>Treppenhaus: Vergleicht die Höhe aus dem Druck mit der Höhe aus den Stufen. Nennt eine Ursache für die Abweichung.</li></ol>' },
-        { typ: 'notiz', id: 'n11_ausw', titel: 'Kernaussagen', felder: ['Kältetest: Kernaussage mit Zahl', 'Treppenhaus: Kernaussage mit Zahl', 'Was bedeutet das für die Sonde?'] },
+        { typ: 'phase', art: 'messen', sozial: 'team', von: '08:00', bis: '08:20', titel: 'Kältetest draußen starten',
+          html: '<ol><li>Die Lehrkraft füllt 40 °C warmes Wasser ab. Jede Box bekommt eine 250-ml-Flasche, dazu kommt eine Flasche ohne Box als Vergleich.</li><li>Fühler durch den Deckel, Spitze an die Flasche kleben.</li><li>Alle Boxen und die Flasche ohne Box stehen nebeneinander im Schatten unter dem Vordach, auf einer Dämmplatte statt auf dem kalten Boden.</li><li>Ein Ventilator steht 1 m vor der zweiten Box von Team A, immer auf derselben Stufe. Das ist der Fahrtwind der Sonde.</li><li>Ein zusätzliches Thermometer misst die Außenluft im Schatten.</li><li>Eine Messwache liest alle 5 Minuten alle Anzeigen ab und trägt sie in die gemeinsame Liste ein. Nach jeder Viertelstunde übernimmt ein Schüler aus dem nächsten Team. Die Fühlerkabel laufen durch ein gekipptes Fenster, oder die Messwache geht kurz hinaus.</li></ol>' +
+            '<div class="warn">Ventilator und Verlängerungskabel bleiben trocken und liegen nicht in Pfützen. Bei Regen stehen alle Boxen unter dem Dach.</div>' +
+            '<div class="merke"><b>Plan B bei mildem Wetter (über 10 °C):</b> eine Kältemischung aus Eis und Kochsalz (3 : 1) in einer großen Kühlbox. Sie wird etwa −15 bis −20 °C kalt. Dort passen nur zwei bis drei Boxen gleichzeitig hinein.</div>',
+          ergebnis: 'Test läuft, Messliste der Messwache beginnt',
+          foto: 'Alle Boxen nebeneinander unter dem Vordach, dazu der Ventilator' },
+        { typ: 'messtabelle', id: 'mt11_kaelte', titel: 'Abkühlkurven', x: 't in min', y: 'Temperatur in °C', spalten: ['unsere Box', 'Box im Wind', 'Flasche ohne Box', 'Außenluft'], zeilen: ['0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75'],
+          html: '<p>Übertragt nach dem Test die Werte aus der Liste der Messwache.</p>' },
+
+        { typ: 'phase', art: 'messen', sozial: 'paare', von: '08:20', bis: '10:00', titel: 'Stationen in zwei Runden',
+          html: '<p>Jedes Team teilt sich in zwei Paare. Ein Paar startet an Station A, das andere an Station B. Um 09:10 Uhr wird gewechselt. Station A baut in Runde 2 auf der Zeichnung aus Runde 1 auf. Der Kältetest läuft bis 09:35 Uhr weiter.</p>',
+          ergebnis: 'Zeichnung und gefertigter Halter, Treppenhausmessung, Fallschirmversuch',
+          foto: 'Fallschirmabwurf als Zeitlupenvideo, Druckkurve als Bildschirmfoto, Halter mit Messschieber' },
+        { typ: 'stationen', id: 'st11', titel: 'Wo startet euer Paar?', runden: ['08:20–09:10', '09:10–10:00'],
+          html: '<p>Wählt eure Startstation. Die App zeigt euch danach beide Runden in der richtigen Reihenfolge.</p>',
+          stationen: {
+            A: { titel: 'Halter von Hand konstruieren',
+              r1: [
+                { typ: 'auftrag', id: 'a11_zeichnen', kicker: 'Station A, Runde 1', titel: 'Halter zeichnen',
+                  html: '<p>Die Sensorplatine soll später fest in der Sondenwand sitzen. Zeichnet einen Halter, der in eine 20 mm dicke Styroporwand gesteckt wird. Als Muster liegt an der Station eine Sensorplatine.</p>' +
+                    '<div class="task"><b>Anforderungen</b><ul><li>Masse höchstens 8 g, wenn der Halter später aus PLA gedruckt wird</li><li>Platine sitzt formschlüssig, Sensor bleibt frei zur Luft</li><li>Halter hält in der Styroporwand, ohne zu wackeln</li></ul></div>' +
+                    '<ol><li>Platine mit dem Messschieber vermessen: Länge, Breite, Dicke, Lochabstand. Jedes Maß zweimal messen (10 min).</li><li>Idee als Skizze (5 min).</li><li>Fertigungszeichnung in drei Ansichten auf Karopapier im Maßstab 2 : 1, mit Bemaßung und Spiel von etwa 0,3 mm (25 min).</li><li>Volumen aus Teilkörpern berechnen und daraus die Masse in PLA und in XPS bestimmen (10 min).</li></ol>' +
+                    '<p>Die Zeichnung bleibt an der Station. Euer zweites Paar fertigt den Halter danach. Fotografiert sie für den Klassenordner.</p>',
+                  produkt: 'Fertigungszeichnung in drei Ansichten, Masse in PLA und XPS' },
+                { typ: 'notiz', id: 'n11_zeichnen', kicker: 'Station A, Runde 1', titel: 'Messwerte und Masse', felder: ['Maße der Platine (je zwei Messungen)', 'Volumen aus Teilkörpern', 'Masse in PLA (ρ = 1,24 g/cm³) und in XPS (ρ ≈ 0,033 g/cm³)'] }
+              ],
+              r2: [
+                { typ: 'auftrag', id: 'a11_fertigen', kicker: 'Station A, Runde 2', titel: 'Halter nach Zeichnung fertigen und prüfen',
+                  html: '<p>Ihr übernehmt die Zeichnung eures zweiten Paars aus Runde 1. Fragt nicht nach, sondern arbeitet nur mit der Zeichnung. So zeigt sich, ob sie eindeutig ist.</p>' +
+                    '<ol><li>Halter als Tasche aus einem XPS-Rest fertigen: Cutter, Stahllineal, Schneidmatte (25 min). Halter aus Dämmstoff sind auch in echten Sonden üblich.</li><li>Maßprüfung wie in Woche 10 von 11.1: drei wichtige Maße am Teil messen und mit der Zeichnung vergleichen. In Toleranz oder nicht? (10 min)</li><li>Passprobe mit der Platine und einem Stück 20-mm-Wand (5 min).</li><li>Was war in der Zeichnung unklar? Notiert zwei Verbesserungen für Version 2 (10 min).</li></ol>' +
+                    '<p class="leit">In Jahrgang 12 übertragt ihr die Zeichnung in FreeCAD und druckt den Halter.</p>',
+                  produkt: 'gefertigter Halter, Prüfprotokoll mit drei Maßen, zwei Verbesserungen' },
+                { typ: 'notiz', id: 'n11_pruef', kicker: 'Station A, Runde 2', titel: 'Prüfprotokoll', felder: ['Maßprüfung: Soll, Ist, in Toleranz?', 'Was war in der Zeichnung unklar?', 'Zwei Verbesserungen für Version 2'] }
+              ] },
+            B: { titel: 'Treppenhaus und Fallschirm mit phyphox', r1: STATION_B, r2: STATION_B }
+          } },
+
+        { typ: 'phase', art: 'pause', von: '10:00', bis: '10:15', titel: 'Pause' },
+
+        { typ: 'phase', art: 'rechnen', sozial: 'team', von: '10:15', bis: '10:50', titel: 'Auswertung',
+          html: '<p>Zum Start zeigt die Lehrkraft die Temperaturkurve aus dem echten Flug (1 min). Teilt die Auswertung im Team auf, jeder übernimmt einen Punkt. Danach tragt ihr die Kernaussagen zusammen.</p><ol><li>Kältetest: Temperaturabfall nach 60 min je Box, dazu die Boxmasse an der Tafel. Welche Box ist der beste Kompromiss?</li><li>Fahrtwind: Wie viel schneller kühlt die Box im Wind ab?</li><li>Flasche ohne Box: Wie viel bringt die Dämmung überhaupt?</li><li>Treppenhaus und Fallschirm: Höhen und Sinkgeschwindigkeit mit der Rechnung vergleichen.</li><li>Luftdruck über Nacht: Um wie viel hPa hat sich der Druck geändert? Welche Höhe würde ein Logger daraus fälschlich berechnen? Warum liegen die Kurven der Teams verschieden hoch?</li></ol>',
+          clips: [[4, 214, 258]],
+          ergebnis: 'Kernaussagen mit Zahl für das Missionskonzept und die Folien',
+          foto: 'Abkühlkurven an der Tafel' },
+        { typ: 'notiz', id: 'n11_ausw', titel: 'Kernaussagen', felder: ['Kältetest: Kernaussage mit Zahl', 'Fahrtwind: Kernaussage mit Zahl', 'Treppenhaus und Fallschirm: Kernaussage mit Zahl', 'Luftdruck über Nacht: Kernaussage mit Zahl', 'Was bedeutet das für die Sonde?'] },
         { typ: 'quiz', titel: 'Auswertung geprüft', fragen: [
-          { id: 'q11_t1', f: 'Im Treppenhaus sinkt der Druck vom EG bis zum 3. OG um 1,10 hPa. Wie groß ist der Höhenunterschied?', o: ['etwa 1 m', 'etwa 9 m', 'etwa 90 m'], r: 1, e: 'Δh = Δp / (ρ · g) = 110 Pa / (1,2 kg/m³ · 9,81 m/s²) ≈ 9,3 m.' },
-          { id: 'q11_t2', f: 'Box A kühlt in 60 min um 8 K ab und wiegt 90 g. Box B kühlt um 6 K ab und wiegt 210 g. Was folgt daraus?', o: ['Box B ist immer besser.', 'Box B dämmt besser, kostet aber 120 g mehr. Ob sich das lohnt, entscheidet das Massebudget.', 'Box A ist kaputt.'], r: 1, e: 'Technik heißt abwägen. Ein Kriterium allein entscheidet nicht.' }
+          { id: 'q11_t1', f: 'Im Treppenhaus sinkt der Druck vom EG bis zum 3. OG um 1,10 hPa. Wie groß ist der Höhenunterschied?', o: ['etwa 90 m', 'etwa 9 m', 'etwa 1 m'], r: 1, e: 'Δh = Δp / (ρ · g) = 110 Pa / (1,2 kg/m³ · 9,81 m/s²) ≈ 9,3 m.' },
+          { id: 'q11_t2', f: 'Box A kühlt in 60 min um 8 K ab und wiegt 90 g. Box B kühlt um 6 K ab und wiegt 210 g. Welche nehmen wir?', o: ['Box A, weil sie leichter ist.', 'Box B, weil sie besser dämmt.', 'Das hängt vom Massebudget ab.'], r: 2, e: 'Box B dämmt besser, kostet aber 120 g mehr. Ob sich das lohnt, entscheidet das Massebudget. Ein Kriterium allein reicht nicht.' },
+          { id: 'q11_d1', f: 'Über Nacht fällt der Luftdruck um 4 hPa. Welche Höhenänderung würde ein Logger daraus fälschlich berechnen?', o: ['etwa 4 m', 'etwa 340 m', 'etwa 34 m'], r: 2, e: '4 hPa · 8,5 m/hPa ≈ 34 m. Deshalb stellen wir den Logger am Starttag auf den aktuellen Bodendruck ein.' }
         ] }
       ] },
 
-    /* ================= Jahrgang 11, Missionskonferenz ================= */
-    { id: 'j11konf', icon: '🎤', tag: 'Jahrgang 11, Tag 2 nachmittags', titel: 'Missionskonferenz', kurz: 'Konferenz', untertitel: 'Missionskonzept, Pitch vor Gästen, Freigabe für Jahrgang 12',
-      ziele: ['Anforderungen mit prüfbarem Kriterium formulieren', 'ein Massebudget aufstellen', 'das Konzept des Teams vor Gästen begründen'],
+    /* ================= Jahrgang 11, Tag 2 (Freitag) ab 10:50 ================= */
+    { id: 'j11konf', icon: '🎤', tag: 'Jahrgang 11, Tag 2 ab 10:50 Uhr', titel: 'Konzept und Präsentation', kurz: 'Tag 2 Präsentation', untertitel: 'Missionskonzept, Werkstatt für den Tag der offenen Tür, Generalprobe vor Gästen',
+      ziele: ['Anforderungen mit prüfbarem Kriterium formulieren', 'Ergebnisse auf zwei Folien verständlich darstellen', 'das Konzept des Teams vor Gästen begründen'],
       bloecke: [
-        { typ: 'notiz', id: 'n11_anf', kicker: 'Missionskonzept', zeit: '11:15', titel: 'Anforderungsliste eures Teams',
+        { typ: 'phase', art: 'schreiben', sozial: 'team', von: '10:50', bis: '11:30', titel: 'Missionskonzept',
+          html: '<p>20 min Anforderungsliste, 20 min Massebudget und Top 5 der Risiken.</p>',
+          ergebnis: 'Konzeptseite je Team (Anforderungen, Massebudget, Top 5 der Risiken)' },
+        { typ: 'notiz', id: 'n11_anf', titel: 'Anforderungsliste eures Teams',
           html: '<p>Schreibt Anforderungen so, dass man sie prüfen kann. Schlecht: „Die Box soll gut dämmen.“ Gut: „Die Innentemperatur sinkt im Kältetest in 60 min um höchstens 8 K.“</p>',
           felder: ['Muss (ohne das scheitert die Mission)', 'Soll (wichtig, aber verhandelbar)', 'Kann (wenn Zeit und Masse reichen)'] },
         { typ: 'rechner', ids: ['masse'] },
         { typ: 'risiko', titel: 'Top 5 der Risiken', html: '<p>Prüft eure Matrix. Die fünf Risiken mit der höchsten Zahl kommen ins Konzept.</p>' },
-        { typ: 'pitch', zeit: '12:25', titel: 'Euer Fünf-Minuten-Pitch', html: '<p>Um 13:05 Uhr stellt jedes Team sein Konzept vor Gästen vor. Danach gibt es drei Minuten für Fragen.</p>' },
-        { typ: 'auftrag', id: 'a11_poster', titel: 'Posterentwurf für den Tag der offenen Tür',
-          html: '<p>Skizziert ein Poster im Format A1 zu eurem Teamthema. Es hängt am Tag der offenen Tür am Stand.</p><ul><li>Überschrift als Frage, z. B. „Wie kalt ist es in 30 km Höhe?“</li><li>ein Bild oder Diagramm aus euren Messungen</li><li>höchstens 60 Wörter Text</li><li>eine Zahl, die Besucher überrascht</li></ul>',
-          produkt: 'Posterskizze auf A4' },
+
+        { typ: 'phase', art: 'pause', von: '11:30', bis: '12:00', titel: 'Mittagspause' },
+
+        { typ: 'phase', art: 'bauen', sozial: 'team', von: '12:00', bis: '13:00', titel: 'Werkstatt für den Tag der offenen Tür',
+          html: '<p>Morgen ist Tag der offenen Tür. Heute bis 13:00 Uhr muss alles fertig sein.</p><ol><li><b>12:00–12:05 Abstimmung</b> über die Ideenwand: Die zwei Ideen mit den meisten Stimmen werden umgesetzt.</li><li><b>Redaktionsteam:</b> Team E und die Rolle „Präsentation“ aus den Teams A bis D. Sie schneiden den Kurzfilm und bauen die Endlos-Präsentation.</li><li><b>Alle anderen:</b> zwei Folien je Team, den Vortrag für die Generalprobe und die gewählten Ideen.</li></ol>',
+          ergebnis: 'Kurzfilm, Endlos-Präsentation, zwei Folien je Team im Klassenordner',
+          foto: 'Redaktionsteam beim Schneiden (von hinten)' },
+        { typ: 'stopp', titel: '12:00 Uhr: Abstimmung über die Ideenwand', html: '<p>Jeder hat zwei Stimmen. Die zwei Ideen mit den meisten Stimmen werden heute umgesetzt. Wer sie umsetzt, legt die Klasse direkt fest.</p>' },
+        { typ: 'ideen', titel: 'Eure Ideen' },
+        { typ: 'auftrag', id: 'a11_folien', kicker: 'Teams', titel: 'Zwei Folien und ein Vortrag von 4 Minuten',
+          html: '<ul><li><b>Folie 1:</b> eure Frage als Überschrift, ein Foto vom Projekttag</li><li><b>Folie 2:</b> euer Ergebnis mit Diagramm und einer Zahl, die überrascht</li><li>höchstens 30 Wörter je Folie, große Schrift</li><li>Vorlage und Ablage im Klassenordner, Dateiname „Team A“ usw.</li></ul><p>Den Vortrag in der Generalprobe halten die Mitglieder, die nicht im Redaktionsteam sind. Plant ihn mit dem Pitch-Planer unten.</p>',
+          produkt: 'zwei Folien im Klassenordner, geprobter Vortrag' },
+        { typ: 'pitch', titel: 'Euer Vortrag (4 Minuten)' },
+        { typ: 'auftrag', id: 'a11_redaktion', kicker: 'Redaktionsteam', titel: 'Kurzfilm und Endlos-Präsentation',
+          html: '<p><b>Filmgruppe (vier Schüler), Kurzfilm „Mission Stratosphäre, Jahr 1“, 2 bis 3 Minuten, auf dem iPad zum Beispiel mit iMovie:</b></p><ol><li>Titel (5 s)</li><li>Die Mission: 35 km, −56 °C, Herbst 2028 als Texteinblendungen (20 s)</li><li>Isolierbox bauen und Kältetest im Zeitraffer (30 s)</li><li>Treppenhaus mit Druckkurve (25 s)</li><li>Fallschirm in Zeitlupe (20 s)</li><li>Zeichnen, Fertigen, Messen (20 s)</li><li>Ausblick „Herbst 2028: Start“ (10 s)</li></ol><p>Zeitplan: 10 min Clips auswählen, 35 min schneiden, 10 min Text und Musik, 5 min exportieren und in den Klassenordner legen.</p>' +
+            '<p><b>Foliengruppe (vier Schüler), Endlos-Präsentation:</b> Titel mit QR-Code zur App, Zeitstrahl 2026 bis 2028, die zwei Folien jedes Teams, eine Folie zu euren Ideen, Schluss mit Ausblick. In Keynote oder PowerPoint auf „selbst ablaufend“ mit etwa 10 s je Folie und Endlosschleife stellen. Einmal am großen Bildschirm testen.</p>' +
+            '<div class="warn">Nur eigene Fotos und Videos verwenden, keine Ausschnitte aus den c’t-Videos (Urheberrecht). Musik nur aus der Schnitt-App. Fotoregeln beachten: Gesichter nur mit Einwilligung.</div>',
+          produkt: 'Kurzfilm und Endlos-Präsentation im Klassenordner, am Bildschirm getestet' },
+        { typ: 'fotoliste', titel: 'Fotoliste für Film und Folien', html: '<p>Hakt ab, welche Fotomomente im Klassenordner liegen. Was fehlt, ersetzt ihr durch Bildschirmfotos von Messkurven.</p>' },
+
+        { typ: 'phase', art: 'praesentieren', sozial: 'plenum', von: '13:00', bis: '13:45', titel: 'Missionskonferenz als Generalprobe',
+          html: '<ol><li>Endlos-Präsentation läuft einmal an (2 min).</li><li>Jedes Team hält seinen Vortrag zu den zwei Folien (4 min), danach 2 min Fragen der Gäste.</li><li>Kurzfilm (3 min).</li><li>Rückmeldung der Gäste und Missionsfreigabe (10 min).</li></ol>',
+          ergebnis: 'Rückmeldungen, Missionsfreigabe, letzte Korrekturen für Samstag',
+          foto: 'Großer Bildschirm mit der Präsentation während der Generalprobe' },
         { typ: 'feedback', titel: 'Zwei Sterne und ein Wunsch' },
+
+        { typ: 'phase', art: 'schreiben', sozial: 'einzel', von: '13:45', bis: '14:00', titel: 'Logbuch und Sichern',
+          ergebnis: 'Logbucheintrag, alle Dateien gesichert' },
         { typ: 'logbuch', titel: 'Logbuch Tag 2' },
+        { typ: 'checkliste', id: 'cl11_t2', titel: 'Bevor du gehst (Tag 2)', punkte: ['Messwerte aus Kältetest, Treppenhaus und Fallschirm sind in der App eingetragen.', 'Unsere zwei Folien liegen im Klassenordner.', 'Film und Endlos-Präsentation laufen am Bildschirm.', 'Boxen und Halter sind für Samstag beschriftet und verstaut.', 'Ich kenne meine Schicht für Samstag.', 'Mein Logbuch für Tag 2 ist vollständig.'] },
         { typ: 'freigabe', id: 'f_mission', titel: 'Missionsfreigabe für Jahrgang 12',
-          html: '<p>Die Gäste und die Lehrkraft entscheiden nach den Pitches, ob die Mission weitergeht.</p>' },
+          html: '<p>Die Gäste und die Lehrkraft entscheiden nach der Generalprobe, ob die Mission weitergeht.</p>' },
         { typ: 'text', kicker: 'Mission Go', titel: 'Glückwunsch, die Mission geht weiter',
           html: '<p>Eure Konzeptseiten sammelt die Lehrkraft als Übergabedokument v1.0. In Jahrgang 12 baut ihr darauf auf.</p>' }
       ] },
 
-    /* ================= Jahrgang 11, Tag der offenen Tür ================= */
-    { id: 'j11tdot', icon: '🏫', tag: 'Jahrgang 11, Tag der offenen Tür', titel: 'Tag der offenen Tür', kurz: 'Tag der offenen Tür', untertitel: 'Fünf Mitmachstationen zur Mission',
+    /* ================= Jahrgang 11, Tag der offenen Tür (Samstag) ================= */
+    { id: 'j11tdot', icon: '🏫', tag: 'Jahrgang 11, Samstag', titel: 'Tag der offenen Tür', kurz: 'Samstag', untertitel: 'Präsentation, Film, drei Mitmachstationen und Gespräche',
       ziele: ['die Mission in 30 Sekunden verständlich erklären', 'eine Mitmachstation sicher betreuen'],
       bloecke: [
-        { typ: 'text', kicker: 'Unser Stand', titel: 'Fünf Stationen, ein Ziel',
-          html: '<p>Besucher sollen nach fünf Minuten wissen, was ihr vorhabt, und eine Sache selbst ausprobiert haben. Jede Station betreuen zwei von euch in Schichten zu 45 Minuten.</p>' +
+        { typ: 'phase', art: 'bauen', sozial: 'team', titel: 'Aufbau vor dem Einlass (30 min)',
+          html: '<ol><li>Großer Bildschirm: Endlos-Präsentation im Wechsel mit dem Kurzfilm.</li><li>Drei Stationen aufbauen (siehe unten), Schichtplan aushängen.</li><li>QR-Code zur App gut sichtbar aufstellen.</li><li>Fernzugriff von phyphox im Raum testen.</li></ol>',
+          ergebnis: 'Stand steht, Fernzugriff läuft' },
+        { typ: 'text', kicker: 'Unser Stand', titel: 'Bildschirm, drei Stationen und Gespräche',
+          html: '<p>Besucher sollen nach fünf Minuten wissen, was ihr vorhabt, und eine Sache selbst ausprobiert haben. Jede Station betreuen zwei von euch in Schichten zu 45 Minuten. Wer gerade keine Station hat, spricht Besucher am Bildschirm an.</p>' +
             '<div class="stationen">' +
-            '<div class="task"><b>1 Mission Stratosphäre (Team E)</b><br>Poster aller Teams, Fotos der Projekttage.<br><i>30-Sekunden-Satz:</i> „Wir bauen in drei Jahren eine Sonde, die 35 km hoch fliegt und dabei Temperatur und Luftdruck misst.“</div>' +
-            '<div class="task"><b>2 Wie hoch bist du? (Team D)</b><br>Besucher tragen den Sensor die Treppe hoch, der Laptop zeigt den Druck.<br><i>30-Sekunden-Satz:</i> „Jeder Meter nach oben senkt den Luftdruck ein kleines Stück. Unser Sensor merkt schon einen Höhenunterschied von einem Stockwerk.“</div>' +
-            '<div class="task"><b>3 Kältebox-Challenge (Team B)</b><br>Besucher tippen, welche Box am besten dämmt. Danach zeigt ihr die Kurven.<br><i>30-Sekunden-Satz:</i> „Unsere Elektronik muss −50 °C überstehen. Hier seht ihr, welche Box sie am besten warm hält und was das an Masse kostet.“</div>' +
-            '<div class="task"><b>4 Ballonrechner (Team A)</b><br>Besucher rechnen aus, wie viel Helium sie selbst heben würde.<br><i>30-Sekunden-Satz:</i> „Ein Kubikmeter Helium hebt etwa ein Kilogramm. Wie groß müsste dein Ballon sein?“</div>' +
-            '<div class="task"><b>5 Konstruktion (Team C)</b><br>Gedruckte Halter zum Anfassen, Messschieber zum Nachmessen, FreeCAD am Laptop.<br><i>30-Sekunden-Satz:</i> „Jedes Gramm zählt. Deshalb konstruieren wir Halter mit Rippen statt aus Vollmaterial.“</div>' +
-            '</div>' },
+            '<div class="task"><b>1 Wie hoch bist du? (Team D)</b><br>Ein Handy mit phyphox („Aufzug“) wandert mit den Besuchern die Treppe hoch. Über den Fernzugriff zeigt ein Bildschirm Höhe und Geschwindigkeit live.<br><i>30-Sekunden-Satz:</i> „Jeder Meter nach oben senkt den Luftdruck ein kleines Stück. Das Handy merkt schon ein einzelnes Stockwerk.“</div>' +
+            '<div class="task"><b>2 Kältebox-Challenge (Team B)</b><br>Besucher tippen, welche Box am besten dämmt und was der Fahrtwind ausmacht. Danach zeigt ihr die Kurven auf dem iPad.<br><i>30-Sekunden-Satz:</i> „Unsere Elektronik muss −50 °C und Fahrtwind überstehen. Hier seht ihr, welche Box sie am besten warm hält und was das an Masse kostet.“</div>' +
+            '<div class="task"><b>3 Ballonrechner (Team A)</b><br>Besucher rechnen auf dem iPad aus, wie viel Helium sie selbst heben würde.<br><i>30-Sekunden-Satz:</i> „Ein Kubikmeter Helium hebt etwa ein Kilogramm. Wie groß müsste dein Ballon sein?“</div>' +
+            '<div class="task"><b>Gespräche am Bildschirm (Teams C und E)</b><br>Präsentation und Film laufen. Ihr erklärt Zeichnungen, Halter und die Planung bis 2028.<br><i>30-Sekunden-Satz:</i> „Wir bauen in drei Jahren eine Sonde, die 35 km hoch fliegt und dabei Temperatur und Luftdruck misst.“</div>' +
+            '</div>' +
+            '<div class="merke"><b>Fernzugriff einrichten:</b> In phyphox das Experiment „Aufzug“ öffnen, im Menü oben rechts „Fernzugriff erlauben“ wählen und den angezeigten Link am Laptop oder iPad im Browser öffnen. Beide Geräte müssen im selben WLAN sein, ein Hotspot des Handys funktioniert auch.</div>' },
         { typ: 'rechner', ids: ['heben'] },
         { typ: 'faq', kicker: 'Besucherfragen', titel: 'Was Besucher oft fragen', liste: [
           ['Darf man einfach einen Wetterballon steigen lassen?', 'Nein. Man braucht eine Aufstiegserlaubnis der Luftfahrtbehörde, eine Versicherung und die Zustimmung des Grundstückseigentümers. Wir stellen den Antrag im Sommer 2028.'],
@@ -472,9 +612,12 @@ const PROJEKT = {
           ['Was lernt man dabei?', 'Messen, Konstruieren, Programmieren, Planen und Präsentieren. Das sind genau die Aufgaben von physikalisch-technischen Assistenten.'],
           ['Ist das gefährlich?', 'Die Sonde ist leicht, fällt am Fallschirm und wird vorher genau geprüft. Genau dafür gibt es die Genehmigung und unsere Checklisten.']
         ] },
-        { typ: 'auftrag', id: 'a11_tdot', titel: 'Vorbereitung im Team',
-          html: '<ol><li>Poster nach dem Entwurf fertigstellen.</li><li>Station einmal komplett aufbauen und durchspielen.</li><li>Den 30-Sekunden-Satz auswendig sprechen können.</li><li>Schichtplan mit Namen an der Station aushängen.</li></ol>',
-          produkt: 'Poster, getestete Station, Schichtplan' },
+        { typ: 'phase', art: 'praesentieren', sozial: 'team', titel: 'Während der Öffnung',
+          html: '<p>Arbeitet nach Schichtplan. Achtet auf die Fotoregeln: Besucher nur fotografieren, wenn sie zustimmen.</p>',
+          ergebnis: 'Gespräche geführt, Stationen betreut' },
+        { typ: 'auftrag', id: 'a11_tdot', titel: 'Schicht und Abbau',
+          html: '<ol><li>Schicht pünktlich übernehmen und übergeben.</li><li>Nach dem Ende alles abbauen. Boxen, Halter und Zeichnungen in die beschriftete Projektkiste legen. Sie werden in Jahrgang 12 gebraucht.</li></ol>',
+          produkt: 'Projektkiste vollständig' },
         { typ: 'logbuch', titel: 'Logbuch Tag der offenen Tür' }
       ] }
   ]
@@ -778,7 +921,7 @@ const PROJEKT = {
     fallschirm: {
       titel: 'Fallschirm', icon: '🪂', kurz: 'Wie groß muss der Fallschirm sein?',
       html: function () {
-        return '<div class="rgrid">' + feld('f_m', 'Masse am Fallschirm', '1.5', 'kg') + feld('f_cw', 'Widerstandsbeiwert c_w', '1.5', '') + feld('f_v', 'gewünschte Sinkgeschwindigkeit am Boden', 5, 'm/s') + feld('f_rho', 'Luftdichte am Boden', '1.225', 'kg/m³') + '</div><div class="erg" id="f_erg"></div>' +
+        return '<div class="rgrid">' + feld('f_m', 'Masse am Fallschirm', '1.5', 'kg') + feld('f_cw', 'Widerstandsbeiwert c_w', '1.5', '') + feld('f_v', 'gewünschte Sinkgeschwindigkeit am Boden', 5, 'm/s') + feld('f_rho', 'Luftdichte am Boden', '1.225', 'kg/m³') + feld('f_a', 'oder: vorhandene Fläche', '', 'm²') + '</div><div class="erg" id="f_erg"></div>' +
           '<div class="merke"><b>Kräftegleichgewicht:</b> Bei konstanter Sinkgeschwindigkeit gilt <span class="formel">m · g = ½ · ρ · c<sub>w</sub> · A · v²</span>, also <span class="formel">A = 2 · m · g / (ρ · c<sub>w</sub> · v²)</span>.</div>';
       },
       init: function (el) {
@@ -786,7 +929,9 @@ const PROJEKT = {
           var A = 2 * v(el, 'f_m') * 9.81 / (v(el, 'f_rho') * v(el, 'f_cw') * Math.pow(v(el, 'f_v'), 2));
           var hoch = atm(10000).rho;
           var v10 = Math.sqrt(2 * v(el, 'f_m') * 9.81 / (hoch * v(el, 'f_cw') * A));
-          $('#f_erg', el).innerHTML = '<div>Fläche<b>' + fmt(A, 2) + ' m²</b></div><div>Durchmesser<b>' + fmt(2 * Math.sqrt(A / Math.PI), 2) + ' m</b></div><div>Sinkgeschwindigkeit in 10 km<b>' + fmt(v10, 1) + ' m/s</b></div>';
+          var Af = v(el, 'f_a');
+          var vf = Af > 0 ? Math.sqrt(2 * v(el, 'f_m') * 9.81 / (v(el, 'f_rho') * v(el, 'f_cw') * Af)) : NaN;
+          $('#f_erg', el).innerHTML = '<div>nötige Fläche<b>' + fmt(A, 2) + ' m²</b></div><div>Durchmesser<b>' + fmt(2 * Math.sqrt(A / Math.PI), 2) + ' m</b></div><div>Sinkgeschwindigkeit in 10 km<b>' + fmt(v10, 1) + ' m/s</b></div>' + (Af > 0 ? '<div>Sinkgeschwindigkeit mit vorhandener Fläche<b>' + fmt(vf, 2) + ' m/s</b></div>' : '');
         }
         el.addEventListener('input', rechne); rechne();
       }
@@ -906,7 +1051,7 @@ const PROJEKT = {
       var st = S.fall[c.id] || {};
       var fertig = st.u != null && st.m != null;
       html += '<div class="fall' + (fertig ? ' fertig' : '') + '" data-fall="' + c.id + '"><div class="kopf"><span class="nr">' + c.id + '</span><b>' + esc(c.titel) + '</b><span class="teamtag">Team ' + c.team + '</span></div>' +
-        '<div class="quelle">' + esc(c.quelle) + '</div><p>' + c.text + '</p>' +
+        (c.quelle ? '<div class="quelle">' + esc(c.quelle) + '</div>' : '') + clipLinks(c.clips) + '<p>' + c.text + '</p>' +
         fallFrage(c, 'u', 'Wahrscheinliche Ursache', c.ursache, st) + fallFrage(c, 'm', 'Beste Gegenmaßnahme für unsere Sonde', c.massnahme, st) +
         (fertig ? '<div class="reihe"><label class="feld" style="margin:0">Wahrscheinlichkeit</label>' + wahl(c.id, 'w', st.w || c.w, ['selten', 'möglich', 'wahrscheinlich']) +
           '<label class="feld" style="margin:0">Auswirkung</label>' + wahl(c.id, 'a', st.a || c.a, ['gering', 'mittel', 'kritisch']) + '</div>' : '') + '</div>';
@@ -1015,6 +1160,83 @@ const PROJEKT = {
     return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Fragen') + '</div><h3>' + esc(b.titel) + '</h3>' + (b.html || '') + b.liste.map(function (f) { return '<details><summary>' + esc(f[0]) + '</summary><p style="margin-top:6px">' + f[1] + '</p></details>'; }).join('') + '</div>';
   }
 
+  /* ---------- Videos ---------- */
+  function zeitText(s) { var m = Math.floor(s / 60), x = s % 60; return m + ':' + (x < 10 ? '0' : '') + x; }
+  function clipLinks(clips) {
+    if (!clips || !clips.length || !P.videos) return '';
+    return '<div class="clips">' + clips.map(function (c) {
+      return '<a class="clip" href="https://youtu.be/' + P.videos[c[0]] + '?t=' + c[1] + '" target="_blank" rel="noopener">▶ c\u2019t Teil ' + c[0] + ', ' + zeitText(c[1]) + '–' + zeitText(c[2]) + '</a>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- Phasen, Fahrplan, Stopp ---------- */
+  var ART = { video: '🎬', lesen: '📖', rechnen: '🧮', messen: '🔬', bauen: '🛠️', plenum: '🗣️', pause: '☕', schreiben: '✍️', team: '👥', praesentieren: '🎤' };
+  var SOZIAL = { plenum: 'Plenum', team: 'Teamarbeit', partner: 'Partnerarbeit', paare: 'Paare an Stationen', einzel: 'Einzelarbeit', gemischt: 'Team und Einzel' };
+  function phasenVon(e) { return e.bloecke.filter(function (b) { return b.typ === 'phase'; }); }
+  function uhrJetzt() { var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function blockPhase(b, nr, gesamt) {
+    if (b.art === 'pause') return '<div class="card phase pausekarte" id="' + b._anker + '"><b>☕ ' + esc(b.titel || 'Pause') + '</b> ' + (b.von ? esc(b.von) + '–' + esc(b.bis) + ' Uhr' : '') + '</div>';
+    return '<div class="card phase" id="' + b._anker + '"><div class="phkopf"><span class="phnr">Phase ' + nr + ' von ' + gesamt + '</span>' + (b.von ? '<span class="zeit">' + esc(b.von) + '–' + esc(b.bis) + '</span>' : '') + (b.sozial ? '<span class="chip">' + esc(SOZIAL[b.sozial] || b.sozial) + '</span>' : '') + '</div>' +
+      '<h3>' + (ART[b.art] || '') + ' ' + esc(b.titel) + '</h3>' + (b.html || '') + clipLinks(b.clips) +
+      (b.ergebnis ? '<div class="produkt"><b>Ergebnis der Phase:</b> ' + b.ergebnis + '</div>' : '') +
+      (b.foto ? '<div class="foto">📸 <b>Fotomoment (Rolle Dokumentation):</b> ' + esc(b.foto) + '</div>' : '') + '</div>';
+  }
+  function fahrplan(e) {
+    var ph = phasenVon(e);
+    if (!ph.length) return '';
+    var hm = uhrJetzt();
+    return '<div class="card fahrplan"><div class="kicker">Tagesfahrplan</div><h3>So läuft ' + esc(e.kurz || e.titel) + ' ab</h3><ol class="fp">' + ph.map(function (b) {
+      var aktiv = b.von && hm >= b.von && hm < b.bis;
+      return '<li class="' + (aktiv ? 'jetzt' : '') + (b.art === 'pause' ? ' fppause' : '') + '"><button data-scroll="' + b._anker + '"><span class="fpz">' + esc(b.von || '') + '</span><span class="fpt">' + (ART[b.art] || '') + ' ' + esc(b.titel || 'Pause') + (aktiv ? ' <b class="jetztmarke">jetzt</b>' : '') + '</span><span class="fps">' + esc(b.art === 'pause' ? '' : (SOZIAL[b.sozial] || '')) + '</span></button></li>';
+    }).join('') + '</ol><p class="leit">Tippe auf eine Zeile, um dorthin zu springen. Die Markierung „jetzt“ richtet sich nach der Uhrzeit deines Geräts.</p></div>';
+  }
+  function blockStopp(b) {
+    return '<div class="card stopp"><div class="kicker">Stopp</div><h3>✋ ' + esc(b.titel || 'Jetzt alle zusammen') + '</h3>' + (b.html || '') + clipLinks(b.clips) + '</div>';
+  }
+  function mitBid(h, bid) { return h.replace(/^<div class="card/, '<div data-bid="' + bid + '" class="card'); }
+  function stationsFolge(b) {
+    var wahl = S.werte['st_' + b.id];
+    if (!wahl) return null;
+    var andere = wahl === 'A' ? 'B' : 'A';
+    return [[1, wahl, b.stationen[wahl].r1], [2, andere, b.stationen[andere].r2]];
+  }
+  function blockStationen(b, eid) {
+    var wahl = S.werte['st_' + b.id];
+    var html = '<div class="card weiche"><div class="kicker">Stationsweiche</div><h3>🔀 ' + esc(b.titel) + '</h3>' + (b.html || '') + '<div class="reihe">' + ['A', 'B'].map(function (k) {
+      return '<button class="btn' + (wahl === k ? '' : ' sek') + '" data-weiche="' + b.id + '" data-st="' + k + '">Wir starten an Station ' + k + '</button>';
+    }).join('') + '</div></div>';
+    var folge = stationsFolge(b);
+    if (!folge) return html + '<div class="card gesperrt">Wählt zuerst eure Startstation. Ein Paar eures Teams startet an A, das andere an B.</div>';
+    folge.forEach(function (f) {
+      html += '<div class="card rundenkopf"><div class="kicker">Runde ' + f[0] + ', ' + esc(b.runden[f[0] - 1]) + ' Uhr</div><h3>Station ' + f[1] + ': ' + esc(b.stationen[f[1]].titel) + '</h3></div>';
+      f[2].forEach(function (sb) { html += mitBid(blockHtml(sb, eid), sb._bid); });
+    });
+    return html;
+  }
+  function blockCheckliste(b) {
+    return '<div class="card checkliste"><div class="kicker">Bevor du gehst</div><h3>✅ ' + esc(b.titel || 'Checkliste') + '</h3>' + b.punkte.map(function (pt, i) {
+      var k = 'cl_' + b.id + '_' + i;
+      return '<label class="check"><input type="checkbox" data-pc="' + k + '"' + (S.werte[k] ? ' checked' : '') + '> ' + esc(pt) + '</label>';
+    }).join('') + '</div>';
+  }
+  function blockIdeen(b) {
+    var l = S.werte.ideen || [];
+    return '<div class="card"><div class="kicker">Ideenwand</div><h3>💡 ' + esc(b.titel || 'Eure Ideen für den Tag der offenen Tür') + '</h3>' + (b.html || '') +
+      '<label class="feld" for="idee_neu">Neue Idee</label><input type="text" id="idee_neu" placeholder="z. B. Live-Druckkurve auf dem großen Bildschirm"><div class="reihe"><button class="btn klein" data-idee="neu">Idee notieren</button></div>' +
+      (l.length ? '<ol>' + l.map(function (t, i) { return '<li>' + esc(t) + ' <button class="btn klein sek" data-ideeweg="' + i + '" aria-label="Idee löschen">✕</button></li>'; }).join('') + '</ol>' : '') + '</div>';
+  }
+  function blockFotoliste(b) {
+    var html = '<div class="card"><div class="kicker">Fotoliste</div><h3>📸 ' + esc(b.titel || 'Alle Fotomomente') + '</h3>' + (b.html || '');
+    P.etappen.forEach(function (e) {
+      phasenVon(e).forEach(function (x) {
+        if (!x.foto) return;
+        var k = 'fo_' + x._bid;
+        html += '<label class="check"><input type="checkbox" data-pc="' + k + '"' + (S.werte[k] ? ' checked' : '') + '> ' + esc((e.kurz || e.titel) + (x.von ? ', ' + x.von : '') + ': ' + x.foto) + '</label>';
+      });
+    });
+    return html + '</div>';
+  }
+
   function blockHtml(b, eid) {
     switch (b.typ) {
       case 'text': return blockText(b);
@@ -1031,23 +1253,45 @@ const PROJEKT = {
       case 'feedback': return blockFeedback(b);
       case 'faq': return blockFaq(b);
       case 'notiz': return blockNotiz(b);
+      case 'stopp': return blockStopp(b);
+      case 'stationen': return blockStationen(b, eid);
+      case 'checkliste': return blockCheckliste(b);
+      case 'ideen': return blockIdeen(b);
+      case 'fotoliste': return blockFotoliste(b);
       default: return '';
     }
   }
 
   /* ---------- Indizes ---------- */
   var etappen = {}, blockIndex = {}, alleFragen = {};
+  function registriere(b, bid) {
+    if (b._bid) return;
+    b._bid = bid;
+    blockIndex[bid] = b;
+    if (b.typ === 'phase') b._anker = 'ph_' + bid;
+    if (b.typ === 'quiz') b.fragen.forEach(function (q) { alleFragen[q.id] = q; });
+    if (b.typ === 'stationen') ['A', 'B'].forEach(function (k) {
+      ['r1', 'r2'].forEach(function (r) { b.stationen[k][r].forEach(function (sb, j) { registriere(sb, bid + '_' + k + r + '_' + j); }); });
+    });
+  }
   P.etappen.forEach(function (e) {
     etappen[e.id] = e;
-    e.bloecke.forEach(function (b, i) {
-      b._bid = e.id + '_' + i;
-      blockIndex[b._bid] = b;
-      if (b.typ === 'quiz') b.fragen.forEach(function (q) { alleFragen[q.id] = q; });
-    });
+    e.bloecke.forEach(function (b, i) { registriere(b, e.id + '_' + i); });
   });
+  function flach(e) {
+    var l = [];
+    e.bloecke.forEach(function (b) {
+      l.push(b);
+      if (b.typ === 'stationen') {
+        var folge = stationsFolge(b) || [[1, 'A', b.stationen.A.r1], [2, 'B', b.stationen.B.r2]];
+        folge.forEach(function (f) { f[2].forEach(function (sb) { l.push(sb); }); });
+      }
+    });
+    return l;
+  }
   function etappenFortschritt(e) {
     var ges = 0, fertig = 0;
-    e.bloecke.forEach(function (b) {
+    flach(e).forEach(function (b) {
       if (b.typ === 'auftrag') { ges++; if (S.done[b.id]) fertig++; }
       if (b.typ === 'quiz') b.fragen.forEach(function (q) { ges++; if (S.quiz[q.id] && S.quiz[q.id].fertig) fertig++; });
       if (b.typ === 'logbuch') { ges++; if (logVoll(e.id)) fertig++; }
@@ -1093,11 +1337,13 @@ const PROJEKT = {
     if (!e) return startSeite();
     var html = '<section class="hero"><div class="wrap"><div class="kicker">' + esc(e.tag) + '</div><h2>' + e.icon + ' ' + esc(e.titel) + '</h2><p>' + esc(e.untertitel) + '</p>' + (e.ziele ? '<div class="stat" style="margin-top:12px"><b style="font-size:16px">Am Ende kannst du</b><ul style="margin:4px 0 0;padding-left:20px">' + e.ziele.map(function (z) { return '<li>' + esc(z) + '</li>'; }).join('') + '</ul></div>' : '') + '</div></section><div class="wrap step">';
     var gesperrt = false;
-    e.bloecke.forEach(function (b) {
+    var phasen = phasenVon(e).filter(function (b) { return b.art !== 'pause'; });
+    html += fahrplan(e);
+    e.bloecke.forEach(function (b, bi) {
       if (gesperrt) return;
-      var h = blockHtml(b, eid);
-      html += h.replace(/^<div class="card/, '<div data-bid="' + b._bid + '" class="card');
-      if (b.typ === 'freigabe' && !S.frei[b.id]) {
+      var h = b.typ === 'phase' ? blockPhase(b, phasen.indexOf(b) + 1, phasen.length) : blockHtml(b, eid);
+      html += mitBid(h, b._bid);
+      if (b.typ === 'freigabe' && !S.frei[b.id] && bi < e.bloecke.length - 1) {
         gesperrt = true;
         html += '<div class="card gesperrt">🔒 Die nächsten Abschnitte erscheinen nach der Freigabe.</div>';
       }
@@ -1129,7 +1375,7 @@ const PROJEKT = {
     P.jahre.forEach(function (j) {
       (j.etappen || []).forEach(function (eid) {
         var e = etappen[eid];
-        if (!e.bloecke.some(function (b) { return b.typ === 'logbuch'; })) return;
+        if (!flach(e).some(function (b) { return b.typ === 'logbuch'; })) return;
         html += '<div data-bid="lb_' + eid + '">' + blockLogbuch({ titel: e.titel }, eid).replace('<div class="card">', '<div class="card">') + '</div>';
       });
     });
@@ -1228,6 +1474,21 @@ const PROJEKT = {
     }
     if (t.dataset.riweg != null) { S.eigen.splice(+t.dataset.riweg, 1); speichern(); neuZeichnen(); return; }
     if (t.id === 'drucken') { drucken(); return; }
+    var sc = t.closest('[data-scroll]');
+    if (sc) {
+      var ziel = document.getElementById(sc.dataset.scroll);
+      if (ziel) { ziel.scrollIntoView(); window.scrollBy(0, -70); }
+      else toast('Erscheint erst nach der Freigabe');
+      return;
+    }
+    if (t.dataset.weiche) { S.werte['st_' + t.dataset.weiche] = t.dataset.st; speichern(); neuZeichnen(); return; }
+    if (t.dataset.idee === 'neu') {
+      var it = $('#idee_neu').value.trim();
+      if (!it) { toast('Erst eine Idee eintragen'); return; }
+      S.werte.ideen = (S.werte.ideen || []).concat([it]);
+      speichern(); neuZeichnen(); return;
+    }
+    if (t.dataset.ideeweg != null) { S.werte.ideen.splice(+t.dataset.ideeweg, 1); speichern(); neuZeichnen(); return; }
     if (t.id === 'reset') {
       if (confirm('Wirklich alles löschen? Logbuch, Punkte und Freigaben gehen verloren.')) { S = leer(); speichern(); render(); }
     }
