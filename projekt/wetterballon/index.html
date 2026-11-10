@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#16233a">
-<title>Treppenhaus: Druck, Höhe und GPS 11NP</title>
+<title>Mission Stratosphäre 11NP</title>
 <style>
 :root{
   color-scheme:light;
@@ -173,6 +173,10 @@ pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overfl
 .fahrplan li.fppause button{background:#f4f6fa;color:var(--muted)}
 .fahrplan li.jetzt button{border:2px solid var(--acc);background:#fff1ea}
 .jetztmarke{background:var(--acc);color:#fff;border-radius:6px;padding:0 6px;font-size:12px}
+.anleitung{border-left:6px solid var(--blue)}
+.vlink{display:block;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:9px 12px;margin:8px 0;background:#f7fafd}
+.vlink b{display:block;color:var(--blue-d)}
+.vlink span{font-size:14px;color:var(--muted)}
 #druck{display:none}
 @media print{
   body.drucken > *:not(#druck){display:none!important}
@@ -191,7 +195,7 @@ pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overfl
 <nav class="tabbar"><div class="wrap" id="tabs"></div></nav>
 <div id="druck"></div>
 <script>
-const CONFIG = {"codeHash": "1c8864d8", "erzeugt": "2026-11-09"};
+const CONFIG = {"codeHash": "1c8864d8", "erzeugt": "2026-11-10"};
 </script>
 <script>
 /* Inhalt der Projekt-App „Mission Stratosphäre“ (11NP). Engine: _werkzeuge/projekt/engine.js, Bau: _werkzeuge/projekt_bauen.py */
@@ -202,6 +206,7 @@ const STATION_B = [
       '<ol><li>Im Erdgeschoss startet Handy 1 in phyphox „Luftdruck“. Handy 2 startet „Ortung (GPS)“ am Fenster und wartet, bis eine Höhe erscheint.</li><li>Auf jedem Stockwerk bis ins dritte Obergeschoss 30 Sekunden ruhig stehen, dann Druck und GPS-Höhe ablesen und eintragen (15 min).</li><li>Stufen zählen und eine Stufe messen. So erhaltet ihr die echte Höhe.</li><li>Höhe aus dem Druck mit dem Rechner bestimmen und mit Stufen und GPS vergleichen (5 min).</li></ol>' +
       '<div class="merke"><b>Für Schnelle:</b> Startet in phyphox das Experiment „Aufzug“ (Kategorie „Alltag“) und lauft die Treppe hoch. Wie schnell steigt ihr in m/s? Ein Wetterballon steigt mit etwa 5 m/s.</div>',
     produkt: 'Druck, Stufenhöhe und GPS-Höhe je Stockwerk, Höhen im Vergleich' },
+  { typ: 'anleitung', titel: 'Luftdruck und Aufzug mit phyphox', videos: [{ id: 'RCsCRDr_Pac', kanal: 'phyphox', laenge: '2 min', text: 'So zeigt phyphox den Luftdruck an und so lest ihr ihn ab.' }, { id: 'Jgzym7tplVU', kanal: 'phyphox', laenge: '4 min', text: 'Wie phyphox im Aufzug aus dem Luftdruck Höhe und Geschwindigkeit bestimmt.' }] },
   { typ: 'messtabelle', id: 'mt11_treppe', kicker: 'Station B', titel: 'Treppenhaus', x: 'Stockwerk', spalten: ['Druck in hPa', 'Höhe aus Stufen in m', 'GPS-Höhe in m'], zeilen: ['EG', '1. OG', '2. OG', '3. OG'], diagramm: false },
   { typ: 'rechner', ids: ['treppenhaus'] },
   { typ: 'auftrag', id: 'a11_fallschirm', kicker: 'Station B', titel: 'Fallschirm-Modell im Treppenauge',
@@ -210,6 +215,11 @@ const STATION_B = [
       '<div class="warn">Bereich unten absperren. Ein Posten unten ruft „frei“, erst dann wird losgelassen. Nichts aus Fenstern werfen.</div>' +
       '<div class="merke"><b>Für Schnelle:</b> Verdoppelt die Last und messt erneut. Passt das Ergebnis zur Formel?</div>',
     produkt: 'drei Fallzeiten, mittlere Sinkgeschwindigkeit, Vergleich mit der Rechnung' },
+  { typ: 'anleitung', titel: 'Fallschirm bauen und Fall messen', videos: [
+    { id: 'yhj3Ow_5B-k', kanal: 'WEsion', laenge: '7 min', text: 'Schritt für Schritt einen kleinen Fallschirm aus einer Tüte und Schnur basteln.' },
+    { id: 'uA_qzmaDF_8', kanal: 'Experiment Army', laenge: '5 min', sprache: 'englisch, auch ohne Ton verständlich', text: 'Fallschirm aus einer Plastiktüte, gut zum Mitschauen beim Bauen.' },
+    { id: 'fm1QcDtdRX8', kanal: 'phyphox', laenge: '5 min', text: 'Wie man mit phyphox einen Fall misst und auswertet.' }
+  ] },
   { typ: 'messtabelle', id: 'mt11_fall', kicker: 'Station B', titel: 'Fallschirm-Würfe', x: 'Wurf', spalten: ['Fallzeit in s', 'Fallhöhe in m'], zeilen: ['1', '2', '3'], diagramm: false },
   { typ: 'rechner', ids: ['fallschirm'] },
   { typ: 'quiz', kicker: 'Station B', titel: 'Druck, GPS und Fallschirm', fragen: [
@@ -408,6 +418,7 @@ const PROJEKT = {
           html: '<ol><li>Bestimme Druck und Temperatur in 5,5 km, 11 km und 35,7 km Höhe.</li><li>In welcher Höhe beträgt der Druck nur noch 100 hPa? Gib den Druck unten im Rechner ein.</li><li>Wie viel Prozent der Bodendichte hat die Luft in 11 km Höhe noch?</li><li>Begründe in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>' +
             '<div class="merke"><b>Für Schnelle: Wie hoch liegt unsere Schule?</b><br>Lest in phyphox („Luftdruck“) den Druck im Raum ab. Der Wetterbericht nennt den Druck umgerechnet auf Meereshöhe (die Lehrkraft schreibt den aktuellen Wert an). In Bodennähe gilt: 1 hPa Unterschied entspricht etwa 8,5 m. Schätzt die Höhe des Raums über dem Meer und vergleicht mit einer Karte.</div>',
           produkt: 'Ergebnisse im Heft oder im Logbuch notiert' },
+        { typ: 'anleitung', titel: 'Luftdruck mit phyphox messen', videos: [{ id: 'RCsCRDr_Pac', kanal: 'phyphox', laenge: '2 min', text: 'So zeigt phyphox den Luftdruck an und so lest ihr ihn ab.' }] },
         { typ: 'quiz', titel: 'Atmosphäre geprüft', fragen: [
           { id: 'q11_a1', f: 'Wie groß ist der Luftdruck in 11 km Höhe (Normatmosphäre)?', o: ['etwa 226 hPa', 'etwa 500 hPa', 'etwa 5 hPa'], r: 0, e: 'Etwa 226 hPa, also knapp ein Viertel des Bodendrucks von 1013 hPa. 500 hPa herrschen in etwa 5,5 km Höhe.' },
           { id: 'q11_a2', f: 'In welcher Höhe sind es nur noch 100 hPa?', o: ['etwa 5,5 km', 'etwa 40 km', 'etwa 16 km'], r: 2, e: 'Etwa 16,2 km. Ab hier liegt nur noch ein Zehntel der Luftmasse über dem Ballon.' },
@@ -463,6 +474,7 @@ const PROJEKT = {
             '<ol><li>Teile anzeichnen und schneiden (30 min).</li><li>Fügen, Fugen schließen, Deckel mit Loch für den Fühler (30 min).</li><li>Box mit der Küchenwaage wiegen, Masse und Team auf die Box schreiben (10 min).</li></ol>' +
             '<div class="merke"><b>Für Schnelle:</b> Berechnet das Volumen des Dämmstoffs und daraus mit der Dichte (XPS etwa 33 kg/m³, EPS etwa 20 kg/m³) die erwartete Masse. Vergleicht mit der Waage.</div>',
           produkt: 'Box mit Deckel und Fühlerloch, Masse in g' },
+        { typ: 'anleitung', titel: 'Dämmplatten sauber schneiden', videos: [{ id: 'M5XzysUnGEw', kanal: 'ISOVER', laenge: '1 min', text: 'Wie man eine Hartschaumplatte mit dem Messer gerade und sauber schneidet.' }] },
 
         { typ: 'phase', art: 'schreiben', sozial: 'gemischt', von: '13:25', bis: '14:00', titel: 'Prüfauftrag, Logbuch und Messung über Nacht',
           html: '<ol><li>Prüfauftrag im Team (12 min)</li><li>Messung über Nacht vergeben (5 min)</li><li>Exit-Quiz (3 min)</li><li>Logbuch, jeder für sich (15 min)</li></ol>',
@@ -473,6 +485,7 @@ const PROJEKT = {
         { typ: 'auftrag', id: 'a11_druck24', titel: 'Luftdruck über Nacht messen',
           html: '<p>Je Team nimmt ein Schüler mit Barometer-Handy die Messung mit nach Hause.</p><ol><li>Zu Hause phyphox öffnen, Kategorie „Sensoren“, Experiment „Luftdruck“, Start drücken.</li><li>Handy flach hinlegen und bis morgen früh nicht bewegen. Nicht in ein anderes Stockwerk tragen.</li><li>Ladekabel anschließen, die automatische Bildschirmsperre ausschalten, phyphox im Vordergrund lassen.</li><li>Morgens stoppen, die Kurve als Bildschirmfoto sichern oder die Daten als CSV exportieren und in den Klassenordner legen.</li></ol><p class="leit">phyphox speichert dabei nur den Luftdruck, keinen Standort.</p>',
           produkt: 'Druckkurve von Donnerstag bis Freitag im Klassenordner' },
+        { typ: 'anleitung', titel: 'Luftdruck mit phyphox aufzeichnen', videos: [{ id: 'RCsCRDr_Pac', kanal: 'phyphox', laenge: '2 min', text: 'So zeigt phyphox den Luftdruck an und so lest ihr ihn ab.' }] },
         { typ: 'quiz', kicker: 'Exit', titel: 'Was nehmt ihr mit?', fragen: [
           { id: 'q11_x1', f: 'Welche Aussage über die Isolierbox stimmt?', o: ['Die dickste Wand ist für die Mission immer am besten.', 'Dämmung kostet Masse, gesucht ist ein Kompromiss.', 'Die Box muss luftdicht verschlossen sein.'], r: 1, e: 'Jedes Gramm muss der Ballon heben. Luftdicht darf die Box übrigens nicht sein, sonst misst der Drucksensor falsch.' },
           { id: 'q11_x2', f: 'Warum braucht die Sonde ein kleines Loch für den Druckausgleich?', o: ['damit die Kamera durch das Loch filmen kann', 'damit Regenwasser aus der Box ablaufen kann', 'damit der Drucksensor den echten Außendruck misst'], r: 2, e: 'Innen und außen soll derselbe Druck herrschen. Sonst misst der Sensor falsch, und die Box könnte durch Überdruck aufplatzen.' }
@@ -495,6 +508,7 @@ const PROJEKT = {
           foto: 'Alle Boxen nebeneinander unter dem Vordach, dazu der Ventilator' },
         { typ: 'messtabelle', id: 'mt11_kaelte', titel: 'Abkühlkurven', x: 't in min', y: 'Temperatur in °C', spalten: ['unsere Box', 'Box im Wind', 'Flasche ohne Box', 'Außenluft'], zeilen: ['0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75'],
           html: '<p>Übertragt nach dem Test die Werte aus der Liste der Messwache.</p>' },
+        { typ: 'anleitung', titel: 'Plan B: Kältemischung ansetzen', videos: [{ id: 'fDmCnu_VJFM', kanal: 'Kantonsschule Zürich Nord', laenge: '1 min', text: 'Eis und Kochsalz werden gemischt, das Thermometer zeigt, wie kalt es wird.' }] },
 
         { typ: 'phase', art: 'messen', sozial: 'paare', von: '08:20', bis: '10:00', titel: 'Stationen in zwei Runden',
           html: '<p>Jedes Team teilt sich in zwei Paare. Ein Paar startet an Station A, das andere an Station B. Um 09:10 Uhr wird gewechselt. Station A baut in Runde 2 auf der Zeichnung aus Runde 1 auf. Der Kältetest läuft bis 09:35 Uhr weiter.</p>',
@@ -603,6 +617,7 @@ const PROJEKT = {
             '<div class="task"><b>Gespräche am Bildschirm (Teams C und E)</b><br>Präsentation und Film laufen. Ihr erklärt Zeichnungen, Halter und die Planung bis 2028.<br><i>30-Sekunden-Satz:</i> „Wir bauen in drei Jahren eine Sonde, die 35 km hoch fliegt und dabei Temperatur und Luftdruck misst.“</div>' +
             '</div>' +
             '<div class="merke"><b>Fernzugriff einrichten:</b> In phyphox das Experiment „Aufzug“ öffnen, im Menü oben rechts „Fernzugriff erlauben“ wählen und den angezeigten Link am Laptop oder iPad im Browser öffnen. Beide Geräte müssen im selben WLAN sein, ein Hotspot des Handys funktioniert auch.</div>' },
+        { typ: 'anleitung', titel: 'Fernzugriff und Aufzug-Experiment', videos: [{ id: 'MMxNICXEw6A', kanal: 'phyphox', laenge: '5 min', text: 'So richtet ihr den Fernzugriff ein, damit der große Bildschirm die Messung zeigt.' }, { id: 'Jgzym7tplVU', kanal: 'phyphox', laenge: '4 min', text: 'Wie phyphox im Aufzug aus dem Luftdruck Höhe und Geschwindigkeit bestimmt.' }] },
         { typ: 'rechner', ids: ['heben'] },
         { typ: 'faq', kicker: 'Besucherfragen', titel: 'Was Besucher oft fragen', liste: [
           ['Darf man einfach einen Wetterballon steigen lassen?', 'Nein. Man braucht eine Aufstiegserlaubnis der Luftfahrtbehörde, eine Versicherung und die Zustimmung des Grundstückseigentümers. Wir stellen den Antrag im Sommer 2028.'],
@@ -1156,6 +1171,12 @@ const PROJEKT = {
       }).join('') + '</div>';
   }
 
+  function blockAnleitung(b) {
+    return '<div class="card anleitung"><div class="kicker">Video-Anleitung</div><h3>🎥 ' + esc(b.titel) + '</h3>' + b.videos.map(function (x) {
+      return '<a class="vlink" href="https://www.youtube.com/watch?v=' + x.id + '" target="_blank" rel="noopener"><b>▶ ' + esc(x.text) + '</b><span>' + esc(x.kanal) + ', ' + esc(x.laenge) + (x.sprache ? ', ' + esc(x.sprache) : '') + '</span></a>';
+    }).join('') + '<p class="leit" style="margin:6px 0 0">Freiwillig. Der Link öffnet YouTube in einem neuen Tab.</p></div>';
+  }
+
   function blockFaq(b) {
     return '<div class="card"><div class="kicker">' + esc(b.kicker || 'Fragen') + '</div><h3>' + esc(b.titel) + '</h3>' + (b.html || '') + b.liste.map(function (f) { return '<details><summary>' + esc(f[0]) + '</summary><p style="margin-top:6px">' + f[1] + '</p></details>'; }).join('') + '</div>';
   }
@@ -1258,6 +1279,7 @@ const PROJEKT = {
       case 'checkliste': return blockCheckliste(b);
       case 'ideen': return blockIdeen(b);
       case 'fotoliste': return blockFotoliste(b);
+      case 'anleitung': return blockAnleitung(b);
       default: return '';
     }
   }
