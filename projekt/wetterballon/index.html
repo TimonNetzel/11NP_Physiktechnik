@@ -220,6 +220,19 @@ pre.code{background:#111827;color:#e5edf8;border-radius:10px;padding:12px;overfl
 .vlink{display:block;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:9px 12px;margin:8px 0;background:#f7fafd}
 .vlink b{display:block;color:var(--blue-d)}
 .vlink span{font-size:14px;color:var(--muted)}
+/* Simulationen */
+.simsvg{width:100%;height:auto;display:block;border-radius:12px;margin:6px 0;max-height:72vh}
+.simsvg.klein{max-width:420px;margin:8px auto}
+.simknoepfe{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.simknoepfe .btn{min-height:36px;padding:5px 10px;font-size:14px}
+.simhinweis{border-radius:10px;padding:10px 12px;margin:10px 0;font-weight:600;background:#eaf3f7;border-left:5px solid var(--blue)}
+.simhinweis.ok{background:var(--okbg);border-color:var(--ok)}
+.simhinweis.mittel{background:var(--hint);border-color:var(--hintb)}
+.simhinweis.kritisch{background:var(--badbg);border-color:var(--bad)}
+.simhinweis:empty{display:none}
+.simkarte{border-top:5px solid var(--purple)}
+.simkarte .kicker{color:var(--purple)}
+.laborkopf{margin:16px 0 4px;font-size:19px}
 /* Handy quer: Kopf und Fußleiste kompakt, damit Platz für den Inhalt bleibt */
 @media (max-height:500px){
   .top{padding-top:calc(env(safe-area-inset-top) + 4px);padding-bottom:4px}
@@ -270,8 +283,8 @@ const TREPPE = [
 ];
 
 const FALL = [
-  { typ: 'auftrag', id: 'a11_fallschirm', kicker: 'Station B', titel: 'Fallschirm-Wettbewerb im Treppenauge',
-    html: '<p>Ihr nehmt euren Fallschirm vom Mittwoch und eure Vorhersage mit. Die Fallhöhe steht an der Station.</p>' +
+  { typ: 'auftrag', id: 'a11_fallschirm', kicker: 'Station B', titel: 'Fallschirm-Wettbewerb im Treppenhaus',
+    html: '<p>Ihr nehmt euren Fallschirm vom Mittwoch und eure Vorhersage mit. Er fällt durch das Treppenauge, also durch die offene Mitte des Treppenhauses zwischen den Treppenläufen. Die Fallhöhe steht an der Station.</p>' +
       '<ol><li><b>Stoppuhr (5 min):</b> phyphox, Kategorie „Zeitmessung“, „Akustische Stoppuhr“. Das Handy liegt unten. Stellt die Schwelle so ein, dass Gespräche nicht auslösen.</li><li><b>Drei Würfe (20 min):</b> Oben klatscht eine Person laut beim Loslassen, unten klatscht eine Person bei der Landung. Tragt die drei Zeiten ein.</li><li><b>Wettbewerb (15 min):</b> Mittlere Sinkgeschwindigkeit <span class="formel">v = h / t</span> berechnen. Vorhersage und Messung auf die Wettbewerbsliste an der Station schreiben. Es gewinnt das Paar, dessen Vorhersage am nächsten an der Messung liegt.</li></ol>' +
       '<div class="warn">Bereich unten absperren. Ein Posten unten ruft „frei“, erst dann wird losgelassen. Nichts aus Fenstern werfen.</div>' +
       '<div class="merke"><b>Für Schnelle:</b> Verdoppelt die Last und messt erneut. Passt das Ergebnis zur Formel?</div>',
@@ -306,7 +319,7 @@ const PROJEKT = {
   ],
 
   teams: [
-    { id: 'A', icon: '🌡️', name: 'Atmosphäre und Messtechnik', experte: 'Luftdruck: Ballon in der Spritze, Druck über Nacht und Ballonrechner', text: 'Ihr rechnet mit Druck, Temperatur und Auftrieb, wählt Sensoren aus und wertet am Ende die Flugdaten aus.', passt: 'gern rechnest und wissen willst, was die Messwerte bedeuten.' },
+    { id: 'A', icon: '🌡️', name: 'Atmosphäre und Messtechnik', experte: 'Luftdruck und Mensch: Lufthülle, Armstrong-Grenze, Raumanzug und Druck über Nacht', text: 'Ihr rechnet mit Druck, Temperatur und Auftrieb, wählt Sensoren aus und wertet am Ende die Flugdaten aus.', passt: 'gern rechnest und wissen willst, was die Messwerte bedeuten.' },
     { id: 'B', icon: '📐', name: 'Konstruktion und Thermik', experte: 'Kältetest: Welche Box dämmt am besten, und was kostet sie an Masse?', text: 'Ihr baut die Sondenbox, konstruiert Halter in FreeCAD, druckt sie und achtet auf Masse und Wärmedämmung.', passt: 'gern zeichnest, konstruierst und baust.' },
     { id: 'C', icon: '🔋', name: 'Elektronik und Energie', experte: 'Temperatur richtig messen: Fahrtwind, Flasche ohne Box und Außenluft', text: 'Ihr sorgt für Strom, lötet die Schaltung und prüft, ob die Batterien bei −50 °C noch durchhalten.', passt: 'gern mit Schaltungen, Multimeter und Lötkolben arbeitest.' },
     { id: 'D', icon: '💻', name: 'Software und Ortung', experte: 'Treppenhaus: Höhe aus dem Luftdruck gegen Stufen und GPS', text: 'Ihr programmiert den Arduino, speichert Messwerte auf der SD-Karte und sorgt dafür, dass wir die Sonde wiederfinden.', passt: 'gern programmierst und Fehler systematisch suchst.' },
@@ -466,21 +479,22 @@ const PROJEKT = {
         { typ: 'text', kicker: 'Rollen', titel: 'Wer macht was?', html: '<ul><li><b>Teamleitung:</b> Zeit, Absprachen, Aufgaben verteilen</li><li><b>Dokumentation:</b> Fotos und Teamprotokoll</li><li><b>Technik:</b> Aufbau, Material, Sicherheit</li><li><b>Präsentation:</b> Vortrag, Endlos-Präsentation, Station am Samstag</li></ul>' },
 
         { typ: 'phase', art: 'rechnen', sozial: 'partner', von: '10:55', bis: '11:35', titel: 'Grundlagen Druck und Temperatur',
-          html: '<p>Die Lehrkraft zeigt zum Einstieg einen kleinen Ballon in einer Spritze (5 min). Was passiert mit ihm, wenn der Druck sinkt? Genau das erlebt auch der Wetterballon. Danach rechnet ihr mit dem Atmosphärenrechner.</p>',
+          html: '<p>Die Lehrkraft lässt zum Einstieg am Beamer einen Ballon durch die Lufthülle der Erde steigen, vom Boden bis zur Raumstation (5 min). Danach erkundet ihr die Simulation selbst.</p>',
           ergebnis: 'Druck und Temperatur in drei Höhen, Quiz gelöst' },
-        { typ: 'auftrag', id: 'a11_atm', titel: 'Rechnen mit der Normatmosphäre',
-          html: '<ol><li>Bestimmt Druck und Temperatur in 5,5 km, 11 km und 35,7 km Höhe. Öffnet dazu unten den Atmosphärenrechner.</li><li>In welcher Höhe beträgt der Druck nur noch 100 hPa? Gebt den Druck im Rechner ein.</li><li>Begründet in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>' +
+        { typ: 'auftrag', id: 'a11_atm', titel: 'Die Lufthülle erkunden',
+          html: '<ol><li>Zieht den Ballon in der Simulation auf 5,5 km, 11 km und 35,7 km. Notiert jeweils Druck und Temperatur.</li><li>Ab welcher Höhe liegen 90 % der Luft unter euch? Wie groß ist dort der Druck?</li><li>Begründet in einem Satz, warum ein Temperaturfühler in 30 km Höhe schlecht abkühlt.</li></ol>' +
             '<div class="merke"><b>Für Schnelle: Wie hoch liegt unsere Schule?</b> Lest in phyphox den Druck im Raum ab. Die Lehrkraft schreibt den Druck aus dem Wetterbericht an, umgerechnet auf Meereshöhe. In Bodennähe entspricht 1 hPa etwa 8,5 m. Vergleicht eure Höhe mit einer Karte.</div>',
           produkt: 'Ergebnisse im Heft oder im Logbuch' },
         { typ: 'text', kicker: 'Wissen', titel: 'Die Atmosphäre in Schichten',
           html: '<p>Die <b>Troposphäre</b> reicht bis etwa 11 km. Dort findet das Wetter statt, und die Temperatur sinkt um etwa 6,5 K je Kilometer. Darüber liegt die <b>Stratosphäre</b> bis etwa 50 km. In ihr bleibt die Temperatur zunächst gleich und steigt dann wieder an, weil Ozon UV-Strahlung der Sonne absorbiert.</p>' +
             '<div class="merke"><b>Merke:</b> Der Luftdruck entsteht durch das Gewicht der Luft darüber. Je höher man steigt, desto weniger Luft liegt darüber. In den unteren Kilometern halbiert sich der Druck etwa alle 5,5 km.</div>' },
-        { typ: 'text', kicker: 'Wissen', titel: 'Der Ballon in der Spritze',
-          html: '<p>Im Ballon ist eine feste Menge Luft eingeschlossen. Zieht man den Kolben bei verschlossener Spitze heraus, sinkt der Druck um den Ballon. Die Luft im Ballon dehnt sich aus, bis ihr Druck wieder zum Druck außen passt. Bei gleicher Temperatur gilt <span class="formel">p · V = konstant</span>. Halber Druck heißt also doppeltes Volumen.</p><p>Der Wetterballon erlebt dasselbe: In 35 km Höhe ist der Druck etwa 200-mal kleiner. Deshalb wird er so groß, bis er platzt.</p>' },
-        { typ: 'rechner', ids: ['atmosphaere'] },
+        { typ: 'rechner', ids: ['lufthuelle'], bereich: 'haupt' },
+        { typ: 'text', kicker: 'Wissen', titel: 'Warum der Ballon wächst',
+          html: '<p>Im Ballon ist eine feste Menge Gas eingeschlossen. Steigt er, sinkt der Druck um ihn herum. Das Gas dehnt sich aus, bis sein Druck wieder zum Druck außen passt. Bei gleicher Temperatur gilt <span class="formel">p · V = konstant</span>. Halber Druck heißt also doppeltes Volumen.</p><p>In 35 km Höhe ist der Druck etwa 200-mal kleiner als am Boden. Deshalb wird der Ballon so groß, bis er platzt. Probiert es in der Simulation „Der Ballon wächst“.</p>' },
+        { typ: 'rechner', ids: ['ballon', 'atmosphaere'] },
         { typ: 'anleitung', titel: 'Luftdruck mit phyphox messen', videos: [{ id: 'RCsCRDr_Pac', kanal: 'phyphox', laenge: '2 min', text: 'So zeigt phyphox den Luftdruck an und so lest ihr ihn ab.' }] },
         { typ: 'quiz', titel: 'Druck und Temperatur geprüft', fragen: [
-          { id: 'q11_sp', f: 'In der verschlossenen Spritze sinkt der Druck auf die Hälfte. Was passiert mit dem kleinen Ballon?', o: ['Er bleibt gleich groß, weil er zugeknotet ist.', 'Er schrumpft, weil Luft aus ihm entweicht.', 'Sein Volumen verdoppelt sich ungefähr.'], r: 2, e: 'Bei gleicher Temperatur gilt p · V = konstant. Halber Druck ergibt ungefähr doppeltes Volumen, solange die Hülle mitmacht.' },
+          { id: 'q11_bv', f: 'Der Wetterballon steigt, bis der Druck um ihn nur noch halb so groß ist. Was passiert mit seinem Volumen, wenn die Temperatur gleich bleibt?', o: ['Es bleibt gleich, weil die Hülle dicht ist.', 'Es schrumpft, weil Gas aus ihm entweicht.', 'Es verdoppelt sich ungefähr.'], r: 2, e: 'Bei gleicher Temperatur gilt p · V = konstant. Halber Druck ergibt ungefähr doppeltes Volumen, solange die Hülle mitmacht.' },
           { id: 'q11_a1', f: 'Wie groß ist der Luftdruck in 11 km Höhe (Normatmosphäre)?', o: ['etwa 226 hPa', 'etwa 500 hPa', 'etwa 5 hPa'], r: 0, e: 'Etwa 226 hPa, also knapp ein Viertel des Bodendrucks von 1013 hPa. 500 hPa herrschen in etwa 5,5 km Höhe.' },
           { id: 'q11_a2', f: 'In welcher Höhe sind es nur noch 100 hPa?', o: ['etwa 5,5 km', 'etwa 40 km', 'etwa 16 km'], r: 2, e: 'Etwa 16,2 km. Ab hier liegt nur noch ein Zehntel der Luftmasse über dem Ballon.' },
           { id: 'q11_a3', f: 'Warum wird es oberhalb von etwa 20 km wieder wärmer?', o: ['Die Sonde ist dort näher an der Sonne.', 'Ozon nimmt UV-Strahlung auf und heizt die Luft.', 'Warme Luft vom Boden steigt auf und sammelt sich oben.'], r: 1, e: 'Die Ozonschicht nimmt UV-Strahlung auf und gibt die Energie als Wärme an die Luft ab. 30 km näher an der Sonne ändern bei 150 Millionen km Abstand nichts.' }
@@ -505,7 +519,7 @@ const PROJEKT = {
           html: '<p>Jede gelöste Karte erscheint hier. Ergänzt mindestens ein eigenes Risiko für unsere Sonde.</p>' },
 
         { typ: 'phase', art: 'bauen', sozial: 'partner', von: '12:30', bis: '12:45', titel: 'Grundlagen Fallschirm',
-          html: '<p>Am Freitag lasst ihr euren Fallschirm im Treppenauge fallen. Wer die Sinkgeschwindigkeit heute am besten vorhersagt, gewinnt den Fallschirm-Wettbewerb.</p>',
+          html: '<p>Am Freitag lasst ihr euren Fallschirm im Treppenhaus fallen. Wer die Sinkgeschwindigkeit heute am besten vorhersagt, gewinnt den Fallschirm-Wettbewerb.</p>',
           ergebnis: 'Fallschirm gewogen und beschriftet, Vorhersage notiert' },
         { typ: 'auftrag', id: 'a11_fs_bau', titel: 'Fallschirm bauen und vorhersagen',
           html: '<p>Material je Paar: Quadrat aus einem Müllbeutel (40 cm × 40 cm), vier Schnüre zu je 40 cm, Klebeband, 20 g Knete.</p>' +
@@ -514,7 +528,7 @@ const PROJEKT = {
         { typ: 'notiz', id: 'n11_vorhersage', titel: 'Unsere Vorhersage für den Wettbewerb', felder: ['Masse des Fallschirms in g', 'vorhergesagte Sinkgeschwindigkeit in m/s'] },
         { typ: 'text', kicker: 'Wissen', titel: 'Warum ein Fallschirm gleichmäßig sinkt',
           html: '<p>Je schneller der Schirm fällt, desto größer wird der Luftwiderstand. Bald sind Gewichtskraft und Luftwiderstand gleich groß. Ab dann sinkt er mit konstanter Geschwindigkeit.</p><p><span class="formel">m · g = ½ · ρ · c<sub>w</sub> · A · v²</span></p><p>Eine größere Fläche A macht ihn langsamer. Eine größere Masse m macht ihn schneller, aber nur mit der Wurzel: doppelte Masse ergibt etwa 1,4-fache Geschwindigkeit.</p>' },
-        { typ: 'rechner', ids: ['fallschirm'] },
+        { typ: 'rechner', ids: ['fallschirm', 'sprung'] },
         { typ: 'anleitung', titel: 'Fallschirm bauen', videos: [
           { id: 'yhj3Ow_5B-k', kanal: 'WEsion', laenge: '7 min', text: 'Schritt für Schritt einen kleinen Fallschirm aus einer Tüte und Schnur basteln.' },
           { id: 'uA_qzmaDF_8', kanal: 'Experiment Army', laenge: '5 min', sprache: 'englisch, auch ohne Ton verständlich', text: 'Fallschirm aus einer Plastiktüte, gut zum Mitschauen beim Bauen.' }
@@ -559,7 +573,8 @@ const PROJEKT = {
           html: '<ol><li><b>Vorbereiten (5 min):</b> Box wiegen, Masse und Team auf die Box schreiben. Die Lehrkraft füllt die Flaschen mit Wasser von 40 °C. Fühler an die Flasche kleben, Box schließen.</li><li><b>Aufstellen (5 min):</b> Alle Boxen, die Flasche ohne Box und das Thermometer für die Außenluft stehen nebeneinander im Schatten unter dem Vordach, auf einer Dämmplatte. Der Ventilator steht 1 m vor der Box „Wind“, immer auf derselben Stufe.</li><li><b>Messwache (60 min):</b> Alle 5 Minuten liest die Messwache alle Anzeigen ab und trägt sie in die gemeinsame Liste ein. Jede Viertelstunde übernimmt ein Schüler aus dem nächsten Team.</li></ol>' +
             '<div class="warn">Ventilator und Verlängerungskabel bleiben trocken und liegen nicht in Pfützen. Bei Regen stehen alle Boxen unter dem Dach.</div>',
           produkt: 'Test läuft, Masse jeder Box steht auf der Box' },
-        { typ: 'notiz', id: 'n11_hyp', titel: 'Eure Hypothese', felder: ['Welche Box hält die Wärme am besten, und warum?', 'Was macht der Fahrtwind?'] },
+        { typ: 'notiz', id: 'n11_hyp', titel: 'Eure Hypothese', html: '<p class="leit">Für Schnelle: Gebt Material und Wandstärke eurer Box in die Simulation „Abkühlkurve vorhersagen“ ein und notiert die Vorhersage.</p>', felder: ['Welche Box hält die Wärme am besten, und warum?', 'Was macht der Fahrtwind?', 'Vorhersage der Simulation: Abfall nach 60 min in K'] },
+        { typ: 'rechner', ids: ['abkuehlung'] },
         { typ: 'text', kicker: 'Prüfauftrag', titel: 'So ist der Kältetest festgelegt',
           html: '<ul><li><b>Objekt und Messgröße:</b> Temperatur des Wassers in jeder Box</li><li><b>Messmittel und Messstelle:</b> Kabelthermometer, Fühlerspitze an der Flasche</li><li><b>Ablauf:</b> Start bei 40 °C, alle 5 Minuten ablesen, 60 Minuten lang</li><li><b>Entscheidungskriterium:</b> Temperaturabfall nach 60 Minuten im Verhältnis zur Masse der Box</li></ul>' },
         { typ: 'text', kicker: 'Plan B', titel: 'Bei mildem Wetter über 10 °C',
@@ -589,28 +604,37 @@ const PROJEKT = {
           clips: [[4, 214, 258]],
           ergebnis: 'Diagramm, Missionszahl mit Einheit und eine Anforderung an die Sonde',
           foto: 'Abkühlkurven oder Wettbewerbsliste an der Tafel' },
-        { typ: 'auftrag', id: 'a11_ausw_a', team: 'A', kicker: 'Team A', titel: 'Luftdruck: über Nacht und in der Spritze',
-          html: '<ol><li>Vergleicht die Nachtkurven der Teams: Um wie viel hPa hat sich der Druck geändert? Welche Höhe würde ein Logger daraus fälschlich berechnen (8,5 m je hPa)?</li><li>Probiert den Ballon in der Spritze selbst aus und übt die Erklärung für Besucher in zwei Sätzen.</li><li>Rechnet mit „Heb dich selbst“, wie viel Helium eine Person mit 70 kg heben würde. Das ist eure Station am Samstag.</li></ol>',
-          produkt: 'Druckänderung über Nacht, Erklärung zur Spritze, Heliummenge für 70 kg' },
+        { typ: 'auftrag', id: 'a11_ausw_a', team: 'A', kicker: 'Team A', titel: 'Luftdruck und Mensch',
+          html: '<ol><li>Vergleicht die Nachtkurven der Teams: Um wie viel hPa hat sich der Druck geändert? Welche Höhe würde ein Logger daraus fälschlich berechnen (8,5 m je hPa)?</li><li>Zieht in der Simulation „Lufthülle“ den Ballon nach oben. Notiert drei Höhen mit ihrer Folge für den Menschen: Atemmaske, Druckanzug, Raumanzug. Erklärt die Armstrong-Grenze in zwei Sätzen.</li><li>Spielt den „Sprung aus der Stratosphäre“ ab: Warum wurde Baumgartner oben schneller als der Schall und unten wieder langsamer? Das ist eure Station am Samstag.</li></ol>',
+          produkt: 'Druckänderung über Nacht, drei Höhen mit Folge für den Menschen, Erklärung zum Sprung' },
         { typ: 'auftrag', id: 'a11_ausw_b', team: 'B', kicker: 'Team B', titel: 'Kältetest: Dämmung gegen Masse',
-          html: '<ol><li>Tragt für jede Box Masse, Starttemperatur und Temperatur nach 60 Minuten in die Tabelle ein.</li><li>Bildet eine Rangliste nach dem Temperaturabfall. Welche Box ist der beste Kompromiss aus Dämmung und Masse?</li><li>Formuliert eine Anforderung an die Sondenbox mit Zahl, z. B. „In 60 min höchstens 8 K Abfall bei höchstens 250 g“.</li></ol>',
-          produkt: 'Tabelle aller Boxen, Rangliste, Anforderung mit Zahl' },
+          html: '<ol><li>Tragt für jede Box Masse, Starttemperatur und Temperatur nach 60 Minuten in die Tabelle ein.</li><li>Bildet eine Rangliste nach dem Temperaturabfall. Welche Box ist der beste Kompromiss aus Dämmung und Masse?</li><li>Gebt den Abfall eurer besten Box in den Missionssimulator ein: Wie kalt wird es in der Box im Flug? Formuliert daraus eine Anforderung mit Zahl, z. B. „In 60 min höchstens 8 K Abfall bei höchstens 250 g“.</li></ol>',
+          produkt: 'Tabelle aller Boxen, Rangliste, Innentemperatur im Flug, Anforderung mit Zahl' },
         { typ: 'messtabelle', id: 'mt11_boxen', team: 'B', kicker: 'Team B', titel: 'Alle Boxen im Vergleich', x: 'Box', spalten: ['Masse in g', 'Start in °C', 'nach 60 min in °C'], zeilen: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E', 'Styroporbox', 'Box im Wind', 'ohne Box'], diagramm: false },
         { typ: 'auftrag', id: 'a11_ausw_c', team: 'C', kicker: 'Team C', titel: 'Temperatur richtig messen',
-          html: '<ol><li>Übertragt die Kurven der beiden gleichen Styroporboxen, der Flasche ohne Box und der Außenluft in die Tabelle. Wie viel schneller kühlt die Box im Wind ab?</li><li>Die Lehrkraft zeigt die Temperaturkurve aus dem c’t-Flug. Warum misst ein Fühler in der Sonne zu hohe Werte?</li><li>Formuliert eine Anforderung an die Temperaturmessung der Sonde.</li></ol>',
-          produkt: 'Abkühlkurven, Unterschied durch den Fahrtwind, Anforderung' },
+          html: '<ol><li>Übertragt die Kurven der beiden gleichen Styroporboxen, der Flasche ohne Box und der Außenluft in die Tabelle. Wie viel schneller kühlt die Box im Wind ab?</li><li>Vergleicht eure Kurven mit der Simulation „Abkühlkurve vorhersagen“. Gebt den Faktor für den Fahrtwind in den Missionssimulator ein: Wie viel kälter wird die Box im Flug?</li><li>Die Lehrkraft zeigt die Temperaturkurve aus dem c’t-Flug. Warum misst ein Fühler in der Sonne zu hohe Werte? Formuliert eine Anforderung an die Temperaturmessung der Sonde.</li></ol>',
+          produkt: 'Abkühlkurven, Faktor für den Fahrtwind, Anforderung' },
         { typ: 'messtabelle', id: 'mt11_kaelte', team: 'C', kicker: 'Team C', titel: 'Abkühlkurven', x: 't in min', y: 'Temperatur in °C', spalten: ['Styroporbox', 'Box im Wind', 'ohne Box', 'Außenluft'], zeilen: ['0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60'],
           html: '<p>Übertragt die Werte aus der Liste der Messwache.</p>' },
         { typ: 'auftrag', id: 'a11_ausw_d', team: 'D', kicker: 'Team D', titel: 'Treppenhaus: Druck gegen GPS',
           html: '<ol><li>Sammelt die Höhen aller Paare: aus dem Druck, aus den Stufen und aus dem GPS.</li><li>Berechnet für beide Messverfahren die Abweichung zur Stufenhöhe. Welches Verfahren ist genauer?</li><li>Formuliert eine Anforderung: Woher bekommt die Sonde ihre Höhe, und was muss am Starttag eingestellt werden?</li></ol>',
           produkt: 'Abweichungen beider Verfahren, Anforderung zur Höhenmessung' },
         { typ: 'auftrag', id: 'a11_ausw_e', team: 'E', kicker: 'Team E', titel: 'Fallschirm: Vorhersage gegen Messung',
-          html: '<ol><li>Wertet die Wettbewerbsliste aus: Wie weit lagen die Vorhersagen im Mittel daneben? Wer hat gewonnen?</li><li>Erklärt, warum die gemessene Geschwindigkeit meist etwas kleiner ist als die Vorhersage.</li><li>Rechnet mit dem Fallschirmrechner hoch: Welche Fläche braucht die echte Sonde mit 1,5 kg für 5 m/s?</li></ol>',
-          produkt: 'mittlere Abweichung, Sieger, Fläche für die echte Sonde' },
+          html: '<ol><li>Wertet die Wettbewerbsliste aus: Wie weit lagen die Vorhersagen im Mittel daneben? Wer hat gewonnen?</li><li>Erklärt, warum die gemessene Geschwindigkeit meist etwas kleiner ist als die Vorhersage.</li><li>Rechnet mit dem Fallschirmrechner hoch, welche Fläche die echte Sonde mit 1,5 kg für 5 m/s braucht. Prüft sie im Missionssimulator: Wie schnell fällt die Sonde in 30 km Höhe, und wie hart landet sie?</li></ol>',
+          produkt: 'mittlere Abweichung, Sieger, Fläche für die echte Sonde, Sinkgeschwindigkeit oben und unten' },
         { typ: 'notiz', id: 'n11_ausw', titel: 'Eure Kernaussage', felder: ['Unsere Missionszahl mit Einheit', 'Was sie zeigt (ein Satz)', 'Anforderung an die Sonde'] },
-        { typ: 'rechner', ids: ['treppenhaus', 'fallschirm', 'heben'] },
+        { typ: 'rechner', ids: ['mission'], team: ['B', 'C', 'E'], bereich: 'haupt' },
+        { typ: 'rechner', ids: ['lufthuelle', 'sprung', 'heben'], team: 'A' },
+        { typ: 'rechner', ids: ['abkuehlung'], team: ['B', 'C'] },
+        { typ: 'rechner', ids: ['treppenhaus'], team: 'D' },
+        { typ: 'rechner', ids: ['fallschirm'], team: 'E' },
+        { typ: 'text', kicker: 'Wissen', team: 'A', titel: 'Armstrong-Grenze und Raumanzug',
+          html: '<p>Je kleiner der Luftdruck, desto tiefer liegt der Siedepunkt von Wasser. Auf dem Mount Everest siedet es bei etwa 70 °C. In etwa 19 km Höhe beträgt der Druck nur noch 63 hPa. Dort siedet Wasser schon bei 37 °C, also bei Körpertemperatur. Diese Höhe heißt <b>Armstrong-Grenze</b>.</p><p>Darüber würden ohne Schutz Speichel und Tränen zu sieden beginnen. Ein Druckanzug oder Raumanzug hält deshalb einen Überdruck am Körper und liefert reinen Sauerstoff. So trug auch Felix Baumgartner 2012 bei seinem Sprung aus 39 km Höhe einen Druckanzug.</p>' },
         { typ: 'text', kicker: 'Wissen', team: 'A', titel: 'Auftrieb in einem Satz',
           html: '<p>Ein Ballon steigt, wenn die verdrängte Luft schwerer ist als das Gas im Ballon (Prinzip des Archimedes). Ein Kubikmeter Helium hebt am Boden etwa 1,06 kg. Das ist die Differenz aus 1,225 kg/m³ (Luft) und 0,169 kg/m³ (Helium).</p>' },
+        { typ: 'quiz', team: 'A', kicker: 'Team A', titel: 'Luftdruck und Mensch geprüft', fragen: [
+          { id: 'q11_ar', f: 'Warum brauchte Felix Baumgartner in 39 km Höhe einen Druckanzug?', o: ['Es wird dort heißer als 50 °C.', 'Die Luft enthält dort zu viel Sauerstoff.', 'Wasser siedet dort schon unter 37 °C.'], r: 2, e: 'Der Luftdruck beträgt dort nur etwa 3 hPa. Schon oberhalb von 19 km (Armstrong-Grenze) siedet Wasser bei Körpertemperatur. Der Anzug hält den Druck am Körper hoch.' }
+        ] },
         { typ: 'quiz', titel: 'Auswertung geprüft', fragen: [
           { id: 'q11_t1', f: 'Im Treppenhaus sinkt der Druck vom EG bis zum 3. OG um 1,10 hPa. Wie groß ist der Höhenunterschied?', o: ['etwa 90 m', 'etwa 9 m', 'etwa 1 m'], r: 1, e: 'Δh = Δp / (ρ · g) = 110 Pa / (1,2 kg/m³ · 9,81 m/s²) ≈ 9,3 m.' },
           { id: 'q11_t2', f: 'Box A kühlt in 60 min um 8 K ab und wiegt 90 g. Box B kühlt um 6 K ab und wiegt 210 g. Welche nehmen wir?', o: ['Das hängt vom Massebudget ab.', 'Box B, weil sie besser dämmt.', 'Box A, weil sie leichter ist.'], r: 0, e: 'Box B dämmt besser, kostet aber 120 g mehr. Ob sich das lohnt, entscheidet das Massebudget. Ein Kriterium allein reicht nicht.' },
@@ -661,7 +685,7 @@ const PROJEKT = {
           html: '<p>Jedes Team baut seine Station auf. Der große Bildschirm zeigt die Endlos-Präsentation.</p>',
           ergebnis: 'Stand steht, Schichtplan hängt, Fernzugriff läuft' },
         { typ: 'auftrag', id: 'a11_aufbau', titel: 'Aufbau',
-          html: '<ol><li>Endlos-Präsentation am großen Bildschirm starten, QR-Code zur App gut sichtbar aufstellen.</li><li>Eure Station nach eurer Materialliste vom Freitag aufbauen, Schichtplan aushängen.</li><li>Team D testet den Fernzugriff von phyphox im Raum.</li></ol>',
+          html: '<ol><li>Endlos-Präsentation am großen Bildschirm starten, QR-Code zur App gut sichtbar aufstellen. Auf einem zweiten Bildschirm oder iPad läuft der Missionssimulator.</li><li>Eure Station nach eurer Materialliste vom Freitag aufbauen, Schichtplan aushängen.</li><li>Team D testet den Fernzugriff von phyphox im Raum.</li></ol>',
           produkt: 'Station aufgebaut' },
         { typ: 'anleitung', titel: 'Fernzugriff und Aufzug-Experiment', videos: [{ id: 'MMxNICXEw6A', kanal: 'phyphox', laenge: '5 min', text: 'So richtet ihr den Fernzugriff ein, damit der große Bildschirm die Messung zeigt.' }, { id: 'Jgzym7tplVU', kanal: 'phyphox', laenge: '4 min', text: 'Wie phyphox im Aufzug aus dem Luftdruck Höhe und Geschwindigkeit bestimmt.' }] },
         { typ: 'text', kicker: 'Fernzugriff', titel: 'So zeigt der Bildschirm die Messung', html: '<p>In phyphox das Experiment „Aufzug“ öffnen, im Menü oben rechts „Fernzugriff erlauben“ wählen und den angezeigten Link am iPad im Browser öffnen. Beide Geräte müssen im selben WLAN sein, ein Hotspot des Handys funktioniert auch.</p>' },
@@ -671,13 +695,13 @@ const PROJEKT = {
           ergebnis: 'Gespräche geführt, Stationen betreut' },
         { typ: 'text', kicker: 'Unser Stand', titel: 'Stationen und 30-Sekunden-Sätze', bereich: 'haupt',
           html: '<div class="stationen">' +
-            '<div class="task"><b>1 Ballon in der Spritze (Team A)</b><br>Besucher ziehen den Kolben und sehen den Ballon wachsen. Danach rechnen sie mit „Heb dich selbst“, wie viel Helium sie heben würde.<br><i>Satz:</i> „Oben ist der Luftdruck 200-mal kleiner. Deshalb wird unser Ballon so groß, bis er platzt.“</div>' +
+            '<div class="task"><b>1 Könntest du da oben überleben? (Team A)</b><br>Besucher tippen, ab welcher Höhe man einen Raumanzug braucht. Dann ziehen sie in der Simulation „Lufthülle“ den Ballon nach oben und spielen den Sprung aus der Stratosphäre ab.<br><i>Satz:</i> „In 19 km Höhe siedet Wasser schon bei 37 °C. Ohne Druckanzug würden dort Speichel und Tränen zu sieden beginnen.“</div>' +
             '<div class="task"><b>2 Kältebox-Challenge (Team B)</b><br>Besucher tippen, welche der mitgebrachten Boxen am besten dämmt. Danach zeigt ihr die Rangliste.<br><i>Satz:</i> „Unsere Elektronik muss −50 °C überstehen. Hier seht ihr, welche Box sie am besten warm hält und was das an Masse kostet.“</div>' +
             '<div class="task"><b>3 Fahrtwind (Team C)</b><br>Besucher halten die Hand vor den Ventilator und sehen die Abkühlkurven mit und ohne Wind auf dem iPad.<br><i>Satz:</i> „Die Sonde steigt mit 5 m/s. Der Fahrtwind kühlt sie viel stärker als ruhige Luft.“</div>' +
             '<div class="task"><b>4 Wie hoch bist du? (Team D)</b><br>Ein Handy mit phyphox („Aufzug“) wandert mit den Besuchern die Treppe hoch. Über den Fernzugriff zeigt ein iPad Höhe und Geschwindigkeit live.<br><i>Satz:</i> „Jeder Meter nach oben senkt den Luftdruck ein kleines Stück. Das Handy merkt schon ein einzelnes Stockwerk.“</div>' +
             '<div class="task"><b>5 Fallschirm-Abwurf (Team E)</b><br>Besucher lassen einen Fallschirm aus dem ersten Obergeschoss fallen und stoppen die Zeit. Der Bereich unten ist abgesperrt.<br><i>Satz:</i> „Unsere Sonde soll mit 5 m/s landen. Dafür braucht sie einen Fallschirm mit fast einem Meter Durchmesser.“</div>' +
             '</div>' },
-        { typ: 'rechner', ids: ['heben'] },
+        { typ: 'rechner', ids: ['lufthuelle', 'sprung', 'mission', 'heben'] },
         { typ: 'faq', kicker: 'Besucherfragen', titel: 'Was Besucher oft fragen', liste: [
           ['Darf man einfach einen Wetterballon steigen lassen?', 'Nein. Man braucht eine Aufstiegserlaubnis der Luftfahrtbehörde, eine Versicherung und die Zustimmung des Grundstückseigentümers. Wir stellen den Antrag im Sommer 2028.'],
           ['Wo landet der Ballon?', 'Das hängt vom Wind ab. Mit einer Flugbahnprognose rechnen wir das Landegebiet voraus. Ein GPS-Tracker zeigt uns die Sonde nach der Landung.'],
@@ -780,7 +804,7 @@ const PROJEKT = {
 
   /* ---------- Normatmosphäre ---------- */
   var G0 = 9.80665, RL = 287.053;
-  var SCH = [[0, 288.15, -0.0065, 101325], [11000, 216.65, 0, 0], [20000, 216.65, 0.001, 0], [32000, 228.65, 0.0028, 0], [47000, 270.65, 0, 0]];
+  var SCH = [[0, 288.15, -0.0065, 101325], [11000, 216.65, 0, 0], [20000, 216.65, 0.001, 0], [32000, 228.65, 0.0028, 0], [47000, 270.65, 0, 0], [51000, 270.65, -0.0028, 0], [71000, 214.65, -0.002, 0]];
   (function () {
     for (var i = 1; i < SCH.length; i++) {
       var a = SCH[i - 1], h1 = SCH[i][0];
@@ -788,7 +812,7 @@ const PROJEKT = {
     }
   })();
   function atm(h) {
-    h = Math.max(0, Math.min(h, 50000));
+    h = Math.max(0, Math.min(h, 86000));
     var i = SCH.length - 1;
     while (i > 0 && h < SCH[i][0]) i--;
     var s = SCH[i], T = s[1] + s[2] * (h - s[0]);
@@ -1025,9 +1049,329 @@ const PROJEKT = {
     }
   };
 
+  /* ---------- Simulationen (vom Builder an /*__SIMULATIONEN__*\/ in engine.js eingesetzt) ----------
+     Sie nutzen dieselben Hilfen wie die Rechner (atm, fmt, feld, v, diagramm) und erscheinen im Labor über dem Rechner.
+     Kennzeichen: sim: true. In inhalt.js werden sie wie Rechner eingebunden: { typ: 'rechner', ids: ['lufthuelle'] } */
+  var C_WASSER = 1100; /* Wärmekapazität von 250 ml Wasser samt Flasche in J/K */
+  function siedepunkt(pHpa) { /* Magnus-Formel umgekehrt, gilt für flüssiges Wasser ab 6,1 hPa */
+    if (pHpa < 6.11) return NaN;
+    var x = Math.log(pHpa / 6.112);
+    return 243.12 * x / (17.62 - x);
+  }
+  function schall(T) { return Math.sqrt(1.4 * RL * T); }
+  function knopfZeile(id, liste) {
+    return '<div class="simknoepfe" id="' + id + '">' + liste.map(function (k) { return '<button type="button" class="btn klein sek" data-wert="' + k[1] + '">' + esc(k[0]) + '</button>'; }).join('') + '</div>';
+  }
+  function auswahl(id, label, optionen, wert) {
+    return '<div><label class="feld" for="' + id + '">' + esc(label) + '</label><select id="' + id + '">' + optionen.map(function (o) { return '<option value="' + o[0] + '"' + (String(o[0]) === String(wert) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
+  }
+  function zeitMin(s) { var m = Math.round(s / 60); return m >= 60 ? Math.floor(m / 60) + ' h ' + (m % 60) + ' min' : m + ' min'; }
+
+  /* A: Lufthülle der Erde. Höhenskala logarithmisch gestaucht, 0 bis 420 km. */
+  var LH_MAX = 420, LH_A = 2, LH_Y0 = 474, LH_Y1 = 26;
+  function lhF(h) { return Math.log(1 + h / LH_A) / Math.log(1 + LH_MAX / LH_A); }
+  function lhH(f) { return LH_A * (Math.pow(1 + LH_MAX / LH_A, f) - 1); }
+  function lhY(h) { return LH_Y0 - lhF(h) * (LH_Y0 - LH_Y1); }
+  var LH_MARKEN = [
+    [8.849, 'Everest', '▲', 'r', 'u'], [11, 'Flugzeug, Tropopause', '✈', 'r', 'o'], [19, 'Armstrong-Grenze', '', 'l', 'o'],
+    [35.7, 'c’t-Ballon platzt', '', 'l', 'u'], [39, 'Baumgartner springt', '', 'r', 'o'], [50, 'Stratopause', '', 'l', 'o'],
+    [85, 'Mesopause', '', 'r', 'u'], [100, 'Kármán-Linie: Weltraum', '', 'l', 'o'], [400, 'Raumstation ISS', '🛰', 'r', 'u']
+  ];
+  var LH_SCHICHT = [[0, 11, 'Troposphäre'], [11, 50, 'Stratosphäre'], [50, 85, 'Mesosphäre'], [85, 420, 'Thermosphäre']];
+  function lhSzene() {
+    var g = '<defs><linearGradient id="lh_himmel" x1="0" y1="1" x2="0" y2="0">' +
+      [[0, '#9fd0ff'], [lhF(8), '#5ea4ec'], [lhF(20), '#2c5fb5'], [lhF(40), '#13275e'], [lhF(80), '#060c24'], [1, '#000000']].map(function (s) { return '<stop offset="' + s[0].toFixed(3) + '" stop-color="' + s[1] + '"/>'; }).join('') +
+      '</linearGradient><radialGradient id="lh_erde" cx="0.5" cy="0" r="0.9"><stop offset="0" stop-color="#3d8f5a"/><stop offset="1" stop-color="#1c4a7a"/></radialGradient></defs>';
+    g += '<rect x="0" y="0" width="360" height="520" fill="url(#lh_himmel)"/>';
+    var z = 7;
+    for (var i = 0; i < 70; i++) { z = (z * 9301 + 49297) % 233280; var x = z / 233280 * 360; z = (z * 9301 + 49297) % 233280; var y = LH_Y1 - 20 + z / 233280 * (lhY(30) - LH_Y1 + 20); var o = Math.min(1, Math.max(0, (lhY(25) - y) / (lhY(25) - lhY(90)))); g += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (i % 5 ? 0.8 : 1.4) + '" fill="#fff" opacity="' + o.toFixed(2) + '"/>'; }
+    g += '<rect x="0" y="' + lhY(30) + '" width="360" height="' + (lhY(20) - lhY(30)) + '" fill="#b18cff" opacity="0.18"/><text x="352" y="' + ((lhY(20) + lhY(30)) / 2 + 4) + '" font-size="11" text-anchor="end" fill="#e6dcff">Ozonschicht</text>';
+    LH_SCHICHT.forEach(function (s) {
+      var ym = (lhY(s[0]) + lhY(s[1])) / 2;
+      g += '<line x1="0" y1="' + lhY(s[1]) + '" x2="22" y2="' + lhY(s[1]) + '" stroke="#ffffff" stroke-opacity=".6"/><text x="15" y="' + ym + '" font-size="10" font-weight="700" fill="#fff" opacity=".85" text-anchor="middle" transform="rotate(-90 15 ' + ym + ')">' + s[2] + '</text>';
+    });
+    LH_MARKEN.forEach(function (m) {
+      var y = lhY(m[0]), rechts = m[3] === 'r';
+      g += '<line x1="30" y1="' + y + '" x2="360" y2="' + y + '" stroke="#ffffff" stroke-opacity=".55" stroke-dasharray="4 4"/>' +
+        '<text x="' + (rechts ? 354 : 100) + '" y="' + (m[4] === 'u' ? y + 13 : y - 4) + '" font-size="12.5" fill="#fff" text-anchor="' + (rechts ? 'end' : 'start') + '">' + (m[2] ? m[2] + ' ' : '') + esc(m[1]) + ' (' + fmt(m[0], m[0] < 20 ? 1 : 0).replace(',0', '') + ' km)</text>';
+    });
+    g += '<path d="M0,' + (LH_Y0 + 6) + ' Q180,' + (LH_Y0 - 14) + ' 360,' + (LH_Y0 + 6) + ' L360,520 L0,520 Z" fill="url(#lh_erde)"/>';
+    g += '<g id="lh_ballon" style="cursor:grab;touch-action:none"><line x1="0" y1="0" x2="0" y2="18" stroke="#fff" stroke-width="1.5"/><rect x="-5" y="18" width="10" height="8" rx="1.5" fill="#e8eef6"/><circle id="lh_hulle" cx="0" cy="-10" r="10" fill="#ff6b3d" stroke="#fff" stroke-width="1.5"/><text id="lh_icon" x="0" y="-4" font-size="18" text-anchor="middle"></text></g>';
+    return '<svg class="simsvg" id="lh_svg" viewBox="0 0 360 520" role="img" aria-label="Querschnitt der Lufthülle mit Ballon">' + g + '</svg>';
+  }
+  function lhHinweis(h) {
+    if (h < 3) return ['ok', 'Hier atmet man normal. Über euch liegt fast die ganze Luft der Erde.'];
+    if (h < 8) return ['mittel', 'Höhenkrankheit ist möglich: Jeder Atemzug enthält weniger Sauerstoff. Bergsteiger gewöhnen sich wochenlang an.'];
+    if (h < 12.5) return ['mittel', 'Ohne Sauerstoffmaske verliert man nach wenigen Minuten das Bewusstsein. Flugzeugkabinen haben deshalb Überdruck.'];
+    if (h < 19) return ['kritisch', 'Selbst reiner Sauerstoff aus der Maske reicht nicht mehr. Piloten brauchen hier einen Druckanzug.'];
+    if (h < 100) return ['kritisch', 'Über der Armstrong-Grenze siedet Wasser schon bei Körpertemperatur. Ohne Druckanzug würden Speichel und Tränen zu sieden beginnen. Hier überlebt man nur im Raumanzug.'];
+    return ['kritisch', 'Über der Kármán-Linie beginnt der Weltraum. Die ISS kreist so schnell um die Erde, dass sie nicht herunterfällt.'];
+  }
+  function ballonDurchmesser(V0, h) { var a = atm(h * 1000); return Math.pow(6 * V0 * (101325 / a.p) * (a.T / 288.15) / Math.PI, 1 / 3); }
+  function platzHoehe(V0, dP) { if (ballonDurchmesser(V0, 0) >= dP) return 0; var lo = 0, hi = 86; if (ballonDurchmesser(V0, hi) < dP) return NaN; for (var i = 0; i < 50; i++) { var m = (lo + hi) / 2; if (ballonDurchmesser(V0, m) < dP) lo = m; else hi = m; } return hi; }
+
+  var SIMULATIONEN = {
+    lufthuelle: {
+      sim: true, titel: 'Die Lufthülle der Erde', icon: '🌍', kurz: 'Zieht den Ballon nach oben: Was passiert mit Druck, Temperatur und mit einem Menschen?',
+      html: function () {
+        return lhSzene() + '<p class="leit" style="margin-top:6px">Die Höhenskala ist nach oben gestaucht, sonst passte die ISS nicht aufs Bild. Zieht den Ballon oder nutzt den Schieberegler.</p>' +
+          '<label class="feld" for="lh_f">Höhe</label><input type="range" id="lh_f" min="0" max="1000" step="1" value="0">' +
+          knopfZeile('lh_sprung', [['Boden', 0], ['Everest', 8.849], ['Flugzeug', 11], ['Armstrong', 19], ['c’t-Ballon', 35.7], ['Baumgartner', 39], ['Kármán', 100], ['ISS', 400]]) +
+          '<div class="erg" id="lh_erg"></div><div class="simhinweis" id="lh_txt"></div>' +
+          '<details><summary>Maßstabsgetreu: Wie dünn ist die Lufthülle?</summary><svg class="simsvg klein" viewBox="0 0 360 230" role="img" aria-label="Erde mit maßstabsgetreuer Lufthülle"><rect width="360" height="230" fill="#05081a"/>' +
+          '<circle cx="180" cy="115" r="' + (95 + 95 * 100 / 6371).toFixed(2) + '" fill="#7fc3ff"/><circle cx="180" cy="115" r="95" fill="url(#lh_erde)"/>' +
+          '<text x="180" y="222" font-size="12" fill="#cfe3ff" text-anchor="middle">Der hellblaue Rand ist die Lufthülle bis 100 km.</text></svg>' +
+          '<p>Wäre die Erde ein Apfel mit 8 cm Durchmesser, wäre die Lufthülle bis 100 km nur 0,6 mm dick, also dünner als die Schale. Unser Ballon steigt auf diesem Apfel gerade einmal 0,2 mm hoch.</p></details>';
+      },
+      init: function (el) {
+        var reg = $('#lh_f', el), svg = $('#lh_svg', el), ballon = $('#lh_ballon', el);
+        function zeige() {
+          var h = lhH(zahl(reg.value) / 1000), y = lhY(h);
+          var d = h <= 35.7 ? ballonDurchmesser(4.3, h) : 0;
+          ballon.setAttribute('transform', 'translate(62,' + (y - 26).toFixed(1) + ')');
+          $('#lh_hulle', el).setAttribute('r', h <= 35.7 ? (5 + d * 1.3).toFixed(1) : 0);
+          $('#lh_hulle', el).setAttribute('cy', h <= 35.7 ? (-(5 + d * 1.3)).toFixed(1) : 0);
+          $('#lh_icon', el).textContent = h > 35.7 ? (h >= 100 ? '🛰️' : '🧑‍🚀') : '';
+          var erg;
+          if (h <= 86) {
+            var a = atm(h * 1000), p = a.p / 100, sp = siedepunkt(p);
+            erg = '<div>Höhe<b>' + fmt(h, h < 20 ? 1 : 0) + ' km</b></div><div>Luftdruck<b>' + fmt(p, p < 10 ? 2 : 0) + ' hPa</b>' + fmt(100 * a.p / 101325, p < 10 ? 2 : 0) + ' % vom Boden</div>' +
+              '<div>Temperatur<b>' + fmt(a.T - 273.15, 0) + ' °C</b></div><div>Wasser siedet bei<b>' + (isFinite(sp) ? fmt(sp, 0) + ' °C' : 'gar nicht') + '</b>' + (isFinite(sp) ? '' : 'unter 6,1 hPa gibt es kein flüssiges Wasser') + '</div>' +
+              '<div>Luft unter dir<b>' + fmt(100 * (1 - a.p / 101325), h > 30 ? 1 : 0) + ' %</b>der gesamten Lufthülle</div>';
+          } else {
+            erg = '<div>Höhe<b>' + fmt(h, 0) + ' km</b></div><div>Luftdruck<b>unter 0,003 hPa</b>fast Vakuum</div><div>Temperatur<b>kaum messbar</b>die wenigen Teilchen sind heiß, wärmen aber nicht</div><div>Luft unter dir<b>99,999 %</b></div>';
+          }
+          $('#lh_erg', el).innerHTML = erg;
+          var hi = lhHinweis(h);
+          $('#lh_txt', el).className = 'simhinweis ' + hi[0];
+          $('#lh_txt', el).innerHTML = (h > 35.7 && h < 100 ? '🧑‍🚀 ' : (hi[0] === 'ok' ? '🙂 ' : '⚠️ ')) + hi[1] + (Math.abs(h - 35.7) < 0.6 ? ' Genau hier platzte der Ballon der c’t.' : '');
+        }
+        reg.addEventListener('input', zeige);
+        $('#lh_sprung', el).addEventListener('click', function (ev) {
+          var b = ev.target.closest('[data-wert]'); if (!b) return;
+          reg.value = Math.round(lhF(+b.dataset.wert) * 1000); reg.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        var ziehen = false;
+        function aufSvg(ev) { var pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+        ballon.addEventListener('pointerdown', function (ev) { ziehen = true; ballon.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+        ballon.addEventListener('pointermove', function (ev) {
+          if (!ziehen) return;
+          var y = aufSvg(ev).y + 26, f = Math.max(0, Math.min(1, (LH_Y0 - y) / (LH_Y0 - LH_Y1)));
+          reg.value = Math.round(f * 1000); reg.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        ballon.addEventListener('pointerup', function () { ziehen = false; });
+        ballon.addEventListener('pointercancel', function () { ziehen = false; });
+        zeige();
+      }
+    },
+
+    ballon: {
+      sim: true, titel: 'Der Ballon wächst', icon: '🎈', kurz: 'Beim Aufstieg sinkt der Druck. Das Gas dehnt sich aus, bis die Hülle platzt.',
+      html: function () {
+        var g = '<defs><linearGradient id="bw_h" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9fd0ff"/><stop offset="1" stop-color="#1b3a7a"/></linearGradient></defs><rect width="360" height="300" fill="url(#bw_h)" id="bw_bg"/>';
+        for (var m = 0; m <= 14; m += 2) g += '<line x1="22" y1="' + (280 - m * 18) + '" x2="30" y2="' + (280 - m * 18) + '" stroke="#fff"/><text x="34" y="' + (284 - m * 18) + '" font-size="11" fill="#fff">' + m + ' m</text>';
+        g += '<line x1="26" y1="280" x2="26" y2="28" stroke="#fff"/>';
+        g += '<g transform="translate(78,248)" fill="#fff"><circle cx="0" cy="0" r="3.4"/><rect x="-3" y="4" width="6" height="14" rx="2"/><rect x="-3" y="17" width="2.4" height="14"/><rect x="0.6" y="17" width="2.4" height="14"/></g><text x="78" y="296" font-size="10" fill="#fff" text-anchor="middle">1,8 m</text>';
+        g += '<g id="bw_g"><circle id="bw_c" cx="210" cy="150" r="20" fill="#ff6b3d" fill-opacity=".9" stroke="#fff" stroke-width="2"/><line id="bw_s" x1="210" y1="170" x2="210" y2="282" stroke="#fff" stroke-width="1.5"/></g><text id="bw_peng" x="210" y="160" font-size="34" font-weight="800" text-anchor="middle" fill="#fff"></text>';
+        return '<svg class="simsvg" viewBox="0 0 360 300" role="img" aria-label="Ballon im Größenvergleich mit einem Menschen">' + g + '</svg>' +
+          '<label class="feld" for="bw_hr">Höhe (0 bis 40 km)</label><input type="range" id="bw_hr" min="0" max="40" step="0.1" value="0">' +
+          '<div class="rgrid">' + feld('bw_v0', 'Gas am Start', '4.3', 'm³') + feld('bw_dp', 'Platzdurchmesser', '12.5', 'm') + '</div>' +
+          '<div class="reihe"><button type="button" class="btn klein" id="bw_play">▶ Aufstieg abspielen</button></div><div class="erg" id="bw_erg"></div>' +
+          '<div class="merke">Bei gleicher Temperatur gilt <span class="formel">p · V = konstant</span>. Halber Druck heißt doppeltes Volumen. Weil es oben auch kälter ist, wächst der Ballon etwas weniger.</div>';
+      },
+      init: function (el) {
+        var hr = $('#bw_hr', el), lauf = null;
+        function zeige() {
+          var h = zahl(hr.value), V0 = v(el, 'bw_v0'), dP = v(el, 'bw_dp'), hp = platzHoehe(V0, dP);
+          var geplatzt = isFinite(hp) && h >= hp, d = ballonDurchmesser(V0, geplatzt ? hp : h), a = atm(h * 1000), V = Math.PI * d * d * d / 6;
+          var r = d / 2 * 18;
+          $('#bw_c', el).setAttribute('r', geplatzt ? 0 : r.toFixed(1));
+          $('#bw_c', el).setAttribute('cy', (280 - 34 - r).toFixed(1));
+          $('#bw_s', el).setAttribute('y1', (280 - 34).toFixed(1));
+          $('#bw_s', el).setAttribute('y2', geplatzt ? (280 - 34).toFixed(1) : '282');
+          $('#bw_peng', el).textContent = geplatzt ? '💥 Peng!' : '';
+          $('#bw_erg', el).innerHTML = '<div>Höhe<b>' + fmt(h, 1) + ' km</b></div><div>Luftdruck<b>' + fmt(a.p / 100, a.p < 1000 ? 1 : 0) + ' hPa</b></div><div>Temperatur<b>' + fmt(a.T - 273.15, 0) + ' °C</b></div>' +
+            '<div>Volumen<b>' + fmt(V, V < 100 ? 1 : 0) + ' m³</b>' + fmt(V / V0, 0) + '-mal so groß wie am Start</div><div>Durchmesser<b>' + fmt(d, 1) + ' m</b></div>' +
+            '<div>Platzhöhe<b>' + (isFinite(hp) ? fmt(hp, 1) + ' km' : 'über 86 km') + '</b></div>';
+        }
+        el.addEventListener('input', function (ev) { if (ev.target.id !== 'bw_hr' && lauf) { cancelAnimationFrame(lauf); lauf = null; } zeige(); });
+        $('#bw_play', el).addEventListener('click', function () {
+          if (lauf) cancelAnimationFrame(lauf);
+          var hp = platzHoehe(v(el, 'bw_v0'), v(el, 'bw_dp')), h = 0, t0 = null;
+          function schritt(ts) {
+            if (t0 == null) t0 = ts;
+            h = Math.min((ts - t0) / 150, isFinite(hp) ? hp + 0.3 : 40, 40);
+            hr.value = h.toFixed(1); zeige();
+            if (h < (isFinite(hp) ? hp + 0.3 : 40) && h < 40) lauf = requestAnimationFrame(schritt); else lauf = null;
+          }
+          lauf = requestAnimationFrame(schritt);
+        });
+        zeige();
+      }
+    },
+
+    sprung: {
+      sim: true, titel: 'Sprung aus der Stratosphäre', icon: '🪂', kurz: 'Freier Fall aus großer Höhe: In dünner Luft wird man schneller als der Schall.',
+      html: function () {
+        return '<p>Am 14. Oktober 2012 sprang Felix Baumgartner aus 38 969 m Höhe aus einer Kapsel unter einem Heliumballon. Er trug einen Druckanzug und erreichte 1357,6 km/h, also mehr als die Schallgeschwindigkeit.</p>' +
+          '<div class="rgrid">' + auswahl('sp_wer', 'Wer fällt?', [['bauch', 'Mensch im Druckanzug, Bauchlage'], ['kopf', 'Mensch im Druckanzug, Kopf voran'], ['sonde', 'unsere Sonde am Fallschirm (1,7 kg)']], 'bauch') +
+          feld('sp_h0', 'Absprunghöhe', '39', 'km') + feld('sp_hf', 'Fallschirm öffnen in', '2.5', 'km') + '</div>' +
+          '<div class="reihe"><button type="button" class="btn klein" id="sp_play">▶ Sprung abspielen (10-fach)</button></div>' +
+          '<div class="erg" id="sp_live"></div><div id="sp_dia"></div><div class="erg" id="sp_erg"></div>' +
+          '<p class="leit">Modell: Luftwiderstand mit der Dichte der Normatmosphäre, Mensch 118 kg mit Anzug, Sonde mit 0,65 m² Fallschirm, c<sub>w</sub> = 1,5.</p>';
+      },
+      init: function (el) {
+        var bahn = [], lauf = null;
+        function rechne() {
+          var wer = $('#sp_wer', el).value, m = wer === 'sonde' ? 1.7 : 118, cwA = wer === 'sonde' ? 1.5 * 0.65 : (wer === 'kopf' ? 0.35 : 0.62);
+          var h = Math.min(Math.max(v(el, 'sp_h0'), 1), 80) * 1000, hf = wer === 'sonde' ? 1e9 : Math.max(0, v(el, 'sp_hf')) * 1000;
+          var vv = 0, t = 0, dt = 0.05, tf = null, vmax = 0, hmax = h, k = 0;
+          bahn = [];
+          while (h > 0 && t < 20000) {
+            var a = atm(h), c = cwA;
+            if (h < hf) { if (tf == null) tf = t; c = Math.min(45, cwA + (t - tf) * 15); }
+            vv += (G0 - 0.5 * a.rho * c * vv * vv / m) * dt; h -= vv * dt; t += dt;
+            if (vv > vmax) { vmax = vv; hmax = h; }
+            if (k++ % 20 === 0) bahn.push([t, Math.max(h, 0), vv, schall(a.T)]);
+          }
+          bahn.push([t, 0, vv, schall(288.15)]);
+          var mach = vmax / schall(atm(hmax).T);
+          $('#sp_erg', el).innerHTML = '<div>Höchstgeschwindigkeit<b>' + fmt(vmax * 3.6, 0) + ' km/h</b>in ' + fmt(hmax / 1000, 1) + ' km Höhe</div><div>Machzahl<b>' + fmt(mach, 2) + '</b>' + (mach > 1 ? 'schneller als der Schall' : 'langsamer als der Schall') + '</div>' +
+            (tf != null ? '<div>freier Fall<b>' + fmt(tf, 0) + ' s</b></div>' : '') + '<div>gesamte Zeit<b>' + zeitMin(t) + '</b></div><div>Landung mit<b>' + fmt(vv, 1) + ' m/s</b></div>';
+          zeichne(null);
+        }
+        function zeichne(i) {
+          var r = [{ name: 'Geschwindigkeit', farbe: '#c2410c', punkte: bahn.map(function (b) { return [b[0], b[2] * 3.6]; }) }, { name: 'Schallgeschwindigkeit', farbe: '#17607a', punkte: bahn.map(function (b) { return [b[0], b[3] * 3.6]; }) }];
+          if (i != null) r.push({ name: '', farbe: '#132033', nurPunkte: true, punkte: [[bahn[i][0], bahn[i][2] * 3.6]] });
+          var ymax = Math.max.apply(null, bahn.map(function (b) { return Math.max(b[2], b[3]) * 3.6; }));
+          $('#sp_dia', el).innerHTML = diagramm(r, { xl: 't in s', yl: 'v in km/h', legende: true, y0: 0, y1: Math.ceil(ymax * 1.3 / 1000) * 1000 });
+        }
+        el.addEventListener('input', function () { if (lauf) { cancelAnimationFrame(lauf); lauf = null; } rechne(); });
+        el.addEventListener('change', function (ev) { if (ev.target.id === 'sp_wer') rechne(); });
+        $('#sp_play', el).addEventListener('click', function () {
+          if (lauf) cancelAnimationFrame(lauf);
+          var t0 = null, i = 0;
+          function schritt(ts) {
+            if (t0 == null) t0 = ts;
+            var t = (ts - t0) / 100;
+            while (i < bahn.length - 1 && bahn[i + 1][0] <= t) i++;
+            var b = bahn[i];
+            $('#sp_live', el).innerHTML = '<div>Zeit<b>' + fmt(b[0], 0) + ' s</b></div><div>Höhe<b>' + fmt(b[1] / 1000, 1) + ' km</b></div><div>Geschwindigkeit<b>' + fmt(b[2] * 3.6, 0) + ' km/h</b></div><div>Schall<b>' + fmt(b[3] * 3.6, 0) + ' km/h</b></div>';
+            zeichne(i);
+            if (i < bahn.length - 1) lauf = requestAnimationFrame(schritt); else lauf = null;
+          }
+          lauf = requestAnimationFrame(schritt);
+        });
+        rechne();
+      }
+    },
+
+    mission: {
+      sim: true, titel: 'Missionssimulator', icon: '🚀', kurz: 'Der ganze Flug mit euren Messwerten: Wie hoch, wie lange, wie kalt und wie hart landet die Sonde?',
+      html: function () {
+        return '<div class="rgrid">' + feld('ms_v0', 'Gas am Start', '4.3', 'm³') + feld('ms_m', 'Masse der Sonde', '1500', 'g') + feld('ms_dp', 'Platzdurchmesser des Ballons', '12.5', 'm') + feld('ms_a', 'Fläche des Fallschirms', '0.65', 'm²') + '</div>' +
+          '<h4>Aus dem Kältetest</h4><div class="rgrid">' + feld('ms_dt', 'Temperaturabfall in 60 min', '8', 'K') + feld('ms_t0', 'Starttemperatur des Wassers', '40', '°C') + feld('ms_ta', 'Außentemperatur beim Test', '8', '°C') + feld('ms_w', 'Faktor Fahrtwind (Team C)', '1.5', '') +
+          auswahl('ms_p', 'Wärme der Elektronik', [['0', 'keine'], ['0.5', '0,5 W'], ['1', '1 W']], '0') + '</div>' +
+          '<div class="erg" id="ms_erg"></div><div class="simhinweis" id="ms_txt"></div><div id="ms_dia1"></div><div id="ms_dia2"></div>' +
+          '<label class="feld" for="ms_tr">Zeitpunkt im Flug</label><input type="range" id="ms_tr" min="0" max="1000" step="1" value="0"><div class="erg" id="ms_live"></div>' +
+          '<p class="leit">Zum Vergleich: Der Ballon der c’t stieg auf 35,7 km und flog etwa 3,5 h. Warum er länger brauchte, erklärt Karte F3 der Fallakte. Modell: gleichmäßiger Aufstieg mit der Steigrate am Boden, Gas so kalt wie die Luft, kein Wind, Hülle 1,2 kg, Fallschirm mit Schnur 0,2 kg. Die Box kühlt wie im Kältetest mit 250 ml Wasser, mal dem Faktor für den Fahrtwind. Innen startet sie mit 20 °C.</p>';
+      },
+      init: function (el) {
+        var bahn = [];
+        function rechne() {
+          var V0 = v(el, 'ms_v0'), ms = v(el, 'ms_m') / 1000, dP = v(el, 'ms_dp'), Af = v(el, 'ms_a');
+          var abfall = v(el, 'ms_dt'), T0 = v(el, 'ms_t0'), Ta = v(el, 'ms_ta'), wf = v(el, 'ms_w'), P = zahl($('#ms_p', el).value);
+          var L = V0 * (RHO_L - RHO_HE) - (1.2 + ms + 0.2);
+          bahn = [];
+          if (!(L > 0)) { $('#ms_erg', el).innerHTML = ''; $('#ms_txt', el).className = 'simhinweis kritisch'; $('#ms_txt', el).innerHTML = '⚠️ Der Ballon hebt nicht ab. Mehr Gas einfüllen oder die Sonde leichter machen.'; $('#ms_dia1', el).innerHTML = ''; $('#ms_dia2', el).innerHTML = ''; return; }
+          var ok = abfall > 0 && abfall < T0 - Ta;
+          var G = ok ? -Math.log(1 - abfall / (T0 - Ta)) / 3600 * C_WASSER * (wf > 0 ? wf : 1) : 0.1;
+          var d0 = Math.pow(6 * V0 / Math.PI, 1 / 3), vSteig = Math.sqrt(2 * L * G0 / (RHO_L * 0.3 * Math.PI * d0 * d0 / 4));
+          var h = 0, t = 0, dt = 5, Ti = 20, auf = true, hGipfel = 0, tGipfel = 0, vSink30 = NaN, vLand = 0, TaMin = 99, TiMin = 99, vAuf = 0, n = 0;
+          while (h >= 0 && t < 8 * 3600) {
+            var a = atm(h), vv;
+            if (auf) {
+              var d = Math.pow(6 * V0 * (101325 / a.p) * (a.T / 288.15) / Math.PI, 1 / 3);
+              if (d >= dP || h > 60000) { auf = false; hGipfel = h; tGipfel = t; continue; }
+              vv = vSteig; vAuf += vv; n++;
+              h += vv * dt;
+            } else {
+              vv = Math.sqrt(2 * (ms + 0.2) * G0 / (a.rho * 1.5 * Af));
+              if (h <= 30000 && isNaN(vSink30)) vSink30 = vv;
+              vLand = vv; h -= vv * dt;
+            }
+            var tA = a.T - 273.15;
+            Ti += (-G * (Ti - tA) + P) / C_WASSER * dt;
+            TaMin = Math.min(TaMin, tA); TiMin = Math.min(TiMin, Ti);
+            if (Math.round(t) % 60 === 0) bahn.push([t / 60, Math.max(h, 0) / 1000, tA, Ti, auf, vv]);
+            t += dt;
+          }
+          bahn.push([t / 60, 0, 15, Ti, false, vLand]);
+          $('#ms_erg', el).innerHTML = '<div>Gipfelhöhe<b>' + fmt(hGipfel / 1000, 1) + ' km</b></div><div>Aufstieg<b>' + zeitMin(tGipfel) + '</b>mit ' + fmt(vAuf / n, 1) + ' m/s</div><div>ganzer Flug<b>' + zeitMin(t) + '</b></div>' +
+            '<div>Sinken in 30 km<b>' + (isFinite(vSink30) ? fmt(vSink30, 0) + ' m/s' : '–') + '</b></div><div>Landung mit<b>' + fmt(vLand, 1) + ' m/s</b></div><div>kälteste Luft<b>' + fmt(TaMin, 0) + ' °C</b></div><div>kälteste Stelle in der Box<b>' + fmt(TiMin, 0) + ' °C</b></div>';
+          var txt = [], stufe = 'ok';
+          if (!ok) { txt.push('Der Temperaturabfall im Kältetest muss kleiner sein als der Unterschied zwischen Wasser und Außenluft.'); stufe = 'mittel'; }
+          if (TiMin < -20) { txt.push('In der Box wird es kälter als −20 °C. Akkus liefern dann kaum noch Energie (Fallakte F6).'); stufe = 'kritisch'; }
+          else if (TiMin < 0) { txt.push('In der Box wird es kälter als 0 °C. Akkus verlieren Kapazität, Lithium-Zellen halten besser durch.'); stufe = 'mittel'; }
+          else txt.push('Die Elektronik bleibt über 0 °C.');
+          if (vLand > 6) { txt.push('Die Landung ist härter als 6 m/s. Der Fallschirm sollte größer sein.'); stufe = 'kritisch'; }
+          else txt.push('Die Landung ist sanft genug.');
+          $('#ms_txt', el).className = 'simhinweis ' + stufe;
+          $('#ms_txt', el).innerHTML = (stufe === 'ok' ? '✅ ' : '⚠️ ') + txt.join(' ');
+          zeichne();
+        }
+        function zeichne() {
+          var i = Math.min(bahn.length - 1, Math.round(zahl($('#ms_tr', el).value) / 1000 * (bahn.length - 1)));
+          var b = bahn[i], mark = [b[0]];
+          $('#ms_dia1', el).innerHTML = diagramm([{ name: 'Höhe', farbe: '#17607a', punkte: bahn.map(function (x) { return [x[0], x[1]]; }) }, { name: '', farbe: '#132033', nurPunkte: true, punkte: [[mark[0], b[1]]] }], { xl: 't in min', yl: 'Höhe in km', y0: 0, x0: 0 });
+          $('#ms_dia2', el).innerHTML = diagramm([{ name: 'Luft außen', farbe: '#17607a', punkte: bahn.map(function (x) { return [x[0], x[2]]; }) }, { name: 'in der Box', farbe: '#c2410c', punkte: bahn.map(function (x) { return [x[0], x[3]]; }) }, { name: '', farbe: '#132033', nurPunkte: true, punkte: [[mark[0], b[3]]] }], { xl: 't in min', yl: 'Temperatur in °C', legende: true, x0: 0, y0: -60, y1: 40 });
+          $('#ms_live', el).innerHTML = '<div>Zeit<b>' + zeitMin(b[0] * 60) + '</b></div><div>Phase<b>' + (b[4] ? 'Aufstieg' : (b[1] > 0 ? 'Fallschirm' : 'gelandet')) + '</b></div><div>Höhe<b>' + fmt(b[1], 1) + ' km</b></div><div>Geschwindigkeit<b>' + fmt(b[5], 1) + ' m/s</b></div><div>außen<b>' + fmt(b[2], 0) + ' °C</b></div><div>in der Box<b>' + fmt(b[3], 0) + ' °C</b></div>';
+        }
+        el.addEventListener('input', function (ev) { if (ev.target.id === 'ms_tr') zeichne(); else rechne(); });
+        el.addEventListener('change', function (ev) { if (ev.target.id === 'ms_p') rechne(); });
+        rechne();
+      }
+    },
+
+    abkuehlung: {
+      sim: true, titel: 'Abkühlkurve vorhersagen', icon: '🧊', kurz: 'Wie schnell kühlt die Flasche in eurer Box ab? Vorhersage vor dem Kältetest, danach Vergleich mit den Messwerten.',
+      html: function () {
+        return '<div class="rgrid">' + auswahl('ak_mat', 'Material der Box', [['0.035', 'Styropor (EPS)'], ['0.033', 'XPS-Hartschaum'], ['0.04', 'Kühltasche (Schaumstoff)'], ['0.065', 'Wellpappe'], ['0.13', 'Holz'], ['0.2', 'Kunststoff (Brotdose)'], ['50', 'Blech (Keksdose)']], '0.035') +
+          feld('ak_d', 'Wandstärke', '20', 'mm') + feld('ak_a', 'Innenmaß (Kantenlänge)', '15', 'cm') + feld('ak_t0', 'Starttemperatur des Wassers', '40', '°C') + feld('ak_ta', 'Außentemperatur', '8', '°C') +
+          auswahl('ak_w', 'Fahrtwind für die Box im Wind', [['25', 'Ventilator (etwa 3 m/s)'], ['40', 'starker Wind (etwa 6 m/s)']], '25') + '</div>' +
+          '<div class="erg" id="ak_erg"></div><div id="ak_dia"></div>' +
+          '<p class="leit">Punkte im Diagramm sind eure Messwerte aus der Tabelle „Abkühlkurven“ (Team C), sobald sie eingetragen sind. Modell: Wärmeleitung durch die Wand, Wärmeübergang an der Flasche und außen, 250 ml Wasser.</p>' +
+          '<div class="merke">Schon die eingeschlossene Luft in der Box dämmt gut. Deshalb hält auch eine dünne Brotdose länger warm als die Flasche ganz ohne Box.</div>';
+      },
+      init: function (el) {
+        function rechne() {
+          var lam = zahl($('#ak_mat', el).value), d = v(el, 'ak_d') / 1000, a = v(el, 'ak_a') / 100, T0 = v(el, 'ak_t0'), Ta = v(el, 'ak_ta'), hw = zahl($('#ak_w', el).value);
+          var Ai = 6 * a * a, Ao = 6 * Math.pow(a + 2 * d, 2), Am = Math.sqrt(Ai * Ao), Af = 0.032;
+          function G(hAussen, mitBox) { return mitBox ? 1 / (d / (lam * Am) + 1 / (hAussen * Ao) + 1 / (6 * Af)) : hAussen * Af; }
+          var faelle = [['eure Box', G(8, true), '#c2410c'], ['Box im Wind', G(hw, true), '#5b3fc4'], ['ohne Box', G(8, false), '#1b7a47']];
+          function T(g, min) { return Ta + (T0 - Ta) * Math.exp(-g * min * 60 / C_WASSER); }
+          var reihen = faelle.map(function (f) { var p = []; for (var m = 0; m <= 60; m += 2) p.push([m, T(f[1], m)]); return { name: f[0], farbe: f[2], punkte: p }; });
+          reihen.push({ name: 'Außenluft', farbe: '#17607a', punkte: [[0, Ta], [60, Ta]] });
+          var mt = S.werte['t_mt11_kaelte'] || {};
+          [[0, '#c2410c'], [1, '#5b3fc4'], [2, '#1b7a47']].forEach(function (s) {
+            var p = []; for (var i = 0; i <= 12; i++) { var y = zahl(mt[i + '_' + s[0]]); if (isFinite(y)) p.push([i * 5, y]); }
+            if (p.length) reihen.push({ name: '', farbe: s[1], nurPunkte: true, punkte: p });
+          });
+          var yu = Math.floor(Math.min(Ta, T0) / 5) * 5;
+          $('#ak_dia', el).innerHTML = diagramm(reihen, { xl: 't in min', yl: 'Temperatur in °C', legende: true, x0: 0, x1: 60, y0: yu, y1: yu + Math.ceil((T0 + 0.35 * Math.abs(T0 - Ta) - yu) / 25) * 25 });
+          $('#ak_erg', el).innerHTML = faelle.map(function (f) { return '<div>' + f[0] + '<b>−' + fmt(T0 - T(f[1], 60), 1) + ' K</b>in 60 min</div>'; }).join('') + '<div>Wärmeverlust eurer Box<b>' + fmt(faelle[0][1], 3) + ' W/K</b></div>';
+        }
+        el.addEventListener('input', rechne);
+        el.addEventListener('change', rechne);
+        rechne();
+      }
+    }
+  };
+  for (var simId in SIMULATIONEN) RECHNER[simId] = SIMULATIONEN[simId];
+
   function rechnerKarte(id, eingebettet) {
     var r = RECHNER[id];
-    var html = '<div class="card" data-rechner="' + id + '"><div class="kicker">Rechner</div><h3>' + r.icon + ' ' + esc(r.titel) + '</h3><p class="leit">' + esc(r.kurz) + '</p>' + r.html() + '</div>';
+    var html = '<div class="card' + (r.sim ? ' simkarte' : '') + '" data-rechner="' + id + '"><div class="kicker">' + (r.sim ? 'Simulation' : 'Rechner') + '</div><h3>' + r.icon + ' ' + esc(r.titel) + '</h3><p class="leit">' + esc(r.kurz) + '</p>' + r.html() + '</div>';
     return html;
   }
   function rechnerStarten(root) {
@@ -1440,7 +1784,7 @@ const PROJEKT = {
       }
       html += '</div>';
     });
-    html += '<div class="card"><div class="kicker">Werkzeuge</div><h3>Alles für die Mission</h3><div class="reihe"><a class="btn sek" href="#/rechner">🧮 Rechner</a><a class="btn sek" href="#/fallakte">🔎 Fallakte</a><a class="btn sek" href="#/risiko">⚠️ Risikomatrix</a><a class="btn sek" href="#/pitch">🎤 Pitch</a><a class="btn sek" href="#/logbuch">📓 Logbuch</a></div></div>';
+    html += '<div class="card"><div class="kicker">Werkzeuge</div><h3>Alles für die Mission</h3><div class="reihe"><a class="btn sek" href="#/labor">🔬 Labor</a><a class="btn sek" href="#/fallakte">🔎 Fallakte</a><a class="btn sek" href="#/risiko">⚠️ Risikomatrix</a><a class="btn sek" href="#/pitch">🎤 Pitch</a><a class="btn sek" href="#/logbuch">📓 Logbuch</a></div></div>';
     return html + '</div>';
   }
 
@@ -1478,7 +1822,7 @@ const PROJEKT = {
   /* Kapitelseite: Darum geht's, Auftrag, Nachschlagen (aufklappbar), Prüfen, Ergebnis, Weiter */
   var MEHR = { text: 1, rechner: 1, anleitung: 1 };
   function mehrEintraege(b) {
-    if (b.typ === 'rechner') return b.ids.map(function (id) { return ['🧮 Rechner: ' + RECHNER[id].titel, rechnerKarte(id, true), b._bid + '_' + id]; });
+    if (b.typ === 'rechner') return b.ids.map(function (id) { return [(RECHNER[id].sim ? '🛰️ Simulation: ' : '🧮 Rechner: ') + RECHNER[id].titel, rechnerKarte(id, true), b._bid + '_' + id]; });
     if (b.typ === 'anleitung') return [['🎥 Video: ' + b.titel, blockAnleitung(b), b._bid]];
     return [['📖 ' + (b.kicker || 'Wissen') + ': ' + b.titel, blockText(b), b._bid]];
   }
@@ -1534,17 +1878,16 @@ const PROJEKT = {
     return html + '<div class="weiter">' + vor + nach + '</div></div>';
   }
 
-  function rechnerSeite(id) {
-    var html = '<div class="wrap step"><h2 style="margin:4px 0 10px">🧮 Rechner</h2>';
-    if (id && RECHNER[id]) {
-      html += '<p><a href="#/rechner">← alle Rechner</a></p>' + rechnerKarte(id);
-    } else {
-      html += '<div class="levels">' + Object.keys(RECHNER).map(function (k) {
+  function laborSeite(id) {
+    var html = '<div class="wrap step"><h2 style="margin:4px 0 10px">🔬 Labor</h2>';
+    if (id && RECHNER[id]) return html + '<p><a href="#/labor">← alle Simulationen und Rechner</a></p>' + rechnerKarte(id) + '</div>';
+    function liste(sim) {
+      return '<div class="levels">' + Object.keys(RECHNER).filter(function (k) { return !!RECHNER[k].sim === sim; }).map(function (k) {
         var r = RECHNER[k];
-        return '<a class="lv" href="#/rechner/' + k + '"><span class="num">' + r.icon + '</span><span class="tx"><span class="tt" style="display:block">' + esc(r.titel) + '</span><span class="sub">' + esc(r.kurz) + '</span></span></a>';
+        return '<a class="lv" href="#/labor/' + k + '"><span class="num">' + r.icon + '</span><span class="tx"><span class="tt" style="display:block">' + esc(r.titel) + '</span><span class="sub">' + esc(r.kurz) + '</span></span></a>';
       }).join('') + '</div>';
     }
-    return html + '</div>';
+    return html + '<h3 class="laborkopf">Simulationen</h3>' + liste(true) + '<h3 class="laborkopf">Rechner</h3>' + liste(false) + '</div>';
   }
 
   function logbuchSeite() {
@@ -1583,7 +1926,9 @@ const PROJEKT = {
     html += '<div class="card"><h3>Rollen im Team</h3><p>Die Rollen wechseln jedes Jahr. So lernt jeder alle Seiten des Projekts kennen.</p><ul>' + P.rollen.map(function (r) { return '<li><b>' + esc(r.name) + ':</b> ' + esc(r.text) + '</li>'; }).join('') + '</ul></div>';
     html += '<div class="card"><h3>Teamvertrag</h3><p>Drei Regeln, auf die sich euer Team einigt.</p>' + [0, 1, 2].map(function (i) { return '<label class="feld" for="tv_' + i + '">Regel ' + (i + 1) + '</label><input type="text" id="tv_' + i + '" data-tv="' + i + '" value="' + esc(S.vertrag[i] || '') + '">'; }).join('') + '</div>';
     html += '<div class="card"><h3>So wird bewertet</h3><table class="tabelle"><thead><tr><th>Kriterium</th><th>Anteil</th><th>gut erfüllt, wenn</th></tr></thead><tbody>' + P.bewertung.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td></tr>'; }).join('') + '</tbody></table></div>';
-    html += '<div class="card"><h3>Speicher</h3><p class="leit">Dein Fortschritt liegt nur auf diesem Gerät. Wechselst du das Gerät, beginnst du neu. Drucke dein Logbuch deshalb nach jedem Projekttag.</p><button class="btn sek" id="reset">Alles zurücksetzen</button></div>';
+    html += '<div class="card"><h3>Speicher und Neustart</h3><p class="leit">Dein Fortschritt liegt nur auf diesem Gerät. Wechselst du das Gerät, beginnst du neu. Drucke dein Logbuch deshalb als PDF, bevor du etwas löschst.</p>' +
+      '<div class="reihe"><button class="btn sek" id="reset_fortschritt">Fortschritt zurücksetzen</button><button class="btn sek" id="reset">Alles löschen</button></div>' +
+      '<p class="leit" style="margin-top:8px">„Fortschritt zurücksetzen“ löscht Aufträge, Quiz, Fallakte, Freigaben, Messwerte und Notizen. Name, Team, Rolle, Teamvertrag und Logbuch bleiben. „Alles löschen“ setzt die App ganz auf Anfang.</p></div>';
     return html + '</div>';
   }
 
@@ -1594,13 +1939,13 @@ const PROJEKT = {
   }
 
   /* ---------- Router ---------- */
-  var TABS = [['#/', '🗺️', 'Mission'], ['#/rechner', '🧮', 'Rechner'], ['#/fallakte', '🔎', 'Fallakte'], ['#/logbuch', '📓', 'Logbuch'], ['#/team', '👥', 'Team']];
+  var TABS = [['#/', '🗺️', 'Mission'], ['#/labor', '🔬', 'Labor'], ['#/fallakte', '🔎', 'Fallakte'], ['#/logbuch', '📓', 'Logbuch'], ['#/team', '👥', 'Team']];
   function render() {
     var h = location.hash || '#/';
     var teile = h.replace(/^#\//, '').split('/');
     var html;
     if (teile[0] === 'e') html = teile[2] ? kapitelSeite(teile[1], +teile[2]) : tagSeite(teile[1]);
-    else if (teile[0] === 'rechner') html = rechnerSeite(teile[1]);
+    else if (teile[0] === 'labor' || teile[0] === 'rechner') html = laborSeite(teile[1]);
     else if (teile[0] === 'logbuch') html = logbuchSeite();
     else if (teile[0] === 'team') html = teamSeite();
     else if (teile[0] === 'fallakte' || teile[0] === 'risiko' || teile[0] === 'pitch') html = einzelSeite(teile[0]);
@@ -1662,7 +2007,15 @@ const PROJEKT = {
     }
     if (t.dataset.ideeweg != null) { S.werte.ideen.splice(+t.dataset.ideeweg, 1); speichern(); neuZeichnen(); return; }
     if (t.id === 'reset') {
-      if (confirm('Wirklich alles löschen? Logbuch, Punkte und Freigaben gehen verloren.')) { S = leer(); speichern(); render(); }
+      if (confirm('Wirklich alles löschen? Auch Logbuch, Name und Team gehen verloren.')) { S = leer(); speichern(); render(); toast('App zurückgesetzt'); }
+      return;
+    }
+    if (t.id === 'reset_fortschritt') {
+      if (confirm('Fortschritt zurücksetzen? Name, Team, Rolle und Logbuch bleiben erhalten.')) {
+        var neu = leer();
+        ['name', 'team', 'rolle', 'wunsch', 'log', 'vertrag'].forEach(function (k) { neu[k] = S[k]; });
+        S = neu; speichern(); render(); toast('Fortschritt zurückgesetzt');
+      }
     }
   });
   app.addEventListener('change', function (ev) {
