@@ -462,6 +462,9 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
   {
    "html": "probeklausuren/probeklausur_etappen-3-4.html",
    "pdf": "probeklausuren/probeklausur_etappen-3-4.pdf",
+   "bogen": {
+    "pdf": "probeklausuren/probeklausur_etappen-3-4_uebungsbogen.pdf"
+   },
    "titel": "Probeklausur Etappen 3–4",
    "dauer": "90 Min.",
    "wochen": "3–4"
@@ -551,6 +554,10 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
         html += l.html
           ? '<a class="mat-neben" href="' + esc(l.html) + '">Lösung</a>'
           : '<a class="mat-neben" href="' + esc(l.pdf) + '" target="_blank" rel="noopener">Lösung</a>';
+      }
+      var b = satz.bogen;  // Übungsbogen zur Probeklausur (Antwortbogen zum Ausdrucken)
+      if (b && b.pdf) {
+        html += '<a class="mat-neben" href="' + esc(b.pdf) + '" target="_blank" rel="noopener">Antwortbogen</a>';
       }
       return html + "</div>";
     }
