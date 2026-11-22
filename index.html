@@ -55,6 +55,7 @@ var LKZ=(function(){
   return {norm:norm,hash:hash,stimmt:stimmt,angemeldet:angemeldet,merken:merken,abmelden:abmelden,gemerkt:gemerkt};
 })();
 </script>
+  <script>var SEITEN_VERSION = "060d937b55c9";</script>
 
   <!-- Alles Weitere erzeugt _werkzeuge/index_bauen.py. Bitte nicht von Hand ändern. -->
   <style>
@@ -391,7 +392,7 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
  "klasse": "11NP",
  "fach": "Physiktechnik",
  "schuljahr": "2026/27",
- "erzeugt": "2026-11-20",
+ "erzeugt": "2026-11-22",
  "wochen": [
   {
    "nr": 1,
@@ -555,12 +556,6 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
    "titel": "Probeklausur Etappen 3–4",
    "dauer": "90 Min.",
    "wochen": "3–4"
-  },
-  {
-   "html": "probeklausuren/q1-01.html",
-   "pdf": "probeklausuren/q1-01.pdf",
-   "titel": "Übung Woche 1",
-   "dauer": "90 Min."
   }
  ],
  "klausuren": [],
@@ -955,6 +950,39 @@ body.beamer .beamer-aus { display: inline-flex; position: fixed; top: 16px; righ
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && document.body.classList.contains("beamer")) beamer(false);
     });
+
+    // ---------- Neue Version erkennen ----------
+    // version.json liegt neben der Seite. Weicht sie ab, erscheint ein Hinweis zum Aktualisieren.
+    (function () {
+      if (!/^https?:/.test(location.protocol) || !window.SEITEN_VERSION || !window.fetch) return;
+      var geprueft = 0;
+      function pruefen() {
+        var jetzt = Date.now();
+        if (jetzt - geprueft < 30000) return;
+        geprueft = jetzt;
+        fetch("version.json?t=" + jetzt, { cache: "no-store" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (!d || !d.version || d.version === window.SEITEN_VERSION) return;
+            if (document.getElementById("neue-version")) return;
+            var b = document.createElement("button");
+            b.id = "neue-version";
+            b.type = "button";
+            b.textContent = "Neue Inhalte verfügbar. Tippen zum Aktualisieren";
+            b.setAttribute("style", "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;padding:12px 18px;border:0;border-radius:999px;background:#1a56db;color:#fff;font:600 15px system-ui,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.3);cursor:pointer;max-width:92vw");
+            b.addEventListener("click", function () {
+              location.replace(location.pathname + "?v=" + d.version + location.hash);
+            });
+            document.body.appendChild(b);
+          })
+          .catch(function () { /* offline, nichts tun */ });
+      }
+      pruefen();
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") pruefen();
+      });
+      window.addEventListener("pageshow", function (e) { if (e.persisted) pruefen(); });
+    }());
 
     // ---------- Alte Links ----------
     // Früher öffnete HTML-Material in einem Betrachter über der Übersicht (#material=<pfad>).
