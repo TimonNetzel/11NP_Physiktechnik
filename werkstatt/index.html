@@ -399,12 +399,15 @@
   }
 
   /* ---------- Status ---------- */
+  function altNr(nr) { return (D.altmappe || []).indexOf(nr) >= 0; }
+  function altDa() { return !!(D.altmappe && S.alt && S.alt.code); }
   function status(nr) {
     var s = S.seiten[String(nr)];
-    if (!s) return { gebaut: false, geprueft: false, kicheck: false };
+    var code = (s && s.code) || (altNr(nr) && altDa());
+    if (!s) return { gebaut: !!code, geprueft: false, kicheck: false };
     return {
-      gebaut: !!s.code,
-      geprueft: !!s.code && s.notiz.ok && s.notiz.probe.trim().length >= 10,
+      gebaut: !!code,
+      geprueft: !!code && s.notiz.ok && s.notiz.probe.trim().length >= 10,
       kicheck: s.notiz.fehler.trim().length >= 10
     };
   }
@@ -448,6 +451,41 @@
       }).join("") + '<button type="button" class="egal" data-farbe="" aria-pressed="' + (!S.farbe) + '">egal</button></div>';
   }
 
+  /* ---------- Alte Mappe (nur wenn etappen.json "altmappe" nennt) ---------- */
+  function altText() {
+    var n = D.altmappe || [];
+    return n.length === 1 ? "Etappe " + n[0] : "Etappe " + n.slice(0, -1).join(", ") + " und " + n[n.length - 1];
+  }
+  function altImBrowser() {
+    try { var w = localStorage.getItem("ki-werkstatt-" + D.klasse + "-entwurf"); return w && /<html/i.test(w) ? w : ""; } catch (e) { return ""; }
+  }
+  function altHtml() {
+    var h = '<section class="karte" id="altbox"><h2>Alte Mappe übernehmen</h2>';
+    if (altDa()) {
+      h += '<p class="gut">✔ Deine alte Mappe ist übernommen. Sie ist deine Seite für ' + altText() + ". Weiter geht es mit Schritt 4.</p>" +
+        '<div class="knoepfe"><button type="button" class="knopf klein" data-tu="alt-ansehen">Alte Mappe ansehen</button>' +
+        '<label class="knopf klein" for="k-alt">Andere Datei wählen</label></div>';
+    } else {
+      var b = altImBrowser();
+      h += "<p>Du hast " + altText() + " schon in deiner alten Mappe-Datei gebaut. Übernimm sie einmal. Sie wird eine Seite deiner neuen Mappe, und du musst nichts neu bauen.</p>" +
+        '<div class="knoepfe">' + (b ? '<button type="button" class="knopf haupt" data-tu="alt-browser">Aus diesem Browser übernehmen</button>' : "") +
+        '<label class="knopf' + (b ? "" : " haupt") + '" for="k-alt">Alte Datei hochladen</label></div>' +
+        (b ? '<p class="leise">In diesem Browser liegt noch dein letzter Stand aus der alten Werkstatt.</p>' : "") +
+        '<p class="leise">Hast du keine alte Datei, baust du die Etappe mit den Schritten unten neu.</p>';
+    }
+    h += '<input type="file" id="k-alt" accept=".html,.htm,text/html" hidden><p class="meldung" id="alt-meldung" role="status"></p>' +
+      '<div class="vorschau-rahmen" id="alt-rahmen" hidden><div class="vollbild-leiste"><button type="button" class="knopf klein" data-tu="vollbild-aus">Schließen</button></div>' +
+      '<iframe class="vorschau" id="alt-vorschau" title="Alte Mappe" sandbox="allow-scripts allow-modals"></iframe></div>';
+    return h + "</section>";
+  }
+  function setzeAlt(roh) {
+    var code = bereinige(roh || "").trim();
+    if (!/<html|<body|<!doctype/i.test(code)) { var m = $("alt-meldung"); if (m) m.textContent = "Das ist keine HTML-Datei. Wähle deine alte Mappe, zum Beispiel mappe_e02.html."; return false; }
+    S.alt = { code: code, zeit: Date.now() };
+    geaendert(); zeigeEtappe();
+    return true;
+  }
+
   function zeigeEtappe() {
     var et = etappeNr(aktuell);
     if (!et) { $("etappe").innerHTML = '<p class="karte">Noch keine Etappe.</p>'; return; }
@@ -456,12 +494,15 @@
     h += '<p class="leise">Etappe ' + et.nr + (et.art === "gefuehrt" ? ", geführter Einstieg" : ", du wählst selbst") + "</p>";
     h += "<h2>" + esc(et.titel) + "</h2>" + '<div id="haken-oben">' + hakenHtml(et.nr) + "</div>";
     h += "<p>" + esc(et.thema) + "</p></section>";
+    var altHier = altNr(et.nr);
+    if (altHier) h += altHtml();
 
     h += '<section class="karte">';
     // Schritt 1
     h += '<div class="schritt"><span class="nr">1</span><div><h3>Erst selbst rechnen</h3><p>' + esc(et.erst_selbst) + "</p>" +
       '<p class="leise">Auf einen Zettel. Diese Werte brauchst du in Schritt 4.</p></div></div>';
     // Schritt 2
+    if (altHier && altDa()) h += '<details><summary>Trotzdem neu bauen (Schritt 2 und 3)</summary>';
     h += '<div class="schritt"><span class="nr">2</span><div><h3>Bauen lassen</h3>';
     if (et.art === "gefuehrt") h += "<p>Du baust: <strong>" + esc(et.werkzeug) + "</strong></p>";
     else h += ideenHtml(et);
@@ -498,9 +539,11 @@
       '<div class="knoepfe"><button type="button" class="knopf haupt" data-tu="aender-kopieren">Änderung kopieren</button></div>' +
       '<p class="leise">Schick den Prompt im selben Chat ab und füge die Antwort oben wieder ein.</p></div></div>' +
       "</div></div>";
+    if (altHier && altDa()) h += "</details>";
     // Schritt 4
     h += '<div class="schritt"><span class="nr">4</span><div><h3>Prüfen und notieren</h3>' +
       "<p>Probiere deine Seite mit den Werten vom Zettel aus.</p>" +
+      (altHier && altDa() ? '<p class="leise">Aus der alten Mappe kannst du die Tests aus dem Testfeld und die Einträge aus dem Protokoll übernehmen.</p>' : "") +
       "<details><summary>Ergebnis zum Vergleich aufdecken</summary><p>" + esc(et.probe) + "</p>" +
       '<p class="leise">Baust du etwas ohne Rechnung, prüfst du jede Aussage deiner Seite am Skript.</p></details>' +
       '<details><summary>Achtung, KI-Falle</summary><p>' + esc(et.ki_falle) + "</p></details>" +
@@ -592,6 +635,11 @@
     if (e.target.id === "n-ok") { seite(aktuell).notiz.ok = e.target.checked; geaendert(); aktualisiereHaken(); }
     else if (e.target.id === "neuer-chat") aenderAnzeigen(aktuellAenderung);
     else if (e.target.id === "k-laden") ladeMappe(e.target);
+    else if (e.target.id === "k-alt" && e.target.files && e.target.files[0]) {
+      var leser = new FileReader();
+      leser.onload = function () { setzeAlt(String(leser.result)); };
+      leser.readAsText(e.target.files[0]);
+    }
   });
 
   var aktuellAenderung = null;
@@ -676,9 +724,14 @@
       teileMappe();
     } else if (tu === "mappe-ansehen") {
       var mr = $("mappe-rahmen");
-      if (!Object.keys(S.seiten).some(function (k) { return S.seiten[k].code; })) { $("mappe-meldung").textContent = "Noch keine Seite gebaut."; return; }
+      if (!hatSeiten()) { $("mappe-meldung").textContent = "Noch keine Seite gebaut."; return; }
       mr.hidden = false; $("mappe-vorschau").srcdoc = mappeHtml();
       mr.classList.add("vollbild"); document.body.classList.add("vollbild");
+    } else if (tu === "alt-browser") {
+      setzeAlt(altImBrowser());
+    } else if (tu === "alt-ansehen") {
+      $("alt-rahmen").hidden = false; $("alt-vorschau").srcdoc = mitFang(S.alt.code);
+      $("alt-rahmen").classList.add("vollbild"); document.body.classList.add("vollbild");
     } else if (tu === "zur-etappe") {
       waehleEtappe(Number(b.getAttribute("data-nr")), true); zeigeReiter("etappe", true);
     }
@@ -700,7 +753,8 @@
       var s = S.seiten[k];
       if (s.code || s.notiz.probe || s.notiz.fehler) seiten[k] = { code: s.code, notiz: s.notiz };
     });
-    return { werkstatt: "seiten", version: 1, klasse: D.klasse, spitzname: S.spitzname || "", stil: S.stil || null, farbe: S.farbe || null, seiten: seiten };
+    return { werkstatt: "seiten", version: 1, klasse: D.klasse, spitzname: S.spitzname || "", stil: S.stil || null, farbe: S.farbe || null, seiten: seiten,
+      alt: altDa() ? { code: S.alt.code, etappen: D.altmappe } : null };
   }
   function mappeHtml() {
     var daten = mappeDaten();
@@ -708,10 +762,12 @@
     var nrs = Object.keys(daten.seiten).map(Number).sort(function (a, b) { return a - b; });
     var titelVon = function (nr) { var e = etappeNr(nr); return e ? e.titel : "Etappe " + nr; };
     var name = esc(S.spitzname || "Spitzname fehlt");
-    var tabs = nrs.filter(function (n) { return daten.seiten[n].code; }).map(function (n) {
+    var altTitel = daten.alt ? altText() + ": alte Mappe" : "";
+    var tabs = (daten.alt ? '<button type="button" data-zeige="alt">' + esc(altTitel) + "</button>" : "") + nrs.filter(function (n) { return daten.seiten[n].code; }).map(function (n) {
       return '<button type="button" data-zeige="s' + n + '">' + n + ". " + esc(titelVon(n)) + "</button>";
     }).join("") + '<button type="button" data-zeige="logbuch">Logbuch</button>';
-    var teile = nrs.filter(function (n) { return daten.seiten[n].code; }).map(function (n) {
+    var teile = (daten.alt ? '<section id="alt" hidden><h2>' + esc(altTitel) + '</h2><iframe title="Alte Mappe" sandbox="allow-scripts allow-modals" srcdoc="' +
+      esc(daten.alt.code) + '"></iframe></section>' : "") + nrs.filter(function (n) { return daten.seiten[n].code; }).map(function (n) {
       return '<section id="s' + n + '" hidden><h2>Etappe ' + n + ": " + esc(titelVon(n)) + '</h2><iframe title="Etappe ' + n + '" sandbox="allow-scripts allow-modals" srcdoc="' +
         esc(daten.seiten[n].code) + '"></iframe></section>';
     }).join("");
@@ -749,7 +805,7 @@
     return "mappe_" + (D.klasse || "ki") + "_" + d.getFullYear() + "-" + zwei(d.getMonth() + 1) + "-" + zwei(d.getDate()) + ".html";
   }
   function mappeMelden(t) { var m = $("mappe-meldung"); if (m) m.textContent = t; var n = $("meldung"); if (n && aktiverReiter === "etappe") n.textContent = t; }
-  function hatSeiten() { return Object.keys(S.seiten).some(function (k) { return S.seiten[k].code; }); }
+  function hatSeiten() { return altDa() || Object.keys(S.seiten).some(function (k) { return S.seiten[k].code; }); }
   function speichereMappe() {
     if (!hatSeiten()) { mappeMelden("Noch keine Seite gebaut. Es gibt nichts zu speichern."); return; }
     var blob = new Blob([mappeHtml()], { type: "text/html" });
@@ -785,10 +841,16 @@
           S.seiten[k] = { code: x.code || "", versionen: [], notiz: { prompt: (x.notiz || {}).prompt || "", probe: (x.notiz || {}).probe || "", ok: !!(x.notiz || {}).ok, fehler: (x.notiz || {}).fehler || "" } };
         });
         S.spitzname = d.spitzname || ""; if (d.stil) S.stil = d.stil; if (d.farbe) S.farbe = d.farbe;
+        S.alt = d.alt && d.alt.code ? { code: d.alt.code, zeit: Date.now() } : null;
         S.gesichert = Date.now(); S.geaendert = S.gesichert; sichere();
         $("spitzname").value = S.spitzname;
         zeigeMappe(); zeigeEtappe(); zeigeSicherHinweis();
         mappeMelden("Mappe geladen: " + Object.keys(S.seiten).length + " Etappen.");
+      } else if (D.altmappe && /BEREICH: WERKZEUGE/.test(text)) {
+        if (!confirm("Das ist deine alte Mappe aus der KI-Werkstatt. Soll sie deine Seite für " + altText() + " werden?")) return;
+        setzeAlt(text);
+        mappeMelden("Alte Mappe übernommen. Sie zählt als Seite für " + altText() + ".");
+        zeigeMappe();
       } else if (/<html/i.test(text)) {
         if (!confirm("Diese Datei ist eine einzelne Seite. Soll sie die Seite von Etappe " + aktuell + " werden?")) return;
         zeigeReiter("etappe", true);
